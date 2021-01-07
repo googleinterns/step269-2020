@@ -1,10 +1,44 @@
 body {
   background-image: url("images/tests.jpg");
 }
+.sidenav {
+  height: 100%;
+  width: 250px;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  background-color: #111;
+  overflow-x: hidden;
+  padding-top: 20px;
+}
 
+.sidenav a {
+  padding: 6px 8px 6px 16px;
+  text-decoration: none;
+  font-size: 25px;
+  color: #818181;
+  display: block;
+}
+
+.sidenav a:hover {
+  color: #f1f1f1;
+}
+
+.main {
+  margin-left: 260px; /* Same as the width of the sidenav */
+  font-size: 12px; 
+  padding: 0px 10px;
+}
+div.switch_div {
+  position: absolute;
+  right: 150px;  
+  width: 400px;
+  height: 200px;
+  border: 3px solid green;
+}
 .switch {
-  position: relative;
-  left: 800px;
+  position: absolute;
   display: inline-block;
   width: 60px;
   height: 34px;

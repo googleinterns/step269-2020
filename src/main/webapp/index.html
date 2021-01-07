@@ -4,30 +4,42 @@
     <meta charset="UTF-8">
     <title>Air Quality Map</title>
     <link rel="stylesheet" href="style.css">
-    <!--
-    <style>
-    body {
-      background-image: url("tests.jpg");
-    }
-    </style>
-    -->
-    
+
   </head>
   <body>
-    <h1>The background-image Property</h1>
-    <p>Hello World!</p>
+    <!-- Sidebar -->
+    <div class="sidenav">
+      <a href="#about">google map direction</a>
+      <a href="#services">origin</a>
+      <a href="#clients">destination</a>
+      <a href="#contact">directions</a>
+      <p> paragraph insert</p>
+      <div>
+        <label class="switch">
+          <input type="checkbox" checked>
+          <span class="slider round"></span>
+        </label>
+      </div> 
+    </div>
+
+    <div class="main">
+      <h1>Prototype Layout for Air Quality Map</h1>
+      <h2>Background Image should be the google map</h2>
+      <p>By default, the background image will repeat itself if it is smaller than the element where it is specified, in this case the body element.</p>
+      
+      <div class="switch_div">
+        <h3>Data visualisation layer - Toggle Switch </h3>
+        <label class="switch">
+          <input type="checkbox" checked>
+          <span class="slider round"></span>
+        </label>
+        <br><br>
+        <p>This div element has position: absolute and is placed 150 pixels to the left of the right edge of the containing positioned element aka the body.</p>
+      </div>
+    </div>
     
-    <h2>Background Image</h2>
-    <p>By default, the background image will repeat itself if it is smaller than the element where it is specified, in this case the body element.</p>
 
-    <h2>Toggle Switch</h2>
-    <p>Data visualisation layer </p>
-
-
-    <label class="switch">
-      <input type="checkbox" checked>
-      <span class="slider round"></span>
-    </label>
+    
   </body>
 </html>
 
