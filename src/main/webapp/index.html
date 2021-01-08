@@ -9,17 +9,23 @@
   <body>
     <!-- Sidebar -->
     <div class="sidenav">
+      <div class="topnav"> 
+        <div class="search-container">
+          <form action="/action_page.php">
+            <input type="text" placeholder="Search a location.." name="search">
+            <button type="submit" class="button Search" id="submit">Search</button>
+          </form>
+        </div>
+        <button class="button Search">Search</button>
+        <!-- trying button class vs id -->
+        <button id="Directions">Directions</button> 
+      </div> 
       <a href="#about">google map direction</a>
       <a href="#services">origin</a>
       <a href="#clients">destination</a>
       <a href="#contact">directions</a>
       <p> paragraph insert</p>
-      <div>
-        <label class="switch">
-          <input type="checkbox" checked>
-          <span class="slider round"></span>
-        </label>
-      </div> 
+      
     </div>
 
     <div class="main">
@@ -29,7 +35,7 @@
       
       <div class="switch_div">
         <h3>Data visualisation layer - Toggle Switch </h3>
-        <label class="switch">
+        <label id="Switch" class="switch">
           <input type="checkbox" checked>
           <span class="slider round"></span>
         </label>
