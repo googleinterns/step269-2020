@@ -1,6 +1,7 @@
 body {
   background-image: url("images/tests.jpg");
 }
+
 .topnav .search-container {
   float: left;
 }
@@ -60,6 +61,7 @@ body {
   background-color: rgb(38, 137, 219);;
   color: white;
 }
+
 
 
 .sidenav {
