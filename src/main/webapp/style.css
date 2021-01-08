@@ -14,11 +14,11 @@ body {
 }
 
 .topnav .search-container button {
-  float: left;
+  float: right;
   padding: 6px 10px;
   margin-top: 8px;
   margin-right: 16px;
-  background: rgb(202, 26, 149);
+  background: rgb(211, 206, 209);
   font-size: 17px;
   border: none;
   cursor: pointer;
@@ -29,7 +29,7 @@ body {
 }
 
 .button {
-  background-color: #4CAF50; /* Green */
+  background-color: #4CAF50;
   border: none;
   color: white;
   padding: 8px 8px;
@@ -41,32 +41,21 @@ body {
   transition-duration: 0.4s;
   cursor: pointer;
 }
-.Search {
-  background-color: white; 
-  color: black; 
-  border: 2px solid #4CAF50;
-}
 
-.Search:hover {
-  background-color: #4CAF50;
-  color: white;
-}
-
-#Directions{
+#directions{
   background-color: white; 
   color: black; 
   border: 2px solid rgb(38, 137, 219);
 }
-#Directions:hover {
+
+#directions:hover {
   background-color: rgb(38, 137, 219);;
   color: white;
 }
 
-
-
 .sidenav {
   height: 100%;
-  width: 250px;
+  width: 450px;
   position: fixed;
   z-index: 1;
   top: 0;
@@ -89,10 +78,11 @@ body {
 }
 
 .main {
-  margin-left: 260px; /* Same as the width of the sidenav */
+  margin-left: 450px; /* Same as the width of the sidenav */
   font-size: 12px; 
   padding: 0px 10px;
 }
+
 div.switch_div {
   position: absolute;
   right: 150px;  
@@ -100,6 +90,7 @@ div.switch_div {
   height: 200px;
   border: 3px solid green;
 }
+
 .switch {
   position: absolute;
   display: inline-block;
