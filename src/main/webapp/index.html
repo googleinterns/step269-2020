@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Air Quality Map</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <!-- Sidebar -->
+    <div class="sidenav">
+      <!-- The top "nav" in the sidebar -->
+      <div class="topnav"> 
+        <div class="search-container">
+          <form action="/action_page.php">
+            <input type="text" placeholder="Search a location.." name="search">
+            <button type="submit" class="button Search" id="submit">Search</button>
+          </form>
+        </div>
+        <button class="button directions" id="directions">Directions</button> 
+      </div> 
+    </div>
+    <div class="main">
+      <h1>Prototype Layout for Air Quality Map</h1>
+      <h2>Background Image should be the google map</h2>
+      <p>By default, the background image will repeat itself if it is smaller than the element where it is specified, in this case the body element.</p>
+      <div class="switch_div">
+        <h3>Data visualisation layer - Toggle Switch </h3>
+        <p>This div element is on float:right, and its width is 300px. </p>
+        <label id="switch" class="switch">
+        <label class="switch">
+          <input type="checkbox" checked>
+          <span class="slider round"></span>
+        </label>
+      </div>
+    </div>
+  </body>
+</html>
