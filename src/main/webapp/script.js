@@ -1,17 +1,17 @@
-var zoomedIn = false;
-var aqLayerOn = true;
-var routeVisible = false;
+let zoomedIn = false;
+let aqLayerOn = true;
+let routeVisible = false;
 
 function changeBackgroundImage(imagePath) {
-    document.body.style.backgroundImage = "url('" + imagePath + "')";
+    document.body.style.backgroundImage = `url('${imagePath}')`;
 }
 
 function getImagePath() {
-    path = "";
+    let path = "";
     if (zoomedIn) {
-        path = "images/wagga_";
+        path = "/images/wagga_";
     } else {
-        path = "images/nsw_";
+        path = "/images/nsw_";
     }
 
     if (aqLayerOn) {
@@ -30,7 +30,7 @@ function getImagePath() {
 }
 
 function toggleAQLayer() {
-    checkbox = document.getElementById("aq-layer-toggle");
+    const checkbox = document.getElementById("aq-layer-toggle");
     
     aqLayerOn = checkbox.checked;
 
@@ -61,12 +61,12 @@ function showRoutes() {
 }
 
 function searchLocation() {
-    var location = document.getElementById("location-search-bar").value;
+    const locationString = document.getElementById("location-search-bar").value;
 
-    locationInfo = document.getElementById("location-info");
+    const locationInfo = document.getElementById("location-info");
     locationInfo.style.visibility = "visible";
 
-    if (location !== "wagga wagga") {
+    if (locationString !== "wagga wagga") {
         locationInfo.innerHTML = "The only location supported by this prototype is `wagga wagga`";
         return;
     }
