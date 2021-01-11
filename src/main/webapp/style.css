@@ -64,6 +64,14 @@ body {
   visibility: hidden;
 }
 
+#close-sidebar {
+  margin-left: 300px;
+}
+
+#open-sidebar {
+  display: none;
+}
+
 #route-info {
   background-color: white;
   border: 2px solid grey;

@@ -8,7 +8,7 @@
   </head>
   <body>
     <!-- Sidebar -->
-    <div class="sidenav">
+    <div class="sidenav" id="sidebar">
       <!-- The top "nav" in the sidebar -->
       <div class="topnav"> 
         <div class="search-container">
@@ -20,6 +20,8 @@
       </div> 
       <div id="location-info"></div>
     </div>
+    <button id="close-sidebar" onClick="closeSidebar()">close sidebar</button>
+    <button id="open-sidebar" onClick="openSidebar()">open sidebar</button>
     <div class="main">
       <h1>Prototype Layout for Air Quality Map</h1>
       <h2>Background Image should be the google map</h2>
