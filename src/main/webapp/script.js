@@ -47,6 +47,8 @@ function hideRoutes() {
 }
 function showRoutes() {
     zoomedIn = false; //images do not exist for a zoomed in route view in the current prototype
+    document.getElementById("location-info").style.visibility = "hidden";
+
     routeVisible = true;
 
     document.getElementById("close-directions").style.visibility = "visible";
@@ -57,6 +59,26 @@ function showRoutes() {
 }
 
 function searchLocation() {
-    location = document.getElementById("location-search-bar").value;
-    console.log(location)
+    var location = document.getElementById("location-search-bar").value;
+
+    locationInfo = document.getElementById("location-info");
+    locationInfo.style.visibility = "visible";
+
+    if (location !== "wagga wagga") {
+        locationInfo.innerHTML = "The only location supported by this prototype is `wagga wagga`";
+        return;
+    }
+
+    htmlString = ""
+    htmlString += "<h3>Wagga Wagga</h3>\n";
+    htmlString += "<p>Current AQ score: 40 (Pretty good)</p>\n";
+    locationInfo.innerHTML = htmlString;
+
+    zoomedIn = true;
+
+    routeVisible = false; //no image available for zoomed in and routes visible
+    document.getElementById("close-directions").style.visibility = "hidden";
+    document.getElementById("route-info").style.visibility = "hidden";
+
+    changeBackgroundImage(getImagePath());
 }

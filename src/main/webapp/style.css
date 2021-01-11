@@ -59,6 +59,11 @@ body {
   visibility: hidden;
 }
 
+#location-info {
+  color: grey;
+  visibility: hidden;
+}
+
 #route-info {
   background-color: white;
   border: 2px solid grey;
