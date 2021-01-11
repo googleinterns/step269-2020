@@ -87,16 +87,12 @@ function closeSidebar() {
     document.getElementById("close-sidebar").style.display = "none";
     document.getElementById("open-sidebar").style.display = "inline-block";
 
-    // document.getElementById("sidebar").style.display = "none";
-
     document.getElementById("sidebar").style.visibility = "hidden";
 }
 
 function openSidebar() {
     document.getElementById("close-sidebar").style.display = "inline-block";
     document.getElementById("open-sidebar").style.display = "none";
-
-    // document.getElementById("sidebar").style.display = "inline-block;";
 
     document.getElementById("sidebar").style.visibility = "visible";
 }
