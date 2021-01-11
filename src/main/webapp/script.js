@@ -28,6 +28,7 @@ function getImagePath() {
 
     return path;
 }
+
 function toggleAQLayer() {
     checkbox = document.getElementById("aq-layer-toggle");
     
@@ -45,6 +46,7 @@ function hideRoutes() {
 
     changeBackgroundImage(getImagePath());
 }
+
 function showRoutes() {
     zoomedIn = false; //images do not exist for a zoomed in route view in the current prototype
     document.getElementById("location-info").style.visibility = "hidden";
