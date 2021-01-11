@@ -80,7 +80,7 @@ body {
   visibility: hidden;
 }
 
-.sidenav {
+#sidebar {
   height: 100%;
   width: 300px;
   position: fixed;
@@ -92,7 +92,7 @@ body {
   padding-top: 20px;
 }
 
-.sidenav a {
+#sidebar a {
   padding: 6px 8px 6px 16px;
   text-decoration: none;
   font-size: 25px;
@@ -100,12 +100,12 @@ body {
   display: block;
 }
 
-.sidenav a:hover {
+#sidebar a:hover {
   color: #f1f1f1;
 }
 
 .main {
-  margin-left: 300px; /* Same as the width of the sidenav */
+  margin-left: 300px; /* Same as the width of the sidebar */
   font-size: 12px; 
   padding: 0px 10px;
 }
