@@ -92,18 +92,6 @@ body {
   padding-top: 20px;
 }
 
-#sidebar a {
-  padding: 6px 8px 6px 16px;
-  text-decoration: none;
-  font-size: 25px;
-  color: #818181;
-  display: block;
-}
-
-#sidebar a:hover {
-  color: #f1f1f1;
-}
-
 .main {
   margin-left: 300px; /* Same as the width of the sidebar */
   font-size: 12px; 
