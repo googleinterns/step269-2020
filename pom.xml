@@ -49,7 +49,6 @@
         <configuration>
           <!--set GCP project ID here -->
           <deploy.projectId>step269-2020</deploy.projectId>
-          <deploy.version>1</deploy.version>
         </configuration>
       </plugin>
     </plugins>
