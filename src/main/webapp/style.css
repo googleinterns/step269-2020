@@ -55,7 +55,7 @@ body {
 
 .sidenav {
   height: 100%;
-  width: 20%;
+  width: 300px;
   position: fixed;
   z-index: 1;
   top: 0;
@@ -78,7 +78,7 @@ body {
 }
 
 .main {
-  margin-left: 450px; /* Same as the width of the sidenav */
+  margin-left: 300px; /* Same as the width of the sidenav */
   font-size: 12px; 
   padding: 0px 10px;
 }
