@@ -1,5 +1,7 @@
 body {
-  background-image: url("images/tests.jpg");
+  background-image: url("images/nsw_gradient.png");
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
 .topnav .search-container {
@@ -51,6 +53,18 @@ body {
 #directions:hover {
   background-color: rgb(38, 137, 219);
   color: white;
+}
+
+#close-directions {
+  visibility: hidden;
+}
+
+#route-info {
+  background-color: white;
+  border: 2px solid grey;
+  display: inline-block;
+  padding: 0 10px 0 10px;
+  visibility: hidden;
 }
 
 .sidenav {
