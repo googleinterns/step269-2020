@@ -3,22 +3,25 @@
   <head>
     <meta charset="UTF-8">
     <title>Air Quality Map</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="/style.css">
+    <script src="/script.js"></script>
   </head>
   <body>
     <!-- Sidebar -->
-    <div class="sidenav">
+    <div id="sidebar">
       <!-- The top "nav" in the sidebar -->
       <div class="topnav"> 
         <div class="search-container">
-          <form action="/action_page.php">
-            <input type="text" placeholder="Search a location.." name="search">
-            <button type="submit" class="button Search" id="submit">Search</button>
-          </form>
+          <input type="text" placeholder="Search a location.." name="search" id="location-search-bar">
+          <button class="button Search" id="location-search-button" onClick="searchLocation()">Search</button>
         </div>
-        <button class="button directions" id="directions">Directions</button> 
+        <button class="button directions" id="directions" onClick="showRoutes()">Directions</button> 
+        <button class="button directiones" id="close-directions" onClick="hideRoutes()">Close directions</button>
       </div> 
+      <div id="location-info"></div>
     </div>
+    <button id="close-sidebar" onClick="closeSidebar()">close sidebar</button>
+    <button id="open-sidebar" onClick="openSidebar()">open sidebar</button>
     <div class="main">
       <h1>Prototype Layout for Air Quality Map</h1>
       <h2>Background Image should be the google map</h2>
@@ -28,10 +31,18 @@
         <p>This div element is on float:right, and its width is 300px. </p>
         <label id="switch" class="switch">
         <label class="switch">
-          <input type="checkbox" checked>
+          <input type="checkbox" id="aq-layer-toggle" onClick="toggleAQLayer()" checked>
           <span class="slider round"></span>
         </label>
       </div>
+      <div id="route-info">
+        <p> Fastest route: <br>
+        - Time: 4hr <br>
+        - AQ score: 60 (Ok) </p>
+        <p> Cleanest route: <br>
+        - Time: 4hr 30min <br>
+        - AQ score: 30 (Excellent) </p>
     </div>
+    <div id="demo"></div>
   </body>
 </html>

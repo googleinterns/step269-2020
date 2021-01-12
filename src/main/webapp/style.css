@@ -1,5 +1,7 @@
 body {
-  background-image: url("images/tests.jpg");
+  background-image: url("images/nsw_gradient.png");
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
 .topnav .search-container {
@@ -53,7 +55,32 @@ body {
   color: white;
 }
 
-.sidenav {
+#close-directions {
+  visibility: hidden;
+}
+
+#location-info {
+  color: grey;
+  visibility: hidden;
+}
+
+#close-sidebar {
+  margin-left: 300px;
+}
+
+#open-sidebar {
+  display: none;
+}
+
+#route-info {
+  background-color: white;
+  border: 2px solid grey;
+  display: inline-block;
+  padding: 0 10px 0 10px;
+  visibility: hidden;
+}
+
+#sidebar {
   height: 100%;
   width: 300px;
   position: fixed;
@@ -65,20 +92,8 @@ body {
   padding-top: 20px;
 }
 
-.sidenav a {
-  padding: 6px 8px 6px 16px;
-  text-decoration: none;
-  font-size: 25px;
-  color: #818181;
-  display: block;
-}
-
-.sidenav a:hover {
-  color: #f1f1f1;
-}
-
 .main {
-  margin-left: 300px; /* Same as the width of the sidenav */
+  margin-left: 300px; /* Same as the width of the sidebar */
   font-size: 12px; 
   padding: 0px 10px;
 }
