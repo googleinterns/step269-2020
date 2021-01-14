@@ -1,17 +1,13 @@
 body {
-  /* background-image: url("images/nsw_gradient.png");
-  background-repeat: no-repeat;
-  background-size: cover; */
   color: black;
 }
 
-/* Always set the map height explicitly to define the size of the div
-       * element that contains the map. */
 #map {
   height: 100%;
+  z-index: -99;
 }
 
-/* Optional: Makes the sample page fill the window. */
+/* Makes the map fill the window. */
 html,
 body {
   height: 100%;
@@ -80,11 +76,14 @@ body {
 }
 
 #close-sidebar {
-  margin-left: 300px;
+  position:fixed;
+  top: 5px;
 }
 
 #open-sidebar {
   display: none;
+  position: fixed;
+  top: 5px;
 }
 
 #route-info {
@@ -114,9 +113,10 @@ body {
 }
 
 div.switch_div {
-  float: right;  
-  width: 300px;
-  height: 200px;
+	margin: 20px 20px 0 0;
+  position: absolute;
+	top: 30px;
+	right: 0px;
 }
 
 .switch {
