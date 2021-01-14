@@ -1,34 +1,3 @@
-let zoomedIn = false;
-let aqLayerOn = true;
-let routeVisible = false;
-
-function changeBackgroundImage(imagePath) {
-    document.body.style.backgroundImage = `url('${imagePath}')`;
-}
-
-function getImagePath() {
-    let path = "";
-    if (zoomedIn) {
-        path = "/images/wagga_";
-    } else {
-        path = "/images/nsw_";
-    }
-
-    if (aqLayerOn) {
-        path += "gradient";
-    } else {
-        path += "plain";
-    }
-
-    if (routeVisible) {
-        path += "_route.png";
-    } else {
-        path += ".png";
-    }
-
-    return path;
-}
-
 let map;
 let aqLayer;
 
@@ -71,31 +40,6 @@ function initMap() {
 
 function toggleAQLayer() {
     aqLayer.setMap(aqLayer.getMap() ? null : map);
-
-    changeBackgroundImage(getImagePath());
-}
-
-function hideRoutes() {
-    routeVisible = false;
-
-    document.getElementById("close-directions").style.visibility = "hidden";
-
-    document.getElementById("route-info").style.visibility = "hidden";
-
-    changeBackgroundImage(getImagePath());
-}
-
-function showRoutes() {
-    zoomedIn = false; //images do not exist for a zoomed in route view in the current prototype
-    document.getElementById("location-info").style.visibility = "hidden";
-
-    routeVisible = true;
-
-    document.getElementById("close-directions").style.visibility = "visible";
-
-    document.getElementById("route-info").style.visibility = "visible";
-
-    changeBackgroundImage(getImagePath());
 }
 
 function searchLocation() {
@@ -113,14 +57,14 @@ function searchLocation() {
     htmlString += "<h3>Wagga Wagga</h3>\n";
     htmlString += "<p>Current AQ score: 40 (Pretty good)</p>\n";
     locationInfo.innerHTML = htmlString;
+}
 
-    zoomedIn = true;
+function showRoutes() {
+    console.log("Directions not currently supported");
+}
 
-    routeVisible = false; //no image available for zoomed in and routes visible
-    document.getElementById("close-directions").style.visibility = "hidden";
-    document.getElementById("route-info").style.visibility = "hidden";
-
-    changeBackgroundImage(getImagePath());
+function hideRoutes() {
+    console.log("Directions not currently supported");
 }
 
 function closeSidebar() {
