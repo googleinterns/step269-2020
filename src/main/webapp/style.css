@@ -4,7 +4,6 @@ body {
 
 #map {
   height: 100%;
-  z-index: -99;
 }
 
 /* Makes the map fill the window. */
