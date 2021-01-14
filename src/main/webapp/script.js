@@ -24,9 +24,10 @@ function aqLayerControl(controlDiv, map) {
     controlUI.appendChild(controlText);
     // Setup the click event listeners: simply set the map to Chicago.
     controlUI.addEventListener("click", () => {
-        map.setCenter(chicago);
+        toggleAQLayer();
     });
 }
+
 function initMap() {
     map = new google.maps.Map(document.getElementById("map"), {
         center: { lat: 37.775, lng: -122.434 },
