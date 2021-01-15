@@ -1,16 +1,17 @@
 let map;
 let aqLayer;
 
-function aqLayerControl(controlDiv, map) {
+function aqLayerControl(controlDiv) {
+    // Set CSS for the control border.
     const controlUI = document.createElement("div");
     controlUI.style.backgroundColor = "#fff";
     controlUI.style.border = "2px solid #fff";
     controlUI.style.borderRadius = "3px";
     controlUI.style.boxShadow = "0 2px 6px rgba(0,0,0,.3)";
     controlUI.style.cursor = "pointer";
-    controlUI.style.marginBottom = "22px";
+    controlUI.style.margin = "10px";
     controlUI.style.textAlign = "center";
-    controlUI.title = "Click to recenter the map";
+    controlUI.title = "Click to toggle the AQ layer";
     controlDiv.appendChild(controlUI);
       // Set CSS for the control interior.
     const controlText = document.createElement("div");
@@ -20,9 +21,9 @@ function aqLayerControl(controlDiv, map) {
     controlText.style.lineHeight = "38px";
     controlText.style.paddingLeft = "5px";
     controlText.style.paddingRight = "5px";
-    controlText.innerHTML = "Center Map";
+    controlText.innerHTML = "Toggle AQ Layer";
     controlUI.appendChild(controlText);
-    // Setup the click event listeners: simply set the map to Chicago.
+
     controlUI.addEventListener("click", () => {
         toggleAQLayer();
     });
@@ -64,12 +65,9 @@ function initMap() {
     });
     aqLayer.setMap(map);
 
-    // Create the DIV to hold the control and call the CenterControl()
-    // constructor passing in this DIV.
     const aqLayerControlDiv = document.createElement("div");
     aqLayerControl(aqLayerControlDiv, map);
     map.controls[google.maps.ControlPosition.RIGHT_TOP].push(aqLayerControlDiv);
-
 }
 
 function toggleAQLayer() {
