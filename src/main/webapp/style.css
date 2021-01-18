@@ -74,15 +74,10 @@ body {
   visibility: hidden;
 }
 
-#close-sidebar {
-  position:fixed;
-  top: 5px;
-}
-
-#open-sidebar {
-  display: none;
+#toggle-sidebar {
   position: fixed;
   top: 5px;
+  left: 300px;
 }
 
 #sidebar {

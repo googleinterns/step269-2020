@@ -99,16 +99,19 @@ function hideRoutes() {
     console.log("Directions not currently supported");
 }
 
-function closeSidebar() {
-    document.getElementById("close-sidebar").style.display = "none";
-    document.getElementById("open-sidebar").style.display = "inline-block";
+function toggleSidebar() {
+    const toggleButton = document.getElementById("toggle-sidebar");
 
-    document.getElementById("sidebar").style.visibility = "hidden";
-}
-
-function openSidebar() {
-    document.getElementById("close-sidebar").style.display = "inline-block";
-    document.getElementById("open-sidebar").style.display = "none";
-
-    document.getElementById("sidebar").style.visibility = "visible";
+    const sidebar = document.querySelector("#sidebar");
+    const sidebarVisibility = window.getComputedStyle(sidebar).getPropertyValue("visibility");
+    
+    if (sidebarVisibility === "visible") {
+        sidebar.style.visibility = "hidden";
+        toggleButton.innerHTML = "open sidebar";
+        toggleButton.style.left = "5px";
+    } else {
+        sidebar.style.visibility = "visible";
+        toggleButton.innerHTML = "close sidebar";
+        toggleButton.style.left = "300px";
+    }
 }
