@@ -95,11 +95,11 @@ function toggleSidebar() {
     
     if (sidebarVisibility === "visible") {
         sidebar.style.visibility = "hidden";
-        toggleButton.innerHTML = "open sidebar";
+        toggleButton.innerHTML = "<i class=material-icons>navigate_next</i>";
         toggleButton.style.left = "5px";
     } else {
         sidebar.style.visibility = "visible";
-        toggleButton.innerHTML = "close sidebar";
+        toggleButton.innerHTML = "<i class=material-icons>navigate_before</i>";
         toggleButton.style.left = "300px";
     }
 }
