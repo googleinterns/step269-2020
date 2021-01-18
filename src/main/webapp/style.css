@@ -118,10 +118,10 @@ body {
 }
 
 div.switch_div {
-	margin: 20px 20px 0 0;
+  margin: 20px 20px 0 0;
   position: absolute;
-	top: 30px;
-	right: 0px;
+  top: 30px;
+  right: 0px;
 }
 
 .switch {
