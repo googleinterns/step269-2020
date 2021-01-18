@@ -12,9 +12,15 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.URL; 
+import java.net.URL;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 //there'll be methods 
 //fetching from api here so from gov api
@@ -62,15 +68,20 @@ public class GovAdaptor {
       StringBuilder response = new StringBuilder();
       String responseLine = null;
       while ((responseLine = br.readLine()) != null) {
-          response.append(responseLine.trim());
-          }
-      //System.out.println(response.toString());
-      //add it to the response string 
+        response.append(responseLine.trim());
+      }
+      //add it to the responseString 
       String responseString = response.toString();
       System.out.println(responseString);
+
+      // now to take a string(which contains some json formatted data) into gson
+      Gson gson = new Gson();
+      //converting the json string into a array list ( a list of the govparameter class)
+      ArrayList<GovParameters> list = gson.fromJson(responseString, new TypeToken<ArrayList<GovParameters>>() {}.getType());
+      list.forEach(x -> System.out.println(x));
     }
-    // now to take a string(which contains some json formatted data) into gson
-    
+
+
     //hypotechnical that this converst into a string, make it now into a json object like array list  (might need to define a class to convert the json into e.g. like comments class). using gson hopefully 
     //You'll need to look at the response and match the class variables to the json fields
     //Sort of like a hashmap
@@ -84,20 +95,3 @@ public class GovAdaptor {
     // then make servlet, which uses gson to pass into string 
   }
 }
-
-//create a class for beneath (format of the data pt being returned like comment class)
-//site location
-// coordinates (long, lat)
-// AQI
-
-
-/*
-
-public class GovAdaptor {
-  HttpURLConnection connection;
-
-  try {
-    URL url = new URL("https://data.airquality.nsw.gov.au/api/Data/get_Observations");
-  }
-  }
-*/
