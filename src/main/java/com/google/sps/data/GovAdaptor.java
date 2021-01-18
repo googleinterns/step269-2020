@@ -81,7 +81,6 @@ public class GovAdaptor {
       list.forEach(x -> System.out.println(x));
     }
 
-
     //hypotechnical that this converst into a string, make it now into a json object like array list  (might need to define a class to convert the json into e.g. like comments class). using gson hopefully 
     //You'll need to look at the response and match the class variables to the json fields
     //Sort of like a hashmap
