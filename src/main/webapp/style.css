@@ -1,7 +1,36 @@
 body {
-  background-image: url("images/nsw_gradient.png");
-  background-repeat: no-repeat;
-  background-size: cover;
+  color: black;
+}
+
+#map {
+  height: 100%;
+}
+
+.mapControlUI {
+  background-color: #fff;
+  border: 2px solid #fff;
+  border-radius: 3px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, .3);
+  cursor: pointer;
+  margin: 10px;
+  text-align: center;
+}
+
+.mapControlText {
+  color: rgb(25,25,25);
+  font-family: Roboto,Arial,sans-serif;
+  font-size: 16px;
+  line-height: 38px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+/* Makes the map fill the window. */
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 .topnav .search-container {
@@ -64,20 +93,10 @@ body {
   visibility: hidden;
 }
 
-#close-sidebar {
-  margin-left: 300px;
-}
-
-#open-sidebar {
-  display: none;
-}
-
-#route-info {
-  background-color: white;
-  border: 2px solid grey;
-  display: inline-block;
-  padding: 0 10px 0 10px;
-  visibility: hidden;
+#toggle-sidebar {
+  position: fixed;
+  top: 5px;
+  left: 300px;
 }
 
 #sidebar {
@@ -99,9 +118,10 @@ body {
 }
 
 div.switch_div {
-  float: right;  
-  width: 300px;
-  height: 200px;
+  margin: 20px 20px 0 0;
+  position: absolute;
+  top: 30px;
+  right: 0px;
 }
 
 .switch {
