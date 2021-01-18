@@ -13,7 +13,7 @@ function aqLayerControl(controlDiv) {
     controlUI.style.textAlign = "center";
     controlUI.title = "Click to toggle the AQ layer";
     controlDiv.appendChild(controlUI);
-      // Set CSS for the control interior.
+    // Set CSS for the control interior.
     const controlText = document.createElement("div");
     controlText.style.color = "rgb(25,25,25)";
     controlText.style.fontFamily = "Roboto,Arial,sans-serif";
@@ -52,7 +52,6 @@ function initMap() {
         {location: new google.maps.LatLng(37.782, -122.439), weight: 2},
         new google.maps.LatLng(37.782, -122.437),
         {location: new google.maps.LatLng(37.782, -122.435), weight: 0.5},
-
         {location: new google.maps.LatLng(37.785, -122.447), weight: 3},
         {location: new google.maps.LatLng(37.785, -122.445), weight: 2},
         new google.maps.LatLng(37.785, -122.443),
