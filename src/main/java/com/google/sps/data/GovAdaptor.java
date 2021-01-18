@@ -55,16 +55,33 @@ public class GovAdaptor {
     byte[] input = jsonInputString.getBytes("utf-8");
     os.write(input, 0, input.length);
     }	
-    
+
     //read response from input stream 
     try(BufferedReader br = new BufferedReader( new InputStreamReader(con.getInputStream(), "utf-8"))) {
-    StringBuilder response = new StringBuilder();
-    String responseLine = null;
-    while ((responseLine = br.readLine()) != null) {
-        response.append(responseLine.trim());
-        }
-        System.out.println(response.toString());
+      //string builder: put stuff into it, all that stuff i gave, give it back to me as one big string
+      StringBuilder response = new StringBuilder();
+      String responseLine = null;
+      while ((responseLine = br.readLine()) != null) {
+          response.append(responseLine.trim());
+          }
+      //System.out.println(response.toString());
+      //add it to the response string 
+      String responseString = response.toString();
+      System.out.println(responseString);
     }
+    // now to take a string(which contains some json formatted data) into gson
+    
+    //hypotechnical that this converst into a string, make it now into a json object like array list  (might need to define a class to convert the json into e.g. like comments class). using gson hopefully 
+    //You'll need to look at the response and match the class variables to the json fields
+    //Sort of like a hashmap
+    // make pr 
+
+    //write a separeat program and use gson to work on string 
+
+    //want to convert "response, so what i get from the terminal  into a string 
+    //then convert into a json object e.g. arraylist   (using gson)
+    // then cache 
+    // then make servlet, which uses gson to pass into string 
   }
 }
 
