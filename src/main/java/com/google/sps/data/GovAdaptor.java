@@ -54,7 +54,7 @@ public class GovAdaptor {
 
     //Creating the Request Body
     //Json string to be constructred for sepcifc resource(?) - a sample string rn 
-    final String jsonInputString = "{ \"Parameters\": [ \"AQI\" ], \"Sites\": [ 336, 4330, 2330, 7330, 3330, 329, 5330 ], \"StartDate\": \"2021-01-13\", \"EndDate\": \"2021-01-14\", \"Categories\": [ \"Site AQI\" ], \"SubCategories\": [ \"Hourly\" ], \"Frequency\": [ \"Hourly average\" ]}";
+    final String jsonInputString = "{ \"Parameters\": [ \"AQI\", ], \"Sites\": [ ], \"StartDate\": \"2021-01-18\", \"EndDate\": \"2021-01-19\", \"Categories\": [ \"Site AQI\" ], \"SubCategories\": [ \"Hourly\" ], \"Frequency\": [ \"Hourly average\" ]}";
 
     //output stream only flushes its output after its closed
     try(OutputStream os = con.getOutputStream()) {
