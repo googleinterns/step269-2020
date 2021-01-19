@@ -1,9 +1,6 @@
 package com.google.sps.servlets;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -17,9 +14,32 @@ public class VisualisationServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    Path dirPath = Paths.get(".").toAbsolutePath();
-    Path filepath = Paths.get(dirPath.toString(), "WEB-INF/classes/com/google/sps/servlets/testData.json");
-    String testJsonString = new String(Files.readAllBytes(filepath));
+
+    String testJsonString = "[" +
+    "{ \"stationName\":\"Sydney\"," +
+        "\"lat\": -33.8688," +
+    "\"long\": 151.2093," +
+    "\"aqi\": 124" +
+    "}," +
+    "{" +
+    "\"stationName\": \"Canberra\"," +
+    "\"lat\": -35.2809, " +
+    "\"long\": 149.1300," +
+    "\"aqi\": 39" +
+    "}," +
+    "{" +
+    "\"stationName\": \"Wollongong\"," +
+    "\"lat\": -34.4278," +
+    "\"long\": 150.8931," +
+    "\"aqi\": 62" +
+    "}," +
+    "{" +
+    "\"stationName\": \"Sydney\"," +
+    "\"lat\": -34.7479," +
+    "\"long\": 149.7277," +
+    "\"aqi\": 46" +
+    "}" +
+    "]";
 
     response.setContentType("application/json; charset=UTF-8");
     response.setCharacterEncoding("UTF-8");
