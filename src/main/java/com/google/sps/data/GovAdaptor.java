@@ -27,18 +27,18 @@ import com.google.gson.reflect.TypeToken;
 //WANT A STATIC METHOD  
 
 public class GovAdaptor {
-  public static void main(String[] args) {
+  public static void main(final String[] args) {
     try {
       GovAdaptor.extract();
-    } catch (Exception e) {
+    } catch (final Exception e) {
       System.out.println(e.getMessage());
     }
   }
 
   public static void extract() throws Exception {
     //url for api, this is the POST url
-    URL url = new URL("https://data.airquality.nsw.gov.au/api/Data/get_Observations");
-    HttpURLConnection con = (HttpURLConnection) url.openConnection();
+    final URL url = new URL("https://data.airquality.nsw.gov.au/api/Data/get_Observations");
+    final HttpURLConnection con = (HttpURLConnection) url.openConnection();
     con.setRequestMethod("POST");
 
     //Set "content-type" request header to "application/json" to send the request content in JSON form
@@ -54,31 +54,35 @@ public class GovAdaptor {
 
     //Creating the Request Body
     //Json string to be constructred for sepcifc resource(?) - a sample string rn 
-    String jsonInputString = "{ \"Parameters\": [ \"AQI\" ], \"Sites\": [ 336, 4330, 2330, 7330, 3330, 329, 5330 ], \"StartDate\": \"2021-01-13\", \"EndDate\": \"2021-01-14\", \"Categories\": [ \"Site AQI\" ], \"SubCategories\": [ \"Hourly\" ], \"Frequency\": [ \"Hourly average\" ]}";
+    final String jsonInputString = "{ \"Parameters\": [ \"AQI\" ], \"Sites\": [ 336, 4330, 2330, 7330, 3330, 329, 5330 ], \"StartDate\": \"2021-01-13\", \"EndDate\": \"2021-01-14\", \"Categories\": [ \"Site AQI\" ], \"SubCategories\": [ \"Hourly\" ], \"Frequency\": [ \"Hourly average\" ]}";
 
     //output stream only flushes its output after its closed
     try(OutputStream os = con.getOutputStream()) {
-    byte[] input = jsonInputString.getBytes("utf-8");
+    final byte[] input = jsonInputString.getBytes("utf-8");
     os.write(input, 0, input.length);
     }	
 
     //read response from input stream 
-    try(BufferedReader br = new BufferedReader( new InputStreamReader(con.getInputStream(), "utf-8"))) {
+    try(final BufferedReader br = new BufferedReader( new InputStreamReader(con.getInputStream(), "utf-8"))) {
       //string builder: put stuff into it, all that stuff i gave, give it back to me as one big string
-      StringBuilder response = new StringBuilder();
+      final StringBuilder response = new StringBuilder();
       String responseLine = null;
       while ((responseLine = br.readLine()) != null) {
         response.append(responseLine.trim());
       }
-      //add it to the responseString 
+      //add it to the responseString. it shows an array of the data
       String responseString = response.toString();
-      System.out.println(responseString);
+      //System.out.println(responseString);
+
+      //String jsonToProcess = "{'Site_Id':329,'Parameter':{'ParameterCode':'AQI','ParameterDescription':'AQI','Units':'index','UnitsDescription':'index','Category':'Site AQI','SubCategory':'Hourly','Frequency':'Hourly average'},'Date':'2021-01-13','Hour':1,'HourDescription':'12 am - 1 am','Value':41}"
+
 
       // now to take a string(which contains some json formatted data) into gson
-      Gson gson = new Gson();
+      final Gson gson = new Gson();
       //converting the json string into a array list ( a list of the govparameter class)
-      ArrayList<GovParameters> list = gson.fromJson(responseString, new TypeToken<ArrayList<GovParameters>>() {}.getType());
-      list.forEach(x -> System.out.println(x));
+      final ArrayList<GovParameters> convertedlist = gson.fromJson(responseString, new TypeToken<ArrayList<GovParameters>>() {}.getType());
+      //convertedlist.forEach(x -> System.out.println(x));
+      System.out.println(convertedlist);
     }
 
     //hypotechnical that this converst into a string, make it now into a json object like array list  (might need to define a class to convert the json into e.g. like comments class). using gson hopefully 
