@@ -74,9 +74,6 @@ public class GovAdaptor {
       String responseString = response.toString();
       //System.out.println(responseString);
 
-      //String jsonToProcess = "{'Site_Id':329,'Parameter':{'ParameterCode':'AQI','ParameterDescription':'AQI','Units':'index','UnitsDescription':'index','Category':'Site AQI','SubCategory':'Hourly','Frequency':'Hourly average'},'Date':'2021-01-13','Hour':1,'HourDescription':'12 am - 1 am','Value':41}"
-
-
       // now to take a string(which contains some json formatted data) into gson
       final Gson gson = new Gson();
       //converting the json string into a array list ( a list of the govparameter class)
@@ -84,17 +81,5 @@ public class GovAdaptor {
       //convertedlist.forEach(x -> System.out.println(x));
       System.out.println(convertedlist);
     }
-
-    //hypotechnical that this converst into a string, make it now into a json object like array list  (might need to define a class to convert the json into e.g. like comments class). using gson hopefully 
-    //You'll need to look at the response and match the class variables to the json fields
-    //Sort of like a hashmap
-    // make pr 
-
-    //write a separeat program and use gson to work on string 
-
-    //want to convert "response, so what i get from the terminal  into a string 
-    //then convert into a json object e.g. arraylist   (using gson)
-    // then cache 
-    // then make servlet, which uses gson to pass into string 
   }
 }
