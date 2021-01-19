@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.google.gson.annotations.SerializedName;
 
-/** A class, classified as Parameters */
+/** A class, classified as GovParameters */
 public class GovParameters {
   @SerializedName(value = "Site_Id")
   private final int siteId;
@@ -23,7 +23,7 @@ public class GovParameters {
     this.aqi = aqi;
   }
 
-  //overriding the toString() method  
+  //Overriding the toString() method  
   public String toString() {
     return siteId + " " + aqi;  
   }  
