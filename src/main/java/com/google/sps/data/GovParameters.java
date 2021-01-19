@@ -13,6 +13,7 @@ public class GovParameters {
   @SerializedName(value = "Value")
   private final double aqi; // AQI
   
+  //No arg constructor to help differentiate a iniatised class with invalid values 
   public GovParameters() {
     this.siteId = -1;
     this.aqi = -1;
