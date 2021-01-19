@@ -52,5 +52,13 @@
         </configuration>
       </plugin>
     </plugins>
+    <resources>
+        <resource>
+            <directory>src/main/java/com/google/sps/data/servlets</directory>
+            <includes>
+                <include>testData.json</include>
+            </includes>
+        </resource>
+    </resources>
   </build>
 </project>

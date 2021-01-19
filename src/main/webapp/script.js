@@ -56,12 +56,19 @@ function initMap() {
     const aqLayerControlDiv = document.createElement("div");
     aqLayerControl(aqLayerControlDiv, map);
     map.controls[google.maps.ControlPosition.RIGHT_TOP].push(aqLayerControlDiv);
+
+    getAQVisualisationData();
 }
 
 function toggleAQLayer() {
     aqLayer.setMap(aqLayer.getMap() ? null : map);
 }
 
+function getAQVisualisationData() {
+    fetch("/visualisation").then(response => response.json()).then((data) => {
+        console.log(data);
+    });
+}
 function searchLocation() {
     const locationString = document.getElementById("location-search-bar").value;
 
