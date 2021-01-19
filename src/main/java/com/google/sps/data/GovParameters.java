@@ -5,7 +5,6 @@ import java.util.List;
 
 import com.google.gson.annotations.SerializedName;
 
-
 /** A class, classified as Parameters */
 public class GovParameters {
   @SerializedName(value = "Site_Id")
