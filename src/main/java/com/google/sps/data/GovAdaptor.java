@@ -59,9 +59,9 @@ public class GovAdaptor {
       while ((responseLine = br.readLine()) != null) {
         response.append(responseLine.trim());
       }
+      
+      //Add it to the responseString to now reflect a string that contains json formatted data in an array 
       String responseString = response.toString();
-
-      // Convert String into an Arraylist of GovParameter class using Gson
       final Gson gson = new Gson();
       final ArrayList<GovParameters> convertedlist = gson.fromJson(responseString, new TypeToken<ArrayList<GovParameters>>() {}.getType());
     }
