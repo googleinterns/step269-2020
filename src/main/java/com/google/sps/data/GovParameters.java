@@ -10,9 +10,9 @@ public class GovParameters {
   @SerializedName(value = "Site_Id")
   private final int siteId;
   @SerializedName(value = "Value")
-  private final double aqi; // AQI
+  private final double aqi; 
   
-  //No arg constructor to help differentiate a iniatised class with invalid values 
+  //No arg constructor to help differentiate a initialised class with invalid values 
   public GovParameters() {
     this.siteId = -1;
     this.aqi = -1;
@@ -23,7 +23,7 @@ public class GovParameters {
     this.aqi = aqi;
   }
 
-  //Overriding the toString() method  
+  @Override
   public String toString() {
     return siteId + " " + aqi;  
   }  

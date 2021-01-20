@@ -1,5 +1,5 @@
 /** A class, classified as an Adaptor. this is the Adaptor class for the government data source
- * the adaptors get their information from their respective data srouces - the government API is called here. 
+ * the adaptors get their information from their respective data sources - the government API is called here. 
 */
 
 package com.google.sps.data;
@@ -40,7 +40,7 @@ public class GovAdaptor {
     //Set request header to application/json to read the response 
     con.setRequestProperty("Accept", "application/json");
 
-    //Enable DoOutput to send requent content and write content to output stream
+    //Enable DoOutput to send request content and write content to output stream
     con.setDoOutput(true);
 
     //Create the Request Body 
@@ -60,7 +60,6 @@ public class GovAdaptor {
       while ((responseLine = br.readLine()) != null) {
         response.append(responseLine.trim());
       }
-      //Add it to the responseString to now reflect a string that contains json formatted data in an array 
       String responseString = response.toString();
 
       // Convert String into an Arraylist of GovParameter class using Gson
