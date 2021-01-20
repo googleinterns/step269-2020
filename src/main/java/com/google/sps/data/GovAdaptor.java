@@ -14,9 +14,9 @@ import java.util.List;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-/** A class, classified as an Adaptor. this is the Adaptor class for the government data source
- * the adaptors get their information from their respective data sources - the government API is called here. 
-*/
+/** Adaptor class for the government data source.
+ * The adaptors get their information from their respective data sources - the government API is called here. 
+ */
 public class GovAdaptor {
   public static void main(final String[] args) {
     try {
@@ -26,8 +26,7 @@ public class GovAdaptor {
     }
   }
 
-  public static void extract() throws Exception {
-    //the POST url for API
+  public static ArrayList<GovParameters> extract() throws Exception {
     final URL url = new URL("https://data.airquality.nsw.gov.au/api/Data/get_Observations");
     final HttpURLConnection con = (HttpURLConnection) url.openConnection();
     con.setRequestMethod("POST");
@@ -43,17 +42,25 @@ public class GovAdaptor {
     con.setDoOutput(true);
 
     //Create the Request Body 
-    final String jsonInputString = "{ \"Parameters\": [ \"AQI\", ], \"Sites\": [ ], \"StartDate\": \"2021-01-18\", \"EndDate\": \"2021-01-19\", \"Categories\": [ \"Site AQI\" ], \"SubCategories\": [ \"Hourly\" ], \"Frequency\": [ \"Hourly average\" ]}";
-
+    final String jsonInputString = "{" +
+      "\"Parameters\": [ \"AQI\", ]," +
+      "\"Sites\": [ ]," +
+      "\"StartDate\": \"2021-01-18\"," +
+      "\"EndDate\": \"2021-01-19\"," + 
+      "\"Categories\": [ \"Site AQI\" ]," +
+      "\"SubCategories\": [ \"Hourly\" ]," +
+      "\"Frequency\": [ \"Hourly average\" ]" +
+      "}";
+ 
     //Output stream only flushes its output after its closed
     try(OutputStream os = con.getOutputStream()) {
-    final byte[] input = jsonInputString.getBytes("utf-8");
-    os.write(input, 0, input.length);
+      final byte[] input = jsonInputString.getBytes("utf-8");
+      os.write(input, 0, input.length);
     }	
 
+    ArrayList<GovParameters> convertedlist;
     //Read response from input stream 
     try(final BufferedReader br = new BufferedReader( new InputStreamReader(con.getInputStream(), "utf-8"))) {
-      //String builder for String concatenation : append all the data in the while loop to the string builder 
       final StringBuilder response = new StringBuilder();
       String responseLine = null;
       while ((responseLine = br.readLine()) != null) {
@@ -63,7 +70,8 @@ public class GovAdaptor {
       //Add it to the responseString to now reflect a string that contains json formatted data in an array 
       String responseString = response.toString();
       final Gson gson = new Gson();
-      final ArrayList<GovParameters> convertedlist = gson.fromJson(responseString, new TypeToken<ArrayList<GovParameters>>() {}.getType());
+      convertedlist = gson.fromJson(responseString, new TypeToken<ArrayList<GovParameters>>() {}.getType());
     }
+    return convertedlist;
   }
 }
