@@ -1,7 +1,3 @@
-/** A class, classified as an Adaptor. this is the Adaptor class for the government data source
- * the adaptors get their information from their respective data sources - the government API is called here. 
-*/
-
 package com.google.sps.data;
 
 import java.io.BufferedReader;
@@ -18,6 +14,9 @@ import java.util.List;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+/** A class, classified as an Adaptor. this is the Adaptor class for the government data source
+ * the adaptors get their information from their respective data sources - the government API is called here. 
+*/
 public class GovAdaptor {
   public static void main(final String[] args) {
     try {
