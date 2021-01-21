@@ -18,15 +18,7 @@ import com.google.gson.reflect.TypeToken;
  * The adaptors get their information from their respective data sources - the government API is called here. 
  */
 public class GovAdaptor {
-  public static void main(final String[] args) {
-    try {
-      GovAdaptor.extract();
-    } catch (final Exception e) {
-      System.out.println(e.getMessage());
-    }
-  }
-
-  public static ArrayList<GovParameters> extract() throws Exception {
+  public static ArrayList<NSWGovAQDataPoint> extract() throws Exception {
     final URL url = new URL("https://data.airquality.nsw.gov.au/api/Data/get_Observations");
     final HttpURLConnection con = (HttpURLConnection) url.openConnection();
     con.setRequestMethod("POST");
@@ -58,7 +50,7 @@ public class GovAdaptor {
       os.write(input, 0, input.length);
     }	
 
-    ArrayList<GovParameters> convertedlist;
+    ArrayList<NSWGovAQDataPoint> convertedlist;
     //Read response from input stream 
     try(final BufferedReader br = new BufferedReader( new InputStreamReader(con.getInputStream(), "utf-8"))) {
       final StringBuilder response = new StringBuilder();
@@ -70,7 +62,7 @@ public class GovAdaptor {
       //Add it to the responseString to now reflect a string that contains json formatted data in an array 
       String responseString = response.toString();
       final Gson gson = new Gson();
-      convertedlist = gson.fromJson(responseString, new TypeToken<ArrayList<GovParameters>>() {}.getType());
+      convertedlist = gson.fromJson(responseString, new TypeToken<ArrayList<NSWGovAQDataPoint>>() {}.getType());
     }
     return convertedlist;
   }
