@@ -30,7 +30,7 @@ public class SiteDetails {
     this.siteName = "Uninitialised site name"; 
     this.lng = -1;
     this.lat = -1;
-    this.reg = "Uninitialised regio";
+    this.reg = "Uninitialised region";
 
   }
 
