@@ -67,7 +67,7 @@ public class GovAdaptor {
       }
       
       //Add it to the responseString to now reflect a string that contains json formatted data in an array 
-      String responseString = response.toString();
+      final String responseString = response.toString();
       final Gson gson = new Gson();
       convertedlist = gson.fromJson(responseString, new TypeToken<ArrayList<NSWGovAQDataPoint>>() {}.getType());
     }
