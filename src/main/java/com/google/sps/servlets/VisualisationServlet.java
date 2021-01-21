@@ -17,7 +17,7 @@ public class VisualisationServlet extends HttpServlet {
 
     String testJsonString = "[" +
     "{ \"stationName\":\"Sydney\"," +
-        "\"lat\": -33.8688," +
+    "\"lat\": -33.8688," +
     "\"long\": 151.2093," +
     "\"aqi\": 124" +
     "}," +

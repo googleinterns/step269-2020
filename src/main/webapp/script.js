@@ -29,7 +29,7 @@ function initMap() {
         fullscreenControl: false,
     });
 
-    loadAQVisualisationData();
+    populateAQVisualisationData();
 
     const aqLayerControlDiv = document.createElement("div");
     aqLayerControl(aqLayerControlDiv, map);
@@ -40,7 +40,7 @@ function toggleAQLayer() {
     aqLayer.setMap(aqLayer.getMap() ? null : map);
 }
 
-function loadAQVisualisationData() {
+function populateAQVisualisationData() {
     fetch("/visualisation").then(response => response.json()).then((data) => {
         const aqData = [];
         for (i = 0; i < data.length; i++) {
