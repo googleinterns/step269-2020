@@ -18,6 +18,13 @@ import com.google.gson.reflect.TypeToken;
  * The adaptors get their information from their respective data sources - the government API is called here. 
  */
 public class GovAdaptor {
+  public static void main(final String[] args) {
+    try {
+      GovAdaptor.extract();
+    } catch (final Exception e) {
+      System.out.println(e.getMessage());
+    }
+  }
   public static ArrayList<NSWGovAQDataPoint> extract() throws Exception {
     final URL url = new URL("https://data.airquality.nsw.gov.au/api/Data/get_Observations");
     final HttpURLConnection con = (HttpURLConnection) url.openConnection();
