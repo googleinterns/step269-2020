@@ -15,45 +15,5 @@ import com.google.gson.reflect.TypeToken;
 /** File to run the GET request in java before putting it in the main adaptor function. 
  */
 public class GetGovAdaptor {
-  public static void main(final String[] args) {
-    try {
-      GetGovAdaptor.getSiteInfo();
-    } catch (final Exception e) {
-      System.out.println(e.getMessage());
-    }
-  }
-
-  public static ArrayList<NSWGovAQDataPoint> getSiteInfo() throws Exception {
-    //creating a get request
-    URL url = new URL("https://data.airquality.nsw.gov.au/api/Data/get_SiteDetails");
-    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-    connection.setRequestMethod("GET");
-    
-    connection.setRequestProperty("Content-Type", "application/json");
-    
-    int responseCode = connection.getResponseCode();
-    System.out.println("\nSending 'GET' request to URL : " + url);
-    System.out.println("Response Code : " + responseCode);
-    
-    ArrayList<NSWGovAQDataPoint> convertedlist = null;
-    if (responseCode == HttpURLConnection.HTTP_OK) {
-      BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-      StringBuilder response = new StringBuilder();
-      String responseLine; 
-      while ((responseLine = br.readLine()) != null) {
-        response.append(responseLine.trim());
-      }
  
-      System.out.println(response.toString());
-
-      //change into string and arraylist 
-      String responseString = response.toString();
-      Gson gson = new Gson();
-      convertedlist = gson.fromJson(responseString, new TypeToken<ArrayList<GovSiteDetails>>() {}.getType());
-      System.out.println(convertedlist);
-    } else {
-      System.out.println("GET request did not work");
-    }
-    return convertedlist;
-  }
 }  
