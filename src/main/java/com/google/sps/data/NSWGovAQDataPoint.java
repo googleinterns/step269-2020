@@ -18,11 +18,6 @@ public class NSWGovAQDataPoint {
     this.aqi = -1;
   }
 
-  public NSWGovAQDataPoint(int siteId, double aqi) {
-    this.siteId = siteId;
-    this.aqi = aqi;
-  }
-
   @Override
   public String toString() {
     return siteId + " " + aqi;  

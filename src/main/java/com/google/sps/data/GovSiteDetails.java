@@ -34,14 +34,6 @@ public class GovSiteDetails {
 
   }
 
-  public GovSiteDetails(int siteId, String siteName, double lng, double lat, String reg) {
-    this.siteId = siteId;
-    this.siteName = siteName; 
-    this.lng = lng;
-    this.lat = lat;
-    this.reg = reg;
-  }
-
   @Override
   public String toString() {
     return siteId + " " + siteName + " " + lng + " " + lat;  

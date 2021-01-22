@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-/** File to run the get request in java before putting it in the main adaptor function. 
+/** File to run the GET request in java before putting it in the main adaptor function. 
  */
 public class GetGovAdaptor {
   public static void main(final String[] args) {
@@ -23,7 +23,7 @@ public class GetGovAdaptor {
     }
   }
 
-  public static void getSiteInfo() throws Exception {
+  public static ArrayList<NSWGovAQDataPoint> getSiteInfo() throws Exception {
     //creating a get request
     URL url = new URL("https://data.airquality.nsw.gov.au/api/Data/get_SiteDetails");
     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -35,7 +35,7 @@ public class GetGovAdaptor {
     System.out.println("\nSending 'GET' request to URL : " + url);
     System.out.println("Response Code : " + responseCode);
     
-    ArrayList<NSWGovAQDataPoint> convertedlist;
+    ArrayList<NSWGovAQDataPoint> convertedlist = null;
     if (responseCode == HttpURLConnection.HTTP_OK) {
       BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
       StringBuilder response = new StringBuilder();
@@ -45,7 +45,7 @@ public class GetGovAdaptor {
       }
  
       System.out.println(response.toString());
-      
+
       //change into string and arraylist 
       String responseString = response.toString();
       Gson gson = new Gson();
@@ -54,5 +54,6 @@ public class GetGovAdaptor {
     } else {
       System.out.println("GET request did not work");
     }
+    return convertedlist;
   }
 }  
