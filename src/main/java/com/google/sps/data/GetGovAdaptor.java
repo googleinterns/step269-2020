@@ -16,7 +16,7 @@ import com.google.gson.reflect.TypeToken;
  */
 public class GetGovAdaptor {
 
-  public static ArrayList<NSWGovAQDataPoint> getSiteInfo() throws Exception {
+  public static ArrayList<GovSiteDetails> getSiteInfo() throws Exception {
     //creating a get request
     URL url = new URL("https://data.airquality.nsw.gov.au/api/Data/get_SiteDetails");
     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -26,7 +26,7 @@ public class GetGovAdaptor {
     
     int responseCode = connection.getResponseCode();
     
-    ArrayList<NSWGovAQDataPoint> convertedlist = null;
+    ArrayList<GovSiteDetails> convertedlist = null;
     if (responseCode == HttpURLConnection.HTTP_OK) {
       BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
       StringBuilder response = new StringBuilder();
