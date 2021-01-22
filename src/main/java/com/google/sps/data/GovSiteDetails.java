@@ -31,7 +31,6 @@ public class GovSiteDetails {
     this.lng = -1;
     this.lat = -1;
     this.reg = "Uninitialised region";
-
   }
 
   @Override

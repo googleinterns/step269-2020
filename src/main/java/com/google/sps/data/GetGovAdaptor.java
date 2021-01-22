@@ -44,13 +44,9 @@ public class GetGovAdaptor {
         response.append(responseLine.trim());
       }
  
-      System.out.println(response.toString());
-
-      //change into string and arraylist 
       String responseString = response.toString();
       Gson gson = new Gson();
       convertedlist = gson.fromJson(responseString, new TypeToken<ArrayList<GovSiteDetails>>() {}.getType());
-      System.out.println(convertedlist);
     } else {
       System.out.println("GET request did not work");
     }
