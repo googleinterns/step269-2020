@@ -41,4 +41,9 @@ public class GovSiteDetails {
     this.lat = lat;
     this.reg = reg;
   }
+
+  @Override
+  public String toString() {
+    return siteId + " " + siteName + " " + lng + " " + lat;  
+  }  
 }

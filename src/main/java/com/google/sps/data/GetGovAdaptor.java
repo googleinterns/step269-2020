@@ -29,13 +29,13 @@ public class GetGovAdaptor {
     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
     connection.setRequestMethod("GET");
     
-    //set request header 
     connection.setRequestProperty("Content-Type", "application/json");
     
     int responseCode = connection.getResponseCode();
     System.out.println("\nSending 'GET' request to URL : " + url);
     System.out.println("Response Code : " + responseCode);
     
+    ArrayList<NSWGovAQDataPoint> convertedlist;
     if (responseCode == HttpURLConnection.HTTP_OK) {
       BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
       StringBuilder response = new StringBuilder();
@@ -43,9 +43,14 @@ public class GetGovAdaptor {
       while ((responseLine = br.readLine()) != null) {
         response.append(responseLine.trim());
       }
-
-      //print result 
+ 
       System.out.println(response.toString());
+      
+      //change into string and arraylist 
+      String responseString = response.toString();
+      Gson gson = new Gson();
+      convertedlist = gson.fromJson(responseString, new TypeToken<ArrayList<GovSiteDetails>>() {}.getType());
+      System.out.println(convertedlist);
     } else {
       System.out.println("GET request did not work");
     }
