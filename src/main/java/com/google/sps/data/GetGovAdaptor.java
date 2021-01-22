@@ -15,13 +15,6 @@ import com.google.gson.reflect.TypeToken;
 /** File to run the GET request in java before putting it in the main adaptor function. 
  */
 public class GetGovAdaptor {
-  public static void main(final String[] args) {
-    try {
-      GetGovAdaptor.getSiteInfo();
-    } catch (final Exception e) {
-      System.out.println(e.getMessage());
-    }
-  }
 
   public static ArrayList<NSWGovAQDataPoint> getSiteInfo() throws Exception {
     //creating a get request
@@ -32,8 +25,6 @@ public class GetGovAdaptor {
     connection.setRequestProperty("Content-Type", "application/json");
     
     int responseCode = connection.getResponseCode();
-    System.out.println("\nSending 'GET' request to URL : " + url);
-    System.out.println("Response Code : " + responseCode);
     
     ArrayList<NSWGovAQDataPoint> convertedlist = null;
     if (responseCode == HttpURLConnection.HTTP_OK) {
