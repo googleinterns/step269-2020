@@ -8,6 +8,11 @@ import java.net.URL;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -15,6 +20,19 @@ import com.google.gson.reflect.TypeToken;
 /** File to run the GET request in java before putting it in the main adaptor function. 
  */
 public class GetGovAdaptor {
+  public static void main(final String[] args) {
+    try {
+      ArrayList<GovSiteDetails> List = GetGovAdaptor.getSiteInfo();
+      System.out.println(List);
+      
+      //convert the array list into a map 
+      HashMap<Integer, GovSiteDetails> map = new HashMap<>();
+      //maps.c
+
+    } catch (final Exception e) {
+      System.out.println(e.getMessage());
+    }
+  }
 
   public static ArrayList<GovSiteDetails> getSiteInfo() throws Exception {
     //creating a get request
@@ -38,9 +56,11 @@ public class GetGovAdaptor {
       String responseString = response.toString();
       Gson gson = new Gson();
       convertedlist = gson.fromJson(responseString, new TypeToken<ArrayList<GovSiteDetails>>() {}.getType());
+      //System.out.println(convertedlist);
     } else {
       System.out.println("GET request did not work");
     }
     return convertedlist;
   }
+ 
 }  

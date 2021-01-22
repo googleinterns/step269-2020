@@ -19,7 +19,11 @@ public class GovSiteDetails {
   private final double lng;
 
   @SerializedName(value = "Latitude")
-  private final double lat; 
+  private final double lat;
+
+
+  //combined coordinates
+  //private final 
 
   //No arg constructor to help differentiate a initialised class with invalid values 
   public GovSiteDetails() {

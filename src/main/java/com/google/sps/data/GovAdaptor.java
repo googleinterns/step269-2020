@@ -19,7 +19,7 @@ import com.google.gson.reflect.TypeToken;
  */
 public class GovAdaptor {
   
-  public static ArrayList<NSWGovAQDataPoint> extract() throws Exception {
+  public static ArrayList<NSWGovAQDataPoint> extractAQI() throws Exception {
     final URL url = new URL("https://data.airquality.nsw.gov.au/api/Data/get_Observations");
     final HttpURLConnection con = (HttpURLConnection) url.openConnection();
     con.setRequestMethod("POST");
