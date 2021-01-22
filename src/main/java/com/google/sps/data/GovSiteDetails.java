@@ -21,8 +21,9 @@ public class GovSiteDetails {
   @SerializedName(value = "Latitude")
   private final double lat;
 
-  @SerializedName(value = "Region")
-  private final String reg;    
+
+  //combined coordinates
+  //private final 
 
   //No arg constructor to help differentiate a initialised class with invalid values 
   public GovSiteDetails() {
@@ -30,7 +31,6 @@ public class GovSiteDetails {
     this.siteName = "Uninitialised site name"; 
     this.lng = -1;
     this.lat = -1;
-    this.reg = "Uninitialised region";
   }
 
   @Override

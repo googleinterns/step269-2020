@@ -8,6 +8,11 @@ import java.net.URL;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -17,13 +22,19 @@ import com.google.gson.reflect.TypeToken;
 public class GetGovAdaptor {
   public static void main(final String[] args) {
     try {
-      GetGovAdaptor.getSiteInfo();
+      ArrayList<GovSiteDetails> List = GetGovAdaptor.getSiteInfo();
+      System.out.println(List);
+      
+      //convert the array list into a map 
+      HashMap<Integer, GovSiteDetails> map = new HashMap<>();
+      //maps.c
+
     } catch (final Exception e) {
       System.out.println(e.getMessage());
     }
   }
 
-  public static ArrayList<NSWGovAQDataPoint> getSiteInfo() throws Exception {
+  public static ArrayList<GovSiteDetails> getSiteInfo() throws Exception {
     //creating a get request
     URL url = new URL("https://data.airquality.nsw.gov.au/api/Data/get_SiteDetails");
     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -35,7 +46,7 @@ public class GetGovAdaptor {
     System.out.println("\nSending 'GET' request to URL : " + url);
     System.out.println("Response Code : " + responseCode);
     
-    ArrayList<NSWGovAQDataPoint> convertedlist = null;
+    ArrayList<GovSiteDetails> convertedlist = null;
     if (responseCode == HttpURLConnection.HTTP_OK) {
       BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
       StringBuilder response = new StringBuilder();
@@ -47,9 +58,11 @@ public class GetGovAdaptor {
       String responseString = response.toString();
       Gson gson = new Gson();
       convertedlist = gson.fromJson(responseString, new TypeToken<ArrayList<GovSiteDetails>>() {}.getType());
+      //System.out.println(convertedlist);
     } else {
       System.out.println("GET request did not work");
     }
     return convertedlist;
   }
+ 
 }  
