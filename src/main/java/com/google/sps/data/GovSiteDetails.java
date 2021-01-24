@@ -10,16 +10,16 @@ import com.google.gson.annotations.SerializedName;
  */
 public class GovSiteDetails {
   @SerializedName(value = "Site_Id")
-  private final int siteId;
+  public int siteId;
 
   @SerializedName(value = "SiteName")
   private final String siteName;
 
   @SerializedName(value = "Longitude")
-  private final double lng;
+  public double lng;
 
   @SerializedName(value = "Latitude")
-  private final double lat;
+  public double lat;
 
 
   //combined coordinates

@@ -23,15 +23,25 @@ public class GetGovAdaptor {
   public static void main(final String[] args) {
     try {
       ArrayList<GovSiteDetails> List = GetGovAdaptor.getSiteInfo();
-      System.out.println(List);
+      //System.out.println(List);
       
       //convert the array list into a map 
       HashMap<Integer, GovSiteDetails> map = new HashMap<>();
-      //maps.c
+      for(GovSiteDetails details : List){
+        map.put(details.siteId , details);
+      }
+      //System.out.println(map);
+      System.out.println(map.get(765).lat);
+
+      Coordinates locationCoord = getCoord(List, map);
+      System.out.println(locationCoord);
 
     } catch (final Exception e) {
       System.out.println(e.getMessage());
     }
+  }
+  public static Coordinates getCoord(ArrayList<GovSiteDetails> List, HashMap<Integer, GovSiteDetails> Map) {
+    return new Coordinates(Map.get(765).lng, Map.get(765).lat);
   }
 
   public static ArrayList<GovSiteDetails> getSiteInfo() throws Exception {
