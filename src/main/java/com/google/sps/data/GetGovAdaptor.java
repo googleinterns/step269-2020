@@ -50,7 +50,7 @@ public class GetGovAdaptor {
 
     ArrayList<GovSiteDetails> convertedlist = null;
     //HashMap<Integer, GovSiteDetails> map = new HashMap<>();
-    MapClass mapClass = new MapClass();
+    //MapClass mapClass = new MapClass();
 
     if (responseCode == HttpURLConnection.HTTP_OK) {
       BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));

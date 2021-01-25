@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-public class test { 
+public class TestAdaptor { 
   public static void main(final String[] args) {
     try {
       GetGovAdaptor adaptor = new GetGovAdaptor();
@@ -28,7 +28,7 @@ public class test {
       System.out.println(Map.get(2560).lat);
       System.out.println(Map.get(testSite).lat);
 
-      Coordinates locationCoord = getCoord(Map, testSite);
+      Coordinates locationCoord = adaptor.getCoord(Map, testSite);
       System.out.println(locationCoord);
 
     } catch (final Exception e) {
