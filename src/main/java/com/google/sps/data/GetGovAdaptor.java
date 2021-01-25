@@ -80,7 +80,6 @@ public class GetGovAdaptor {
 
       //System.out.println(map);
       //System.out.println(map.get(765).lat);
-
     } else {
       System.out.println("GET request did not work");
     }
