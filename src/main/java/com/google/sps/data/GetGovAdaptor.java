@@ -46,7 +46,7 @@ public class GetGovAdaptor {
     return new Coordinates(Map.get(765).lng, Map.get(765).lat);
   }
 
-  public static HashMap<Integer, GovSiteDetails> getSiteInfo() throws Exception {
+  public static ArrayList<GovSiteDetails> getSiteInfo() throws Exception {
     //creating a get request
     URL url = new URL("https://data.airquality.nsw.gov.au/api/Data/get_SiteDetails");
     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -59,7 +59,7 @@ public class GetGovAdaptor {
     System.out.println("Response Code : " + responseCode);
     
     ArrayList<GovSiteDetails> convertedlist = null;
-    HashMap<Integer, GovSiteDetails> map = new HashMap<>();
+    //HashMap<Integer, GovSiteDetails> map = new HashMap<>();
     if (responseCode == HttpURLConnection.HTTP_OK) {
       BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
       StringBuilder response = new StringBuilder();
@@ -73,7 +73,7 @@ public class GetGovAdaptor {
       convertedlist = gson.fromJson(responseString, new TypeToken<ArrayList<GovSiteDetails>>() {}.getType());
       //System.out.println(convertedlist);
       
-      //HashMap<Integer, GovSiteDetails> map = new HashMap<>();
+      HashMap<Integer, GovSiteDetails> map = new HashMap<>();
       for(GovSiteDetails details : convertedlist){
         map.put(details.siteId , details);
       }
@@ -85,7 +85,7 @@ public class GetGovAdaptor {
     } else {
       System.out.println("GET request did not work");
     }
-    return map;
+    return convertedlist;
   }
  
 }  
