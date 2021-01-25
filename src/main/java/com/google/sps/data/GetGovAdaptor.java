@@ -20,23 +20,7 @@ import com.google.gson.reflect.TypeToken;
 /** File to run the GET request in java before putting it in the main adaptor function. 
  */
 public class GetGovAdaptor {
-  public static void main(final String[] args) {
-    try {
-      HashMap<Integer, GovSiteDetails> Map = GetGovAdaptor.getSiteInfo();
-      Integer testSite = 2560;
 
-      System.out.println(Map);
-      System.out.println(Map.get(2560).lat);
-      System.out.println(Map.get(testSite).lat);
-
-      Coordinates locationCoord = getCoord(Map, testSite);
-      System.out.println(locationCoord);
-
-    } catch (final Exception e) {
-      System.out.println(e.getMessage()); 
-    }
-  }
-  
   public static Coordinates getCoord(HashMap<Integer, GovSiteDetails> Map, Integer siteId) {
     return new Coordinates(Map.get(siteId).lng, Map.get(siteId).lat);
   }
