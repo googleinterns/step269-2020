@@ -60,6 +60,7 @@ public class GetGovAdaptor {
     
     ArrayList<GovSiteDetails> convertedlist = null;
     HashMap<Integer, GovSiteDetails> map = new HashMap<>();
+
     if (responseCode == HttpURLConnection.HTTP_OK) {
       BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
       StringBuilder response = new StringBuilder();
@@ -73,14 +74,12 @@ public class GetGovAdaptor {
       convertedlist = gson.fromJson(responseString, new TypeToken<ArrayList<GovSiteDetails>>() {}.getType());
       //System.out.println(convertedlist);
       
-      //HashMap<Integer, GovSiteDetails> map = new HashMap<>();
       for(GovSiteDetails details : convertedlist){
         map.put(details.siteId , details);
       }
 
       System.out.println(map);
       System.out.println(map.get(765).lat);
-      
 
     } else {
       System.out.println("GET request did not work");
