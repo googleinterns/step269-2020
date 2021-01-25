@@ -6,24 +6,20 @@ import java.util.List;
 import com.google.gson.annotations.SerializedName;
 
 /** 
- * This class represents the site details provided by NSW GOV API for each site avaialble for fitering.
+ * This class represents the site details provided by NSW GOV API for each site avaialble for fitering. A PDS. 
  */
 public class GovSiteDetails {
   @SerializedName(value = "Site_Id")
   public int siteId;
 
   @SerializedName(value = "SiteName")
-  private final String siteName;
+  public String siteName;
 
   @SerializedName(value = "Longitude")
   public double lng;
 
   @SerializedName(value = "Latitude")
   public double lat;
-
-
-  //combined coordinates
-  //private final 
 
   //No arg constructor to help differentiate a initialised class with invalid values 
   public GovSiteDetails() {
