@@ -13,7 +13,7 @@ public class Coordinates {
   private final double lng;
 
   @SerializedName(value = "Latitude")
-  public double lat;
+  private final double lat;
 
   
   //combined coordinates
