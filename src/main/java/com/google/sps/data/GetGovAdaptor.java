@@ -26,25 +26,27 @@ public class GetGovAdaptor {
       //System.out.println(List);
       
       //convert the array list into a map 
+      /*
       HashMap<Integer, GovSiteDetails> map = new HashMap<>();
       for(GovSiteDetails details : List){
         map.put(details.siteId , details);
-      }
+      } 
+      */
       //System.out.println(map);
-      System.out.println(map.get(765).lat);
+      //System.out.println(map.get(765).lat);
 
-      Coordinates locationCoord = getCoord(List, map);
-      System.out.println(locationCoord);
+      //Coordinates locationCoord = getCoord(List, map);
+      //System.out.println(locationCoord);
 
     } catch (final Exception e) {
-      System.out.println(e.getMessage());
+      System.out.println(e.getMessage()); 
     }
   }
   public static Coordinates getCoord(ArrayList<GovSiteDetails> List, HashMap<Integer, GovSiteDetails> Map) {
     return new Coordinates(Map.get(765).lng, Map.get(765).lat);
   }
 
-  public static ArrayList<GovSiteDetails> getSiteInfo() throws Exception {
+  public static HashMap<Integer, GovSiteDetails> getSiteInfo() throws Exception {
     //creating a get request
     URL url = new URL("https://data.airquality.nsw.gov.au/api/Data/get_SiteDetails");
     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -55,6 +57,7 @@ public class GetGovAdaptor {
     int responseCode = connection.getResponseCode();
     
     ArrayList<GovSiteDetails> convertedlist = null;
+    HashMap<Integer, GovSiteDetails> map = new HashMap<>();
     if (responseCode == HttpURLConnection.HTTP_OK) {
       BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
       StringBuilder response = new StringBuilder();
@@ -67,10 +70,20 @@ public class GetGovAdaptor {
       Gson gson = new Gson();
       convertedlist = gson.fromJson(responseString, new TypeToken<ArrayList<GovSiteDetails>>() {}.getType());
       //System.out.println(convertedlist);
+      
+      //HashMap<Integer, GovSiteDetails> map = new HashMap<>();
+      for(GovSiteDetails details : convertedlist){
+        map.put(details.siteId , details);
+      }
+
+      System.out.println(map);
+      System.out.println(map.get(765).lat);
+      
+
     } else {
       System.out.println("GET request did not work");
     }
-    return convertedlist;
+    return map;
   }
  
 }  
