@@ -20,9 +20,15 @@ import com.google.gson.reflect.TypeToken;
 /** File to run the GET request in java before putting it in the main adaptor function. 
  */
 public class GetGovAdaptor {
+
+  private HashMap<Integer, GovSiteDetails> dataMap;
   
-  public class MapClass {
-    private HashMap<Integer, GovSiteDetails> dataMap;
+  public void setMap(HashMap<Integer, GovSiteDetails> dataMap) {
+    this.dataMap = dataMap;
+  }
+
+  public HashMap<Integer, GovSiteDetails> getMap(HashMap<Integer, GovSiteDetails> dataMap) {
+    return this.dataMap;
   }
   
   public static void main(final String[] args) {
@@ -58,8 +64,7 @@ public class GetGovAdaptor {
 
     ArrayList<GovSiteDetails> convertedlist = null;
     //HashMap<Integer, GovSiteDetails> map = new HashMap<>();
-    MapClass mapClass = new MapClass();
-
+    //MapClass mapClass = new MapClass();
 
     if (responseCode == HttpURLConnection.HTTP_OK) {
       BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
@@ -75,11 +80,11 @@ public class GetGovAdaptor {
       
       //Convert the arrayList into a map. 
       for(GovSiteDetails details : convertedlist){
-        mapClass.dataMap.put(details.siteId , details);
+        this.dataMap.put(details.siteId , details);
       } 
     } else {
       System.out.println("GET request did not work");
     }
-    return mapClass.dataMap;
+    return this.dataMap;
   }
 }  
