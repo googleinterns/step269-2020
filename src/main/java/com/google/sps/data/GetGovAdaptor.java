@@ -22,7 +22,10 @@ import com.google.gson.reflect.TypeToken;
 public class GetGovAdaptor {
 
   private HashMap<Integer, GovSiteDetails> dataMap;
-  
+
+  public GetGovAdaptor() {
+    dataMap = null;
+  }
   public void setMap(HashMap<Integer, GovSiteDetails> dataMap) {
     this.dataMap = dataMap;
   }
@@ -30,29 +33,12 @@ public class GetGovAdaptor {
   public HashMap<Integer, GovSiteDetails> getMap(HashMap<Integer, GovSiteDetails> dataMap) {
     return this.dataMap;
   }
-  
-  public static void main(final String[] args) {
-    try {
-      HashMap<Integer, GovSiteDetails> Map = GetGovAdaptor.getSiteInfo();
-      Integer testSite = 2560;
 
-      System.out.println(Map);
-      System.out.println(Map.get(2560).lat);
-      System.out.println(Map.get(testSite).lat);
-
-      Coordinates locationCoord = getCoord(Map, testSite);
-      System.out.println(locationCoord);
-
-    } catch (final Exception e) {
-      System.out.println(e.getMessage()); 
-    }
-  }
-
-  public static Coordinates getCoord(HashMap<Integer, GovSiteDetails> Map, Integer siteId) {
+  public Coordinates getCoord(HashMap<Integer, GovSiteDetails> Map, Integer siteId) {
     return new Coordinates(Map.get(siteId).lng, Map.get(siteId).lat);
   }
 
-  public static HashMap<Integer, GovSiteDetails> getSiteInfo() throws Exception {
+  public HashMap<Integer, GovSiteDetails> getSiteInfo() throws Exception {
     //creating a get request
     URL url = new URL("https://data.airquality.nsw.gov.au/api/Data/get_SiteDetails");
     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -64,7 +50,7 @@ public class GetGovAdaptor {
 
     ArrayList<GovSiteDetails> convertedlist = null;
     //HashMap<Integer, GovSiteDetails> map = new HashMap<>();
-    //MapClass mapClass = new MapClass();
+    MapClass mapClass = new MapClass();
 
     if (responseCode == HttpURLConnection.HTTP_OK) {
       BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
@@ -80,11 +66,11 @@ public class GetGovAdaptor {
       
       //Convert the arrayList into a map. 
       for(GovSiteDetails details : convertedlist){
-        this.dataMap.put(details.siteId , details);
+        dataMap.put(details.siteId , details);
       } 
     } else {
       System.out.println("GET request did not work");
     }
-    return this.dataMap;
+    return dataMap;
   }
 }  
