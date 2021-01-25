@@ -22,7 +22,7 @@ import com.google.gson.reflect.TypeToken;
 public class GetGovAdaptor {
   public static void main(final String[] args) {
     try {
-      ArrayList<GovSiteDetails> List = GetGovAdaptor.getSiteInfo();
+      HashMap<Integer, GovSiteDetails> Map = GetGovAdaptor.getSiteInfo();
       //System.out.println(List);
       
       //convert the array list into a map 
@@ -32,17 +32,17 @@ public class GetGovAdaptor {
         map.put(details.siteId , details);
       } 
       */
-      //System.out.println(map);
-      //System.out.println(map.get(765).lat);
+      System.out.println(Map);
+      System.out.println(Map.get(765).lat);
 
-      //Coordinates locationCoord = getCoord(List, map);
-      //System.out.println(locationCoord);
+      Coordinates locationCoord = getCoord(Map);
+      System.out.println(locationCoord);
 
     } catch (final Exception e) {
       System.out.println(e.getMessage()); 
     }
   }
-  public static Coordinates getCoord(ArrayList<GovSiteDetails> List, HashMap<Integer, GovSiteDetails> Map) {
+  public static Coordinates getCoord(HashMap<Integer, GovSiteDetails> Map) {
     return new Coordinates(Map.get(765).lng, Map.get(765).lat);
   }
 
@@ -78,8 +78,8 @@ public class GetGovAdaptor {
         map.put(details.siteId , details);
       }
 
-      System.out.println(map);
-      System.out.println(map.get(765).lat);
+      //System.out.println(map);
+      //System.out.println(map.get(765).lat);
 
     } else {
       System.out.println("GET request did not work");
