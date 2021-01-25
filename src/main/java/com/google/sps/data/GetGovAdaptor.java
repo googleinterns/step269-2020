@@ -23,27 +23,22 @@ public class GetGovAdaptor {
   public static void main(final String[] args) {
     try {
       HashMap<Integer, GovSiteDetails> Map = GetGovAdaptor.getSiteInfo();
-      //System.out.println(List);
-      
-      //convert the array list into a map 
-      /*
-      HashMap<Integer, GovSiteDetails> map = new HashMap<>();
-      for(GovSiteDetails details : List){
-        map.put(details.siteId , details);
-      } 
-      */
-      System.out.println(Map);
-      System.out.println(Map.get(765).lat);
+      Integer testSite = 2560;
 
-      Coordinates locationCoord = getCoord(Map);
+      System.out.println(Map);
+      System.out.println(Map.get(2560).lat);
+      System.out.println(Map.get(testSite).lat);
+
+      Coordinates locationCoord = getCoord(Map, testSite);
       System.out.println(locationCoord);
 
     } catch (final Exception e) {
       System.out.println(e.getMessage()); 
     }
   }
-  public static Coordinates getCoord(HashMap<Integer, GovSiteDetails> Map) {
-    return new Coordinates(Map.get(765).lng, Map.get(765).lat);
+  
+  public static Coordinates getCoord(HashMap<Integer, GovSiteDetails> Map, Integer siteId) {
+    return new Coordinates(Map.get(siteId).lng, Map.get(siteId).lat);
   }
 
   public static HashMap<Integer, GovSiteDetails> getSiteInfo() throws Exception {
@@ -55,9 +50,7 @@ public class GetGovAdaptor {
     connection.setRequestProperty("Content-Type", "application/json");
     
     int responseCode = connection.getResponseCode();
-    System.out.println("\nSending 'GET' request to URL : " + url);
-    System.out.println("Response Code : " + responseCode);
-    
+
     ArrayList<GovSiteDetails> convertedlist = null;
     HashMap<Integer, GovSiteDetails> map = new HashMap<>();
 
@@ -72,18 +65,14 @@ public class GetGovAdaptor {
       String responseString = response.toString();
       Gson gson = new Gson();
       convertedlist = gson.fromJson(responseString, new TypeToken<ArrayList<GovSiteDetails>>() {}.getType());
-      //System.out.println(convertedlist);
       
+      //Convert the arrayList into a map. 
       for(GovSiteDetails details : convertedlist){
         map.put(details.siteId , details);
-      }
-
-      //System.out.println(map);
-      //System.out.println(map.get(765).lat);
+      } 
     } else {
       System.out.println("GET request did not work");
     }
     return map;
   }
- 
 }  
