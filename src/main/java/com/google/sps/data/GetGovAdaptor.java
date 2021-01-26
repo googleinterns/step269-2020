@@ -24,8 +24,9 @@ public class GetGovAdaptor {
   private HashMap<Integer, GovSiteDetails> dataMap;
 
   public GetGovAdaptor() {
-    dataMap = null;
+    dataMap = new HashMap<>();
   }
+  
   public void setMap(HashMap<Integer, GovSiteDetails> dataMap) {
     this.dataMap = dataMap;
   }
@@ -63,11 +64,19 @@ public class GetGovAdaptor {
       String responseString = response.toString();
       Gson gson = new Gson();
       convertedlist = gson.fromJson(responseString, new TypeToken<ArrayList<GovSiteDetails>>() {}.getType());
-      
+      System.out.println("hello");
+
       //Convert the arrayList into a map. 
+      System.out.println(dataMap);
       for(GovSiteDetails details : convertedlist){
         dataMap.put(details.siteId , details);
       } 
+
+      System.out.println("in GetsiteIndo, to prit datamap");
+      System.out.println(dataMap);
+      System.out.println(dataMap.get(2560).lat);
+      Integer testSite = 2560;
+      System.out.println(dataMap.get(testSite).lat);
     } else {
       System.out.println("GET request did not work");
     }
