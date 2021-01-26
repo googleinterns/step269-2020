@@ -49,9 +49,7 @@ public class GetGovAdaptor {
     
     int responseCode = connection.getResponseCode();
 
-    ArrayList<GovSiteDetails> convertedlist = null;
-    //HashMap<Integer, GovSiteDetails> map = new HashMap<>();
-    //MapClass mapClass = new MapClass();
+    ArrayList<GovSiteDetails> convertedlist = new ArrayList<GovSiteDetails>();
 
     if (responseCode == HttpURLConnection.HTTP_OK) {
       BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
@@ -67,16 +65,9 @@ public class GetGovAdaptor {
       System.out.println("hello");
 
       //Convert the arrayList into a map. 
-      System.out.println(dataMap);
       for(GovSiteDetails details : convertedlist){
         dataMap.put(details.siteId , details);
       } 
-
-      System.out.println("in GetsiteIndo, to prit datamap");
-      System.out.println(dataMap);
-      System.out.println(dataMap.get(2560).lat);
-      Integer testSite = 2560;
-      System.out.println(dataMap.get(testSite).lat);
     } else {
       System.out.println("GET request did not work");
     }

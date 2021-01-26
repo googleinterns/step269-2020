@@ -16,29 +16,23 @@ import java.util.stream.Collectors;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-
+/** File to test the GetGovAdator file.
+ */
 public class TestAdaptor { 
   public static void main(final String[] args) {
     try {
-      System.out.println("try1");
       GetGovAdaptor adaptor = new GetGovAdaptor();
-      System.out.println("try2");
       HashMap<Integer, GovSiteDetails> Map = adaptor.getSiteInfo();
       Integer testSite = 2560;
-      System.out.println("in test adaptor, before printing map");
+
       System.out.println(Map);
       System.out.println(Map.get(2560).lat);
       System.out.println(Map.get(testSite).lat);
-      System.out.println("in GetsiteIndo, after datamap before coord");
 
       Coordinates locationCoord = adaptor.getCoord(Map, testSite);
       System.out.println(locationCoord);
-      System.out.println("in GetsiteIndo, after coord");
-
     } catch (final Exception e) {
-      System.out.println("in Catch");
       System.out.println("getMessage(): " + e.getMessage()); 
     }
   }
 }
-
