@@ -32,7 +32,7 @@ function initMap() {
     const searchbar = document.getElementById("location-search-bar");
     const searchMarker = new google.maps.Marker({
         map,
-        anchorPoint: new google.maps.Point(0,-29),
+        anchorPoint: new google.maps.Point(0,-29), // position the marker icon relative to the origin
     });
     searchMarker.setVisible(false);
     const autocomplete = new google.maps.places.Autocomplete(searchbar);
