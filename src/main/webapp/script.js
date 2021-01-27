@@ -83,7 +83,7 @@ function populateAQVisualisationData() {
 }
 
 function loadHeatmap(data) {
-    let aqLayer = new google.maps.visualization.HeatmapLayer({
+    aqLayer = new google.maps.visualization.HeatmapLayer({
         data: data,
         gradient: [
             "rgba(65,169,60,0)",
