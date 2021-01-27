@@ -28,9 +28,8 @@ public class TestAdaptor {
       Integer testSite = 765;
 
       System.out.println(adaptor.getMap(Map));
-      System.out.println(adaptor.getMap(Map).get(2560).lat);
-      //System.out.println("hi");
-      //System.out.println(adaptor.getMap(Map).get(testSite).lat);
+      System.out.println(adaptor.getMap(Map).get(765).lat);
+      System.out.println(adaptor.getMap(Map).get(testSite).lat);
 
       Coordinates locationCoord = adaptor.getCoord(testSite);
       System.out.println(locationCoord);

@@ -33,37 +33,31 @@ public class NSWGovAdaptor {
   }
 
   public Coordinates getCoord(Integer siteId) {
-    //what happens if the site id isnt in the map?  
-    Coordinates siteCoord = new Coordinates(); // initalise map, default coord (-1, -1)
-    System.out.println("before try");
+
+    Coordinates siteCoord = new Coordinates(); 
     try {
-      //check if the siteId is in the map or not. If not, update the map first
-      System.out.println("helloin try");
+
+      //Check if the siteId is in the map or not. If not, update the map first
       if (this.dataMap.containsKey(siteId) == false ) {
-        System.out.println("in if loop");
-        updateSiteInfo();
+        this.updateSiteInfo();
       }
-
-      System.out.println("in try");
-
+      
       siteCoord.setCoordinates(this.dataMap.get(siteId).lng, this.dataMap.get(siteId).lat);
 
-      System.out.println("after try populate map ");
-
-      //siteCoord =  Coordinates(Map.get(siteId).lng, Map.get(siteId).lat);
-      //Coordinates siteCoord = new Coordinates(Map.get(siteId).lng, Map.get(siteId).lat);
     } catch (final NullPointerException e) {
-      System.out.println("getCoord getMessage(): " + e.getMessage() +
-        "\nNull pointer exception caught, because null is returned as siteId Key is not in the hashmap" +
-        "\nFailure to get coordinates. Default coord (-1,-1 ) is expected to be returned."); 
-      //return new Coordinates();
+
+      //indent continuation at least +4 from original line
+      System.out.println("getCoord getMessage(): " + e.getMessage() + 
+          "\nNull pointer exception caught, because null is returned as siteId Key is not in the hashmap" +
+          "\nFailure to get coordinates. Default coord (-1,-1 ) is expected to be returned."); 
 
     } catch (final Exception e) {
-      System.out.println("getCoord getMessage(): " + e.getMessage() + "\nFailure to get coordinates. Default coord (-1,-1 ) is expected to be returned."); 
-      //return new Coordinates();
+      System.out.println("getCoord getMessage(): " + e.getMessage() + 
+          "\nFailure to get coordinates. Default coord (-1,-1 ) is expected to be returned."); 
     } 
 
-    //return new Coordinates(Map.get(siteId).lng, Map.get(siteId).lat);
+    //if siteId was found in map, it's locations coordinates will be returned
+    //if siteId was not found in map, or any other errors were happened, (-1, -1) will be returned 
     return siteCoord;
   }
 
