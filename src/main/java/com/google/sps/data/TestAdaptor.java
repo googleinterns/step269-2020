@@ -25,14 +25,14 @@ public class TestAdaptor {
       NSWGovAdaptor adaptor = new NSWGovAdaptor();
       HashMap<Integer, GovSiteDetails> Map = new HashMap<>();
       adaptor.updateSiteInfo();
-      Integer testSite = 76500;
+      Integer testSite = 765;
 
       System.out.println(adaptor.getMap(Map));
       System.out.println(adaptor.getMap(Map).get(2560).lat);
       //System.out.println("hi");
       //System.out.println(adaptor.getMap(Map).get(testSite).lat);
 
-      Coordinates locationCoord = adaptor.getCoord(adaptor.getMap(Map), testSite);
+      Coordinates locationCoord = adaptor.getCoord(testSite);
       System.out.println(locationCoord);
 
     } catch (final Exception e) {

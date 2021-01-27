@@ -24,7 +24,7 @@ public class NSWGovAdaptor {
   private HashMap<Integer, GovSiteDetails> dataMap;
 
   public NSWGovAdaptor() throws Exception {
-    dataMap = new HashMap<>();
+    this.dataMap = new HashMap<>();
     this.updateSiteInfo();
   }
 
@@ -32,28 +32,34 @@ public class NSWGovAdaptor {
     return this.dataMap;
   }
 
-  public Coordinates getCoord(HashMap<Integer, GovSiteDetails> Map, Integer siteId) {
+  public Coordinates getCoord(Integer siteId) {
     //what happens if the site id isnt in the map?  
     Coordinates siteCoord = new Coordinates(); // initalise map, default coord (-1, -1)
     System.out.println("before try");
     try {
-      //check if the siteId is in the map or not. If not, update the map
+      //check if the siteId is in the map or not. If not, update the map first
       System.out.println("helloin try");
-      if (Map.containsKey(siteId) == false ) {
+      if (this.dataMap.containsKey(siteId) == false ) {
+        System.out.println("in if loop");
         updateSiteInfo();
       }
 
       System.out.println("in try");
 
-      siteCoord.setCoordinates(Map.get(siteId).lng, Map.get(siteId).lat);
+      siteCoord.setCoordinates(this.dataMap.get(siteId).lng, this.dataMap.get(siteId).lat);
 
       System.out.println("after try populate map ");
 
       //siteCoord =  Coordinates(Map.get(siteId).lng, Map.get(siteId).lat);
       //Coordinates siteCoord = new Coordinates(Map.get(siteId).lng, Map.get(siteId).lat);
+    } catch (final NullPointerException e) {
+      System.out.println("getCoord getMessage(): " + e.getMessage() +
+        "\nNull pointer exception caught, because null is returned as siteId Key is not in the hashmap" +
+        "\nFailure to get coordinates. Default coord (-1,-1 ) is expected to be returned."); 
+      //return new Coordinates();
 
     } catch (final Exception e) {
-      System.out.println("Failure to get coordinates. Default coord (-1,-1 ) is expected to be returned. \ngetCoord getMessage(): " + e.getMessage()); 
+      System.out.println("getCoord getMessage(): " + e.getMessage() + "\nFailure to get coordinates. Default coord (-1,-1 ) is expected to be returned."); 
       //return new Coordinates();
     } 
 
