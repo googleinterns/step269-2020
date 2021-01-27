@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.time.*; 
+import java.time.format.DateTimeFormatter;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -30,11 +31,11 @@ public class NSWGovAdaptor {
   }
 
   //to be deleted in production code, used for TestAdaptor.java
-  public HashMap<Integer, GovSiteDetails> getMap(HashMap<Integer, GovSiteDetails> dataMap) {
+  public HashMap<Integer, GovSiteDetails> getMap() {
     return this.dataMap;
   }
 
-  public Coordinates getCoord(Integer siteId) {
+  private Coordinates getCoord(Integer siteId) {
 
     Coordinates siteCoord = new Coordinates(); 
     try {
@@ -64,7 +65,7 @@ public class NSWGovAdaptor {
   }
 
 
-  public void updateSiteInfo() throws Exception {
+  private void updateSiteInfo() throws Exception {
     //creating a get request
     URL url = new URL("https://data.airquality.nsw.gov.au/api/Data/get_SiteDetails");
     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -75,7 +76,9 @@ public class NSWGovAdaptor {
     int responseCode = connection.getResponseCode();
 
     ArrayList<GovSiteDetails> convertedlist = new ArrayList<GovSiteDetails>();
- 
+    
+    System.out.println(java.time.LocalDate.now());  
+
     try {
       if (responseCode == HttpURLConnection.HTTP_OK) {
         BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
@@ -103,8 +106,8 @@ public class NSWGovAdaptor {
     }
   }
 
-  //Post request to extract the AQI from the government API
-  public ArrayList<NSWGovAQDataPoint> extractAQI() throws Exception {
+  //Post request to extract the AQI from the government API, given a desired date
+  private ArrayList<NSWGovAQDataPoint> extractAQI(LocalDate inputDate) throws Exception {
     final URL url = new URL("https://data.airquality.nsw.gov.au/api/Data/get_Observations");
     final HttpURLConnection con = (HttpURLConnection) url.openConnection();
     con.setRequestMethod("POST");
@@ -119,12 +122,15 @@ public class NSWGovAdaptor {
     //Enable DoOutput to send request content and write content to output stream
     con.setDoOutput(true);
 
+    String desiredDate = inputDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+    System.out.println(LocalDate.now());
+
     //Create the Request Body 
     final String jsonInputString = "{" +
       "\"Parameters\": [ \"AQI\", ]," +
       "\"Sites\": [ ]," +
-      "\"StartDate\": \"2021-01-18\"," +
-      "\"EndDate\": \"2021-01-19\"," + 
+      String.format("\"StartDate\": \"%s\",", desiredDate) +
+      String.format("\"EndDate\": \"%s\",", desiredDate) + 
       "\"Categories\": [ \"Site AQI\" ]," +
       "\"SubCategories\": [ \"Hourly\" ]," +
       "\"Frequency\": [ \"Hourly average\" ]" +
@@ -136,7 +142,7 @@ public class NSWGovAdaptor {
       os.write(input, 0, input.length);
     }	
 
-    ArrayList<NSWGovAQDataPoint> convertedlist;
+    ArrayList<NSWGovAQDataPoint> convertedlist = new ArrayList<NSWGovAQDataPoint>();
     //Read response from input stream 
     try(final BufferedReader br = new BufferedReader( new InputStreamReader(con.getInputStream(), "utf-8"))) {
       final StringBuilder response = new StringBuilder();
@@ -149,6 +155,8 @@ public class NSWGovAdaptor {
       final String responseString = response.toString();
       final Gson gson = new Gson();
       convertedlist = gson.fromJson(responseString, new TypeToken<ArrayList<NSWGovAQDataPoint>>() {}.getType());
+    } catch (final Exception e) {
+      System.out.println("GovPostReq getMessage(): " + e.getMessage()); 
     }
     return convertedlist;
   }
