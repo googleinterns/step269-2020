@@ -17,7 +17,7 @@ import com.google.gson.reflect.TypeToken;
 /** Adaptor class for the government data source.
  * The adaptors get their information from their respective data sources - the government API is called here. 
  */
-public class GovAdaptor {
+public class GovPostReq {
   
   public static ArrayList<NSWGovAQDataPoint> extractAQI() throws Exception {
     final URL url = new URL("https://data.airquality.nsw.gov.au/api/Data/get_Observations");
