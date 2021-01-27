@@ -6,7 +6,7 @@ import java.util.List;
 import com.google.gson.annotations.SerializedName;
 
 /** 
- * This class represents the coordinates of a site location provided by NSW GOV API for each site avaialble for fitering.
+ * This class represents the coordinates of a site location.cd 
  */
 public class Coordinates {
   @SerializedName(value = "Longitude")
@@ -14,7 +14,6 @@ public class Coordinates {
 
   @SerializedName(value = "Latitude")
   private final double lat;
-
   
   //combined coordinates
   public Coordinates(double lng, double lat) {
