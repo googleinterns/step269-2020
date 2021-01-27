@@ -28,7 +28,34 @@ function initMap() {
         streetViewControl: false,
         fullscreenControl: false,
     });
+    // Initialise places autocomplete in search bar
+    const searchbar = document.getElementById("location-search-bar");
+    const searchMarker = new google.maps.Marker({
+        map,
+        anchorPoint: new google.maps.Point(0,-29),
+    });
+    searchMarker.setVisible(false);
+    const autocomplete = new google.maps.places.Autocomplete(searchbar);
+    autocomplete.setFields(["address_components","geometry","icon","name"]);
+    autocomplete.addListener("place_changed", () => {
+        searchMarker.setVisible(false);
+        const place = autocomplete.getPlace();
 
+        if (!place.geometry) {
+            console.log(`No details available for input '${place.name}'`);
+            return;
+        }
+
+        if (place.geometry.viewport) {
+            map.fitBounds(place.geometry.viewport);
+        } else {
+            map.setCenter(place.geometry.viewport);
+            map.setZoom(17); // 17 used because it is used in a sample in the documentation
+        }
+        searchMarker.setPosition(place.geometry.location);
+        searchMarker.setVisible(true);
+    })
+    // Initialise visualisation
     populateAQVisualisationData();
 
     const aqLayerControlDiv = document.createElement("div");
@@ -112,6 +139,7 @@ function toggleSidebar() {
         toggleButton.style.left = "300px";
     }
 }
+
 
 // UUID v4 generation
 function generateNewUUID() {
