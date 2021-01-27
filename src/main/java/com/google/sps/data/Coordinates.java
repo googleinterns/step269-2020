@@ -10,10 +10,10 @@ import com.google.gson.annotations.SerializedName;
  */
 public class Coordinates {
   @SerializedName(value = "Longitude")
-  private final double lng;
+  public double lng;
 
   @SerializedName(value = "Latitude")
-  private final double lat;
+  public double lat;
   
   //combined coordinates
   public Coordinates(double lng, double lat) {

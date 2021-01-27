@@ -27,20 +27,16 @@ public class NSWGovAdaptor {
     dataMap = new HashMap<>();
     this.updateSiteInfo();
   }
-  
-  public void setMap(HashMap<Integer, GovSiteDetails> dataMap) {
-    this.dataMap = dataMap;
-  }
 
   public HashMap<Integer, GovSiteDetails> getMap(HashMap<Integer, GovSiteDetails> dataMap) {
     return this.dataMap;
   }
 
-  private Coordinates getCoord(HashMap<Integer, GovSiteDetails> Map, Integer siteId) {
+  public Coordinates getCoord(HashMap<Integer, GovSiteDetails> Map, Integer siteId) {
     return new Coordinates(Map.get(siteId).lng, Map.get(siteId).lat);
   }
 
-  private HashMap<Integer, GovSiteDetails> updateSiteInfo() throws Exception {
+  public void updateSiteInfo() throws Exception {
     //creating a get request
     URL url = new URL("https://data.airquality.nsw.gov.au/api/Data/get_SiteDetails");
     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -64,7 +60,6 @@ public class NSWGovAdaptor {
         String responseString = response.toString();
         Gson gson = new Gson();
         convertedlist = gson.fromJson(responseString, new TypeToken<ArrayList<GovSiteDetails>>() {}.getType());
-        System.out.println("hello");
 
         //Convert the arrayList into a map. 
         for(GovSiteDetails details : convertedlist){
@@ -76,11 +71,11 @@ public class NSWGovAdaptor {
     } catch (final Exception e) {
       System.out.println("getMessage(): " + e.getMessage()); 
     }
-    return dataMap;
+    //return dataMap;
   }
 
   //Post request to extract the AQI from the government API
-  private static ArrayList<NSWGovAQDataPoint> extractAQI() throws Exception {
+  public ArrayList<NSWGovAQDataPoint> extractAQI() throws Exception {
     final URL url = new URL("https://data.airquality.nsw.gov.au/api/Data/get_Observations");
     final HttpURLConnection con = (HttpURLConnection) url.openConnection();
     con.setRequestMethod("POST");

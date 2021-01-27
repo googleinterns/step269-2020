@@ -23,15 +23,19 @@ public class TestAdaptor {
   public static void main(final String[] args) {
     try {
       NSWGovAdaptor adaptor = new NSWGovAdaptor();
-      HashMap<Integer, GovSiteDetails> Map = adaptor.updateSiteInfo();
+      HashMap<Integer, GovSiteDetails> Map = new HashMap<>();
+      adaptor.updateSiteInfo();
       Integer testSite = 2560;
 
-      System.out.println(Map);
-      System.out.println(Map.get(2560).lat);
-      System.out.println(Map.get(testSite).lat);
+      System.out.println(adaptor.getMap(Map));
+      System.out.println("PRINTING INDIVIDUAL COORD LAT");
 
-      Coordinates locationCoord = adaptor.getCoord(Map, testSite);
+      System.out.println(adaptor.getMap(Map).get(2560).lat);
+      System.out.println(adaptor.getMap(Map).get(testSite).lat);
+
+      Coordinates locationCoord = adaptor.getCoord(adaptor.getMap(Map), testSite);
       System.out.println(locationCoord);
+
     } catch (final Exception e) {
       System.out.println("getMessage(): " + e.getMessage()); 
     }
