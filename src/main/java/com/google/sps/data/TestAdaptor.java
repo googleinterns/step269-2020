@@ -23,13 +23,12 @@ public class TestAdaptor {
   public static void main(final String[] args) {
     try {
       NSWGovAdaptor adaptor = new NSWGovAdaptor();
-      HashMap<Integer, GovSiteDetails> Map = new HashMap<>();
-      adaptor.updateSiteInfo();
+      HashMap<Integer, GovSiteDetails> testAdaptorMap = new HashMap<>();
       Integer testSite = 765;
 
-      System.out.println(adaptor.getMap(Map));
-      System.out.println(adaptor.getMap(Map).get(765).lat);
-      System.out.println(adaptor.getMap(Map).get(testSite).lat);
+      System.out.println(adaptor.getMap(testAdaptorMap));
+      System.out.println(adaptor.getMap(testAdaptorMap).get(765).lat);
+      System.out.println(adaptor.getMap(testAdaptorMap).get(testSite).lat);
 
       Coordinates locationCoord = adaptor.getCoord(testSite);
       System.out.println(locationCoord);

@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.time.*; 
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -28,6 +29,7 @@ public class NSWGovAdaptor {
     this.updateSiteInfo();
   }
 
+  //to be deleted in production code, used for TestAdaptor.java
   public HashMap<Integer, GovSiteDetails> getMap(HashMap<Integer, GovSiteDetails> dataMap) {
     return this.dataMap;
   }
@@ -61,6 +63,7 @@ public class NSWGovAdaptor {
     return siteCoord;
   }
 
+
   public void updateSiteInfo() throws Exception {
     //creating a get request
     URL url = new URL("https://data.airquality.nsw.gov.au/api/Data/get_SiteDetails");
@@ -91,7 +94,9 @@ public class NSWGovAdaptor {
           dataMap.put(details.siteId , details);
         } 
       } else {
-        System.out.println("GET request did not work");
+
+        //throw custom exception when the response code is not 200
+        throw new HTTPStatusCodeException("HTTP Status Code is not 200");
       }
     } catch (final Exception e) {
       System.out.println("updateSiteInfo getMessage(): " + e.getMessage()); 
