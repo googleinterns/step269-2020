@@ -27,6 +27,11 @@ public class Coordinates {
     this.lat = -1;
   }
 
+  public void setCoordinates(double lng, double lat) {
+    this.lng = lng;
+    this.lat = lat;
+  }
+
   @Override
   public String toString() {
     return "lng: " + lng + " lat: " + lat;  

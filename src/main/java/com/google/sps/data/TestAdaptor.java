@@ -25,19 +25,18 @@ public class TestAdaptor {
       NSWGovAdaptor adaptor = new NSWGovAdaptor();
       HashMap<Integer, GovSiteDetails> Map = new HashMap<>();
       adaptor.updateSiteInfo();
-      Integer testSite = 2560;
+      Integer testSite = 76500;
 
       System.out.println(adaptor.getMap(Map));
-      System.out.println("PRINTING INDIVIDUAL COORD LAT");
-
       System.out.println(adaptor.getMap(Map).get(2560).lat);
-      System.out.println(adaptor.getMap(Map).get(testSite).lat);
+      //System.out.println("hi");
+      //System.out.println(adaptor.getMap(Map).get(testSite).lat);
 
       Coordinates locationCoord = adaptor.getCoord(adaptor.getMap(Map), testSite);
       System.out.println(locationCoord);
 
     } catch (final Exception e) {
-      System.out.println("getMessage(): " + e.getMessage()); 
+      System.out.println("testAdaptor getMessage(): " + e.getMessage()); 
     }
   }
 }

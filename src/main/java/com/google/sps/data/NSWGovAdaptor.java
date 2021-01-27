@@ -33,7 +33,32 @@ public class NSWGovAdaptor {
   }
 
   public Coordinates getCoord(HashMap<Integer, GovSiteDetails> Map, Integer siteId) {
-    return new Coordinates(Map.get(siteId).lng, Map.get(siteId).lat);
+    //what happens if the site id isnt in the map?  
+    Coordinates siteCoord = new Coordinates(); // initalise map, default coord (-1, -1)
+    System.out.println("before try");
+    try {
+      //check if the siteId is in the map or not. If not, update the map
+      System.out.println("helloin try");
+      if (Map.containsKey(siteId) == false ) {
+        updateSiteInfo();
+      }
+
+      System.out.println("in try");
+
+      siteCoord.setCoordinates(Map.get(siteId).lng, Map.get(siteId).lat);
+
+      System.out.println("after try populate map ");
+
+      //siteCoord =  Coordinates(Map.get(siteId).lng, Map.get(siteId).lat);
+      //Coordinates siteCoord = new Coordinates(Map.get(siteId).lng, Map.get(siteId).lat);
+
+    } catch (final Exception e) {
+      System.out.println("Failure to get coordinates. Default coord (-1,-1 ) is expected to be returned. \ngetCoord getMessage(): " + e.getMessage()); 
+      //return new Coordinates();
+    } 
+
+    //return new Coordinates(Map.get(siteId).lng, Map.get(siteId).lat);
+    return siteCoord;
   }
 
   public void updateSiteInfo() throws Exception {
@@ -69,9 +94,8 @@ public class NSWGovAdaptor {
         System.out.println("GET request did not work");
       }
     } catch (final Exception e) {
-      System.out.println("getMessage(): " + e.getMessage()); 
+      System.out.println("updateSiteInfo getMessage(): " + e.getMessage()); 
     }
-    //return dataMap;
   }
 
   //Post request to extract the AQI from the government API
