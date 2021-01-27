@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.lang.reflect.Method;
+
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -23,15 +23,7 @@ public class TestAdaptor {
   public static void main(final String[] args) {
     try {
       NSWGovAdaptor adaptor = new NSWGovAdaptor();
-      
-      Method updateSiteInformation = NSWGovAdaptor.class.getDeclaredMethod("updateSiteInfo");
-
-      updateSiteInformation.setAccessible(true);
-
-      HashMap<Integer, GovSiteDetails> Map = = updateSiteInformation.invoke(adaptor);
-
-
-      //HashMap<Integer, GovSiteDetails> Map = adaptor.updateSiteInfo();
+      HashMap<Integer, GovSiteDetails> Map = adaptor.updateSiteInfo();
       Integer testSite = 2560;
 
       System.out.println(Map);

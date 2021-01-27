@@ -25,7 +25,7 @@ public class NSWGovAdaptor {
 
   public NSWGovAdaptor() {
     dataMap = new HashMap<>();
-    //this.updateSiteInfo();
+    updateSiteInfo();
   }
   
   public void setMap(HashMap<Integer, GovSiteDetails> dataMap) {
@@ -40,7 +40,7 @@ public class NSWGovAdaptor {
     return new Coordinates(Map.get(siteId).lng, Map.get(siteId).lat);
   }
 
-  private HashMap<Integer, GovSiteDetails> updateSiteInfo() throws Exception {
+  public HashMap<Integer, GovSiteDetails> updateSiteInfo() throws Exception {
     //creating a get request
     URL url = new URL("https://data.airquality.nsw.gov.au/api/Data/get_SiteDetails");
     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
