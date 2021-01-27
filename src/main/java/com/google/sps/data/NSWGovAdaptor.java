@@ -30,7 +30,7 @@ public class NSWGovAdaptor {
     this.updateSiteInfo();
   }
 
-  //to be deleted in production code, used for TestAdaptor.java
+  //To be deleted in production code, used for TestAdaptor.java
   public HashMap<Integer, GovSiteDetails> getMap() {
     return this.dataMap;
   }
@@ -49,7 +49,7 @@ public class NSWGovAdaptor {
 
     } catch (final NullPointerException e) {
 
-      //indent continuation at least +4 from original line
+      //Indent continuation at least +4 from original line
       System.out.println("getCoord getMessage(): " + e.getMessage() + 
           "\nNull pointer exception caught, because null is returned as siteId Key is not in the hashmap" +
           "\nFailure to get coordinates. Default coord (-1,-1 ) is expected to be returned."); 
@@ -59,14 +59,14 @@ public class NSWGovAdaptor {
           "\nFailure to get coordinates. Default coord (-1,-1 ) is expected to be returned."); 
     } 
 
-    //if siteId was found in map, it's locations coordinates will be returned
-    //if siteId was not found in map, or any other errors were happened, (-1, -1) will be returned 
+    //If siteId was found in map, it's locations coordinates will be returned
+    //If siteId was not found in map, or any other errors were happened, (-1, -1) will be returned
     return siteCoord;
   }
 
 
   private void updateSiteInfo() throws Exception {
-    //creating a get request
+    //Creating a get request
     URL url = new URL("https://data.airquality.nsw.gov.au/api/Data/get_SiteDetails");
     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
     connection.setRequestMethod("GET");
@@ -98,7 +98,7 @@ public class NSWGovAdaptor {
         } 
       } else {
 
-        //throw custom exception when the response code is not 200
+        //Throw custom exception when the response code is not 200
         throw new HTTPStatusCodeException("HTTP Status Code is not 200");
       }
     } catch (final Exception e) {

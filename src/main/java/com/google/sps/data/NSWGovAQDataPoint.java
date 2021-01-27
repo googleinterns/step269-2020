@@ -5,7 +5,8 @@ import java.util.List;
 
 import com.google.gson.annotations.SerializedName;
 
-/** A class, classified as NSWGovAQDataPoint */
+/** A class, classified as NSWGovAQDataPoint 
+ */
 public class NSWGovAQDataPoint {
   @SerializedName(value = "Site_Id")
   private final int siteId;

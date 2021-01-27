@@ -22,7 +22,7 @@ import com.google.gson.reflect.TypeToken;
 public class GovPostReq {
   public static void main(String[] args) {
     try {
-      //System.out.println(GovPostReq.extractAQI(LocalDate.now()));
+      
       int theYear=2021;
       int theMonth=01;
       int theDay=21;
