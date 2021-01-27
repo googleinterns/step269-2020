@@ -75,7 +75,7 @@ public class NSWGovAdaptor {
     int responseCode = connection.getResponseCode();
 
     ArrayList<GovSiteDetails> convertedlist = new ArrayList<GovSiteDetails>();
-
+ 
     try {
       if (responseCode == HttpURLConnection.HTTP_OK) {
         BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));

@@ -10,6 +10,8 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.time.*;
+import java.time.format.DateTimeFormatter;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -18,8 +20,14 @@ import com.google.gson.reflect.TypeToken;
  * The adaptors get their information from their respective data sources - the government API is called here. 
  */
 public class GovPostReq {
-  
-  public  ArrayList<NSWGovAQDataPoint> extractAQI() throws Exception {
+  public static void main(String[] args) {
+    try {
+      System.out.println(GovPostReq.extractAQI(LocalDate.now()));
+    } catch (Exception e) {
+      System.out.println(e.getMessage());
+    }
+  }
+  public static ArrayList<NSWGovAQDataPoint> extractAQI(LocalDate today) throws Exception {
     final URL url = new URL("https://data.airquality.nsw.gov.au/api/Data/get_Observations");
     final HttpURLConnection con = (HttpURLConnection) url.openConnection();
     con.setRequestMethod("POST");
@@ -34,12 +42,17 @@ public class GovPostReq {
     //Enable DoOutput to send request content and write content to output stream
     con.setDoOutput(true);
 
+    String todayDate = String.format("2021-01-27");
+    String f = today.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+    System.out.println(LocalDate.now());
+    System.out.println(f + "this is f ");
+
     //Create the Request Body 
     final String jsonInputString = "{" +
       "\"Parameters\": [ \"AQI\", ]," +
       "\"Sites\": [ ]," +
-      "\"StartDate\": \"2021-01-18\"," +
-      "\"EndDate\": \"2021-01-19\"," + 
+      String.format("\"StartDate\": \"%s\",", f ) +
+      String.format("\"EndDate\": \"%s\",", f ) + 
       "\"Categories\": [ \"Site AQI\" ]," +
       "\"SubCategories\": [ \"Hourly\" ]," +
       "\"Frequency\": [ \"Hourly average\" ]" +
@@ -51,7 +64,7 @@ public class GovPostReq {
       os.write(input, 0, input.length);
     }	
 
-    ArrayList<NSWGovAQDataPoint> convertedlist;
+    ArrayList<NSWGovAQDataPoint> convertedlist = new ArrayList<NSWGovAQDataPoint>();
     //Read response from input stream 
     try(final BufferedReader br = new BufferedReader( new InputStreamReader(con.getInputStream(), "utf-8"))) {
       final StringBuilder response = new StringBuilder();
@@ -60,10 +73,16 @@ public class GovPostReq {
         response.append(responseLine.trim());
       }
       
+      
       //Add it to the responseString to now reflect a string that contains json formatted data in an array 
       final String responseString = response.toString();
       final Gson gson = new Gson();
+      System.out.println("hi in try");
       convertedlist = gson.fromJson(responseString, new TypeToken<ArrayList<NSWGovAQDataPoint>>() {}.getType());
+      System.out.println("aftergson");
+
+    } catch (final Exception e) {
+      System.out.println("GovPostReq getMessage(): " + e.getMessage()); 
     }
     return convertedlist;
   }
