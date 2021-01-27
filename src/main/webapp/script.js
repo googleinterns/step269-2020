@@ -140,12 +140,10 @@ function toggleSidebar() {
     }
 }
 
-
 // UUID v4 generation
 function generateNewUUID() {
     const templateString = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx";
     let uuid = "";
-
     for (char of templateString) {
         newChar = char;
         if (char === "x") {
@@ -156,17 +154,13 @@ function generateNewUUID() {
         }
         uuid += newChar;
     }
-
     return uuid;
 }
 
 // min and max are inclusive positive integer bounds
 function genRandomIntInclusive(min, max) {
     const randomBuffer = new Uint8Array(1);
-
     window.crypto.getRandomValues(randomBuffer);
-
     let randomNumber = randomBuffer[0] / 0xff; //convert to be between 0 and 1
-
     return Math.floor(randomNumber * (max - min)) + min;
 }
