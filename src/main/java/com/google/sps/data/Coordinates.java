@@ -6,7 +6,7 @@ import java.util.List;
 import com.google.gson.annotations.SerializedName;
 
 /** 
- * This class represents the coordinates of a site location.cd 
+ * This class represents the coordinates of a site location.
  */
 public class Coordinates {
   @SerializedName(value = "Longitude")
