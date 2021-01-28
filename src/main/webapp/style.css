@@ -100,6 +100,7 @@ button:hover {
   position: fixed;
   top: 5px;
   left: 300px;
+  transition-duration: 0s;
   z-index: 1;
 }
 
