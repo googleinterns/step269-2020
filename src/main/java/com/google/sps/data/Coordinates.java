@@ -1,8 +1,5 @@
 package com.google.sps.data;
 
-import java.util.Arrays;
-import java.util.List;
-
 import com.google.gson.annotations.SerializedName;
 
 /** 
@@ -15,13 +12,12 @@ public class Coordinates {
   @SerializedName(value = "Latitude")
   public double lat;
   
-  //combined coordinates
   public Coordinates(double lng, double lat) {
     this.lng = lng;
     this.lat = lat;
   }  
 
-  //No arg constructor to help differentiate a initialised class with invalid values 
+  //No arg constructor to help differentiate a initialised class with invalid values.
   public Coordinates() {
     this.lng = -1;
     this.lat = -1;

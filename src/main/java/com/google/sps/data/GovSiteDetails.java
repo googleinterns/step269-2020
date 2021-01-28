@@ -1,8 +1,5 @@
 package com.google.sps.data;
 
-import java.util.Arrays;
-import java.util.List;
-
 import com.google.gson.annotations.SerializedName;
 
 /** 
@@ -21,7 +18,7 @@ public class GovSiteDetails {
   @SerializedName(value = "Latitude")
   public double lat;
 
-  //No arg constructor to help differentiate a initialised class with invalid values 
+  //No arg constructor to help differentiate a initialised class with invalid values.
   public GovSiteDetails() {
     this.siteId = -1;
     this.siteName = "Uninitialised site name"; 
