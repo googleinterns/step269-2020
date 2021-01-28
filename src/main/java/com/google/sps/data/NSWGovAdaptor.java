@@ -33,13 +33,14 @@ public class NSWGovAdaptor {
   }
 
   private Coordinates getCoord(Integer siteId) {
-
     Coordinates siteCoord = new Coordinates(); 
+
     try {
       // Check if the siteId is in the map or not. If not, update the map first.
       if (this.dataMap.containsKey(siteId) == false ) {
         this.updateSiteInfo();
       }
+
       siteCoord.setCoordinates(this.dataMap.get(siteId).lng, this.dataMap.get(siteId).lat);
     } catch (final NullPointerException e) {
       System.out.println("getCoord getMessage(): " + e.getMessage() + 
@@ -49,6 +50,7 @@ public class NSWGovAdaptor {
       System.out.println("getCoord getMessage(): " + e.getMessage() + 
           "\nFailure to get coordinates. Default coord (-1,-1 ) is expected to be returned."); 
     } 
+    
     // If siteId was found in map, it's locations coordinates will be returned.
     // If siteId was not found in map, or any other errors were happened, (-1, -1) will be returned.
     return siteCoord;
