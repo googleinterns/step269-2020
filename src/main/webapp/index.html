@@ -22,17 +22,19 @@
       <!-- The top "nav" in the sidebar -->
       <div class="topnav">
         <div class="search-container">
-          <input type="text" placeholder="Search a location.." name="search" id="location-search-bar">
-          <button class="button Search" id="location-search-button" onClick="searchLocation()">Search</button>
+          <input type="text" placeholder="Search a location..." name="search" id="location-search-bar" alt="Search location">
+          <button class="button Search" id="location-search-button" onClick="searchLocation()"><i class="material-icons">search</i></button>
         </div>
-        <button class="button directions" id="directions" onClick="showRoutes()">Directions</button>
-        <button class="button directiones" id="close-directions" onClick="hideRoutes()">Close directions</button>
+        <div id="feature-buttons-container" class="flex-container">
+          <button class="feature-button" id="clean-air-button" alt="Find rest stops with clean air near this location">Clean air near here</button>
+          <button class="feature-button" id="directions" onClick="showRoutes()" alt="Plan a route to this location">Plan route</button>
+          <button class="feature-button" id="close-directions" onClick="hideRoutes()">Close directions</button>
+        </div>
       </div>
       
       <div id="location-info"></div>
     </div>
-    <button id="toggle-sidebar" onClick="toggleSidebar()"><i class=material-icons>navigate_before</i></button>
+    <button id="toggle-sidebar" onClick="toggleSidebar()"><i class="material-icons">navigate_before</i></button>
   </div>
 </body>
-
 </html>
