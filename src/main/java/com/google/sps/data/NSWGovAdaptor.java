@@ -83,7 +83,6 @@ public class NSWGovAdaptor {
           dataMap.put(details.siteId , details);
         } 
       } else {
-
         // Throw custom exception when the response code is not 200.
         throw new HTTPStatusCodeException("HTTP Status Code is not 200");
       }
@@ -99,7 +98,7 @@ public class NSWGovAdaptor {
     con.setRequestMethod("POST");
 
     // Set "content-type" request header to "application/json" to send the request content in JSON form.
-    // Charset encoding as uT8 which is default, useful if the request enconding is diff to UT8 encoding.
+    // Charset encoding as uT8 which is default, useful if the request enconding is diff to UTF8 encoding.
     con.setRequestProperty("Content-Type", "application/json; utf-8");
 
     // Set request header to application/json to read the response.
