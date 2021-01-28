@@ -44,16 +44,12 @@ public class NSWGovAdaptor {
       if (this.dataMap.containsKey(siteId) == false ) {
         this.updateSiteInfo();
       }
-      
       siteCoord.setCoordinates(this.dataMap.get(siteId).lng, this.dataMap.get(siteId).lat);
 
     } catch (final NullPointerException e) {
-
-      //Indent continuation at least +4 from original line
       System.out.println("getCoord getMessage(): " + e.getMessage() + 
           "\nNull pointer exception caught, because null is returned as siteId Key is not in the hashmap" +
           "\nFailure to get coordinates. Default coord (-1,-1 ) is expected to be returned."); 
-
     } catch (final Exception e) {
       System.out.println("getCoord getMessage(): " + e.getMessage() + 
           "\nFailure to get coordinates. Default coord (-1,-1 ) is expected to be returned."); 
@@ -123,7 +119,6 @@ public class NSWGovAdaptor {
     con.setDoOutput(true);
 
     String desiredDate = inputDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-    System.out.println(LocalDate.now());
 
     //Create the Request Body 
     final String jsonInputString = "{" +
