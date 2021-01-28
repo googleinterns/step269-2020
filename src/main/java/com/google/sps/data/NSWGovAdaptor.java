@@ -50,7 +50,7 @@ public class NSWGovAdaptor {
       System.out.println("getCoord getMessage(): " + e.getMessage() + 
           "\nFailure to get coordinates. Default coord (-1,-1 ) is expected to be returned."); 
     } 
-    
+
     // If siteId was found in map, it's locations coordinates will be returned.
     // If siteId was not found in map, or any other errors were happened, (-1, -1) will be returned.
     return siteCoord;
@@ -100,7 +100,7 @@ public class NSWGovAdaptor {
     con.setRequestMethod("POST");
 
     // Set "content-type" request header to "application/json" to send the request content in JSON form.
-    // Charset encoding as uT8 which is default, useful if the request enconding is diff to UTF8 encoding.
+    // Charset encoding as UTF8 which is default, useful if the request enconding is diff to UTF8 encoding.
     con.setRequestProperty("Content-Type", "application/json; utf-8");
 
     // Set request header to application/json to read the response.
@@ -128,8 +128,8 @@ public class NSWGovAdaptor {
       os.write(input, 0, input.length);
     }	
 
-    ArrayList<NSWGovAQDataPoint> convertedlist = new ArrayList<NSWGovAQDataPoint>();
     // Read response from input stream.
+    ArrayList<NSWGovAQDataPoint> convertedlist = new ArrayList<NSWGovAQDataPoint>();
     try(final BufferedReader br = new BufferedReader( new InputStreamReader(con.getInputStream(), "utf-8"))) {
       final StringBuilder response = new StringBuilder();
       String responseLine = null;
