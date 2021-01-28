@@ -128,7 +128,7 @@ public class NSWGovAdaptor {
       os.write(input, 0, input.length);
     }	
 
-    // Read response from input stream.
+    // Read response from input stream into an array.
     ArrayList<NSWGovAQDataPoint> convertedlist = new ArrayList<NSWGovAQDataPoint>();
     try(final BufferedReader br = new BufferedReader( new InputStreamReader(con.getInputStream(), "utf-8"))) {
       final StringBuilder response = new StringBuilder();
