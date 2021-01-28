@@ -11,7 +11,7 @@ public class NSWGovAQDataPoint {
   @SerializedName(value = "Value")
   private final double aqi; 
   
-  //No arg constructor to help differentiate a initialised class with invalid values.
+  // No arg constructor to help differentiate a initialised class with invalid values.
   public NSWGovAQDataPoint() {
     this.siteId = -1;
     this.aqi = -1;

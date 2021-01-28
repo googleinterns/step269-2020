@@ -27,7 +27,7 @@ public class NSWGovAdaptor {
     this.updateSiteInfo();
   }
 
-  //To be deleted in production code, used for TestAdaptor.java.
+  // To be deleted in production code, used for TestAdaptor.java.
   public HashMap<Integer, GovSiteDetails> getMap() {
     return this.dataMap;
   }
@@ -36,13 +36,11 @@ public class NSWGovAdaptor {
 
     Coordinates siteCoord = new Coordinates(); 
     try {
-
-      //Check if the siteId is in the map or not. If not, update the map first.
+      // Check if the siteId is in the map or not. If not, update the map first.
       if (this.dataMap.containsKey(siteId) == false ) {
         this.updateSiteInfo();
       }
       siteCoord.setCoordinates(this.dataMap.get(siteId).lng, this.dataMap.get(siteId).lat);
-
     } catch (final NullPointerException e) {
       System.out.println("getCoord getMessage(): " + e.getMessage() + 
           "\nNull pointer exception caught, because null is returned as siteId Key is not in the hashmap" +
@@ -51,26 +49,20 @@ public class NSWGovAdaptor {
       System.out.println("getCoord getMessage(): " + e.getMessage() + 
           "\nFailure to get coordinates. Default coord (-1,-1 ) is expected to be returned."); 
     } 
-
-    //If siteId was found in map, it's locations coordinates will be returned.
-    //If siteId was not found in map, or any other errors were happened, (-1, -1) will be returned.
+    // If siteId was found in map, it's locations coordinates will be returned.
+    // If siteId was not found in map, or any other errors were happened, (-1, -1) will be returned.
     return siteCoord;
   }
 
-  
-
   private void updateSiteInfo() throws Exception {
-    //Creating a get request.
+    // Creating a get request.
     URL url = new URL("https://data.airquality.nsw.gov.au/api/Data/get_SiteDetails");
     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
     connection.setRequestMethod("GET");
-    
     connection.setRequestProperty("Content-Type", "application/json");
-    
-    int responseCode = connection.getResponseCode();
 
+    int responseCode = connection.getResponseCode();
     ArrayList<GovSiteDetails> convertedlist = new ArrayList<GovSiteDetails>();
-    
     System.out.println(java.time.LocalDate.now());  
 
     try {
@@ -86,13 +78,13 @@ public class NSWGovAdaptor {
         Gson gson = new Gson();
         convertedlist = gson.fromJson(responseString, new TypeToken<ArrayList<GovSiteDetails>>() {}.getType());
 
-        //Convert the arrayList into a map. 
+        // Convert the arrayList into a map. 
         for(GovSiteDetails details : convertedlist){
           dataMap.put(details.siteId , details);
         } 
       } else {
 
-        //Throw custom exception when the response code is not 200.
+        // Throw custom exception when the response code is not 200.
         throw new HTTPStatusCodeException("HTTP Status Code is not 200");
       }
     } catch (final Exception e) {
@@ -100,25 +92,25 @@ public class NSWGovAdaptor {
     }
   }
 
-  //Post request to extract the AQI from the government API, given a desired date.
+  // Post request to extract the AQI from the government API, given a desired date.
   private ArrayList<NSWGovAQDataPoint> extractAQI(LocalDate inputDate) throws Exception {
     final URL url = new URL("https://data.airquality.nsw.gov.au/api/Data/get_Observations");
     final HttpURLConnection con = (HttpURLConnection) url.openConnection();
     con.setRequestMethod("POST");
 
-    //Set "content-type" request header to "application/json" to send the request content in JSON form.
-    //Charset encoding as uT8 which is default, useful if the request enconding is diff to UT8 encoding.
+    // Set "content-type" request header to "application/json" to send the request content in JSON form.
+    // Charset encoding as uT8 which is default, useful if the request enconding is diff to UT8 encoding.
     con.setRequestProperty("Content-Type", "application/json; utf-8");
 
-    //Set request header to application/json to read the response.
+    // Set request header to application/json to read the response.
     con.setRequestProperty("Accept", "application/json");
 
-    //Enable DoOutput to send request content and write content to output stream.
+    // Enable DoOutput to send request content and write content to output stream.
     con.setDoOutput(true);
 
     String desiredDate = inputDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
-    //Create the Request Body.
+    // Create the Request Body.
     final String jsonInputString = "{" +
       "\"Parameters\": [ \"AQI\", ]," +
       "\"Sites\": [ ]," +
@@ -129,14 +121,14 @@ public class NSWGovAdaptor {
       "\"Frequency\": [ \"Hourly average\" ]" +
       "}";
  
-    //Output stream only flushes its output after its closed.
+    // Output stream only flushes its output after its closed.
     try(OutputStream os = con.getOutputStream()) {
       final byte[] input = jsonInputString.getBytes("utf-8");
       os.write(input, 0, input.length);
     }	
 
     ArrayList<NSWGovAQDataPoint> convertedlist = new ArrayList<NSWGovAQDataPoint>();
-    //Read response from input stream.
+    // Read response from input stream.
     try(final BufferedReader br = new BufferedReader( new InputStreamReader(con.getInputStream(), "utf-8"))) {
       final StringBuilder response = new StringBuilder();
       String responseLine = null;
@@ -144,7 +136,7 @@ public class NSWGovAdaptor {
         response.append(responseLine.trim());
       }
       
-      //Add it to the responseString to now reflect a string that contains json formatted data in an array.
+      // Add it to the responseString to now reflect a string that contains json formatted data in an array.
       final String responseString = response.toString();
       final Gson gson = new Gson();
       convertedlist = gson.fromJson(responseString, new TypeToken<ArrayList<NSWGovAQDataPoint>>() {}.getType());
