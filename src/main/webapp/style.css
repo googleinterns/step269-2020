@@ -80,7 +80,7 @@ button:hover {
 }
 
 #location-info {
-  color: grey;
+  padding: 10px;
   visibility: hidden;
 }
 

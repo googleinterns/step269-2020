@@ -1,5 +1,6 @@
 let map;
 let aqLayer;
+let searchMarker;
 
 function aqLayerControl(controlDiv) {
     const controlUI = document.createElement("div");
@@ -30,13 +31,13 @@ function initMap() {
     });
     // Initialise places autocomplete in search bar
     const searchbar = document.getElementById("location-search-bar");
-    const searchMarker = new google.maps.Marker({
+    searchMarker = new google.maps.Marker({
         map,
         anchorPoint: new google.maps.Point(0,-29), // position the marker icon relative to the origin
     });
     searchMarker.setVisible(false);
     const autocomplete = new google.maps.places.Autocomplete(searchbar);
-    autocomplete.setFields(["address_components","geometry","icon","name"]);
+    autocomplete.setFields(["geometry","name"]);
     autocomplete.addListener("place_changed", () => {
         searchMarker.setVisible(false);
         const place = autocomplete.getPlace();
@@ -52,8 +53,11 @@ function initMap() {
             map.setCenter(place.geometry.viewport);
             map.setZoom(17); // 17 used because it is used in a sample in the documentation
         }
-        searchMarker.setPosition(place.geometry.location);
-        searchMarker.setVisible(true);
+
+        selectLocation(place);
+
+        // searchMarker.setPosition(place.geometry.location);
+        // searchMarker.setVisible(true);
     })
     // Initialise visualisation
     populateAQVisualisationData();
@@ -98,21 +102,20 @@ function loadHeatmap(data) {
     aqLayer.setMap(map);
 }
 
-function searchLocation() {
-    const locationString = document.getElementById("location-search-bar").value;
-
+function selectLocation(place) {
     const locationInfo = document.getElementById("location-info");
-    locationInfo.style.visibility = "visible";
+    locationInfo.style.visibility = "visible"; 
+    
+    searchMarker.setPosition(place.geometry.location);
+    searchMarker.setVisible(true);
 
-    if (locationString !== "wagga wagga") {
-        locationInfo.innerHTML = "The only location supported by this prototype is `wagga wagga`";
-        return;
-    }
+    locationInfo.innerHTML = buildLocationHTML(place);
+}
 
+function buildLocationHTML(place) {
     htmlString = ""
-    htmlString += "<h3>Wagga Wagga</h3>\n";
-    htmlString += "<p>Current AQ score: 40 (Pretty good)</p>\n";
-    locationInfo.innerHTML = htmlString;
+    htmlString += `<h3>${place.name}</h3>`;
+    return htmlString;
 }
 
 function showRoutes() {
