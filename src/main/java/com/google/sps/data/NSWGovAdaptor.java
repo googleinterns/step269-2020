@@ -32,7 +32,44 @@ public class NSWGovAdaptor {
     return this.dataMap;
   }
 
-  private Coordinates getCoord(Integer siteId) {
+  public AQDataPoint convertDataPoint(NSWGovAQDataPoint givenPoint) { 
+    /*
+    individual data point conversion to Aqdatapoint
+    Individual one takes in neswdatapoint 
+    Extract method - create a list of nswaqdatapoint 
+    Which has a site id and a aqi
+    Call converter, give a nswaqdata point
+    It takes the site id from the data point which will be problems ose its private
+    Pass the side id into the get coord
+    Take the aqi data from the og data copy it to the common data point
+    And the lng lat to the cpmmpn data point  to return
+    So the parameter it needs is a aqnswdata point
+    */
+    //for each data point, if the value is -1, continue to the next data point so you get a data strema of hours,
+    // each hours is duped, but the ordering is consistent
+
+    //take the site id from given data point and pass it into get coord which gives the coord 
+    int pointSiteid = givenPoint.getId();
+
+    //take our aqi data from given NSWGovAQDataPoint
+    double pointAQI = givenPoint.getAQI();
+
+    //get sitenane fron govesitedetails
+    String pointName = this.dataMap.get(pointSiteid).siteName;
+    double pointLat = this.dataMap.get(pointSiteid).lat;
+    double pointLng = this.dataMap.get(pointSiteid).lng;
+
+    //put all data into AQdatapoint
+    AQDataPoint siteDataPoint = new AQDataPoint();
+    siteDataPoint.setLat(pointLat);
+    siteDataPoint.setLng(pointLng);
+    siteDataPoint.setName(pointName);
+    siteDataPoint.setAQI(pointAQI);
+    
+    return siteDataPoint;
+  }
+
+  public Coordinates getCoord(Integer siteId) {
     Coordinates siteCoord = new Coordinates(); 
 
     try {
@@ -56,7 +93,7 @@ public class NSWGovAdaptor {
     return siteCoord;
   }
 
-  private void updateSiteInfo() throws Exception {
+  public void updateSiteInfo() throws Exception {
     // Creating a get request.
     URL url = new URL("https://data.airquality.nsw.gov.au/api/Data/get_SiteDetails");
     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -93,8 +130,13 @@ public class NSWGovAdaptor {
     }
   }
 
-  // Post request to extract the AQI from the government API, given a desired date.
-  private ArrayList<NSWGovAQDataPoint> extractAQI(LocalDate inputDate) throws Exception {
+
+  /**
+   * Post request to extract the AQI from the government API, given a desired date.
+   * TODO(rosanna): This currently reports each data point twice, 
+   *  due to a bad implementation of the filtering in the NSWGov Data API, add more filtering.
+   */
+  public ArrayList<NSWGovAQDataPoint> extractAQI(LocalDate inputDate) throws Exception {
     final URL url = new URL("https://data.airquality.nsw.gov.au/api/Data/get_Observations");
     final HttpURLConnection con = (HttpURLConnection) url.openConnection();
     con.setRequestMethod("POST");

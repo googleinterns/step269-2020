@@ -22,7 +22,7 @@ public class Coordinates {
     this.lng = -1;
     this.lat = -1;
   }
-
+  
   public void setCoordinates(double lng, double lat) {
     this.lng = lng;
     this.lat = lat;

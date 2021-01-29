@@ -17,6 +17,14 @@ public class NSWGovAQDataPoint {
     this.aqi = -1;
   }
 
+  public int getId() {
+    return this.siteId;
+  }
+
+  public double getAQI() {
+    return this.aqi;
+  }
+
   @Override
   public String toString() {
     return siteId + " " + aqi;  
