@@ -33,38 +33,15 @@ public class NSWGovAdaptor {
   }
 
   public AQDataPoint convertDataPoint(NSWGovAQDataPoint givenPoint) { 
-    /*
-    individual data point conversion to Aqdatapoint
-    Individual one takes in neswdatapoint 
-    Extract method - create a list of nswaqdatapoint 
-    Which has a site id and a aqi
-    Call converter, give a nswaqdata point
-    It takes the site id from the data point which will be problems ose its private
-    Pass the side id into the get coord
-    Take the aqi data from the og data copy it to the common data point
-    And the lng lat to the cpmmpn data point  to return
-    So the parameter it needs is a aqnswdata point
-    */
-    //for each data point, if the value is -1, continue to the next data point so you get a data strema of hours,
-    // each hours is duped, but the ordering is consistent
-
-    //take the site id from given data point and pass it into get coord which gives the coord 
+    // Take the site id from given NSWGovAQDataPoint.
     int pointSiteid = givenPoint.getId();
 
-    //take our aqi data from given NSWGovAQDataPoint
-    double pointAQI = givenPoint.getAQI();
-
-    //get sitenane fron govesitedetails
-    String pointName = this.dataMap.get(pointSiteid).siteName;
-    double pointLat = this.dataMap.get(pointSiteid).lat;
-    double pointLng = this.dataMap.get(pointSiteid).lng;
-
-    //put all data into AQdatapoint
+    // Fill all data into AQdatapoint.
     AQDataPoint siteDataPoint = new AQDataPoint();
-    siteDataPoint.setLat(pointLat);
-    siteDataPoint.setLng(pointLng);
-    siteDataPoint.setName(pointName);
-    siteDataPoint.setAQI(pointAQI);
+    siteDataPoint.setLat(this.dataMap.get(pointSiteid).lat);
+    siteDataPoint.setLng(this.dataMap.get(pointSiteid).lng);
+    siteDataPoint.setName(this.dataMap.get(pointSiteid).siteName);
+    siteDataPoint.setAQI(givenPoint.getAQI());
     
     return siteDataPoint;
   }

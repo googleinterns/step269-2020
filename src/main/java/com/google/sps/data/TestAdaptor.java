@@ -32,7 +32,7 @@ public class TestAdaptor {
       System.out.println(list);
       System.out.println(list.get(0));
 
-      System.out.println(adaptor.convertDataPoint(list.get(0)));
+      System.out.println(adaptor.convertDataPoint(list.get(1)));
 
     } catch (final Exception e) {
       System.out.println("testAdaptor getMessage(): " + e.getMessage()); 
