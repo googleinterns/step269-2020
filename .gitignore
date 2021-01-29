@@ -6,4 +6,3 @@ target/**
 .settings
 *.class
 bin
-src/main/com/google/sps/data/TestAdaptor.java
