@@ -32,7 +32,7 @@ public class NSWGovAdaptor {
     return this.dataMap;
   }
 
-  public AQDataPoint convertDataPoint(NSWGovAQDataPoint givenPoint) { 
+  private AQDataPoint convertDataPoint(NSWGovAQDataPoint givenPoint) { 
     // Take the site id from given NSWGovAQDataPoint.
     int pointSiteid = givenPoint.getId();
 
@@ -46,7 +46,7 @@ public class NSWGovAdaptor {
     return siteDataPoint;
   }
 
-  public Coordinates getCoord(Integer siteId) {
+  private Coordinates getCoord(Integer siteId) {
     Coordinates siteCoord = new Coordinates(); 
 
     try {
@@ -70,7 +70,7 @@ public class NSWGovAdaptor {
     return siteCoord;
   }
 
-  public void updateSiteInfo() throws Exception {
+  private void updateSiteInfo() throws Exception {
     // Creating a get request.
     URL url = new URL("https://data.airquality.nsw.gov.au/api/Data/get_SiteDetails");
     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -113,7 +113,7 @@ public class NSWGovAdaptor {
    * TODO(rosanna): This currently reports each data point twice, 
    *  due to a bad implementation of the filtering in the NSWGov Data API, add more filtering.
    */
-  public ArrayList<NSWGovAQDataPoint> extractAQI(LocalDate inputDate) throws Exception {
+  private ArrayList<NSWGovAQDataPoint> extractAQI(LocalDate inputDate) throws Exception {
     final URL url = new URL("https://data.airquality.nsw.gov.au/api/Data/get_Observations");
     final HttpURLConnection con = (HttpURLConnection) url.openConnection();
     con.setRequestMethod("POST");
