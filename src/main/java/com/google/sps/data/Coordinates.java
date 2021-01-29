@@ -12,6 +12,7 @@ public class Coordinates {
   @SerializedName(value = "Latitude")
   public double lat;
   
+  
   public Coordinates(double lng, double lat) {
     this.lng = lng;
     this.lat = lat;
