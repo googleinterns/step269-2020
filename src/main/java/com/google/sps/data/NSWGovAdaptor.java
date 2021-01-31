@@ -42,7 +42,43 @@ public class NSWGovAdaptor {
     return siteDataPoint;
   }
 
-  private Coordinates getCoord(Integer siteId) {
+  /**
+   * Wrapper function to convert all elements of a given NSWGovAQDataPoint ArrayList 
+   * into an ArrayList of AQDataPoints, which will be the common class for AQ Data. 
+   */
+  public ArrayList<AQDataPoint> convertAllDataPoints(ArrayList<NSWGovAQDataPoint> govDataPointList) {
+    ArrayList<AQDataPoint> convertedAQDataList = new ArrayList<AQDataPoint>();
+    try {
+      if (govDataPointList.isEmpty()) {
+        throw new EmptyListException("Exception: Given List is empty");
+      }
+      for (NSWGovAQDataPoint indvGovAQPoint : govDataPointList) {
+        convertedAQDataList.add(convertDataPoint(indvGovAQPoint));
+      }
+    } catch (final Exception e) {
+      System.out.println("convertAllDataPoints getMessage(): " + e.getMessage()); 
+    }
+    return convertedAQDataList;
+  }
+
+  public ArrayList<AQDataPoint> removeAlternateElements(ArrayList<AQDataPoint> repeatingConvertedDataList) {
+    // The given list contains both the AQI and the AQI on a rolling 24 hr basis. 
+    // Filter out every second element in the given list so the new returned list only has the AQI once. 
+    ArrayList<AQDataPoint> noDupeAQDataList = new ArrayList<AQDataPoint>();
+    try {
+      if (repeatingConvertedDataList.isEmpty()) {
+        throw new EmptyListException("Exception: Given List is empty");
+      }
+      for (int i = 0; i < repeatingConvertedDataList.size(); i += 2) {
+      noDupeAQDataList.add(repeatingConvertedDataList.get(i));
+      }
+    } catch (final Exception e) {
+      System.out.println("removeAlternateElements getMessage(): " + e.getMessage()); 
+    }
+    return noDupeAQDataList;
+  }
+
+  public Coordinates getCoord(Integer siteId) {
     Coordinates siteCoord = new Coordinates(); 
 
     try {
@@ -68,7 +104,7 @@ public class NSWGovAdaptor {
     return siteCoord;
   }
 
-  private void updateSiteInfo() throws Exception {
+  public void updateSiteInfo() throws Exception {
     // Creating a get request.
     URL url = new URL("https://data.airquality.nsw.gov.au/api/Data/get_SiteDetails");
     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -76,8 +112,7 @@ public class NSWGovAdaptor {
     connection.setRequestProperty("Content-Type", "application/json");
 
     int responseCode = connection.getResponseCode();
-    ArrayList<GovSiteDetails> convertedlist = new ArrayList<GovSiteDetails>();
-    System.out.println(java.time.LocalDate.now());  
+    ArrayList<GovSiteDetails> convertedlist = new ArrayList<GovSiteDetails>();  
 
     try {
       if (responseCode == HttpURLConnection.HTTP_OK) {
@@ -111,7 +146,7 @@ public class NSWGovAdaptor {
    * TODO(rosanna): This currently reports each data point twice, 
    * due to a bad implementation of the filtering in the NSWGov Data API, add more filtering.
    */
-  private ArrayList<NSWGovAQDataPoint> extractAQI(LocalDate inputDate) throws Exception {
+  public ArrayList<NSWGovAQDataPoint> extractAQI(LocalDate inputDate) throws Exception {
     final URL url = new URL("https://data.airquality.nsw.gov.au/api/Data/get_Observations");
     final HttpURLConnection con = (HttpURLConnection) url.openConnection();
     con.setRequestMethod("POST");
@@ -143,7 +178,7 @@ public class NSWGovAdaptor {
     try(OutputStream os = con.getOutputStream()) {
       final byte[] input = jsonInputString.getBytes("utf-8");
       os.write(input, 0, input.length);
-    }	
+    } 
 
     // Read response from input stream into an array.
     ArrayList<NSWGovAQDataPoint> convertedlist = new ArrayList<NSWGovAQDataPoint>();
