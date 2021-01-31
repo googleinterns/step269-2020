@@ -6,5 +6,8 @@ package com.google.sps.data;
 public class GriddedData {
     public int resolution; // the width & height of each grid cell, stored in metres
     public double[][] data;
-    public Coordinates origin; // the coordinates of the top left corner of the grid
+
+    // the coordinates of the top left corner of the grid
+    public double originLat;
+    public double originLong;
 }
