@@ -55,9 +55,6 @@ function initMap() {
         }
 
         selectLocation(place);
-
-        // searchMarker.setPosition(place.geometry.location);
-        // searchMarker.setVisible(true);
     })
     // Initialise visualisation
     populateAQVisualisationData();
@@ -128,16 +125,15 @@ function hideRoutes() {
 
 function toggleSidebar() {
     const toggleButton = document.getElementById("toggle-sidebar");
-
     const sidebar = document.querySelector("#sidebar");
-    const sidebarVisibility = window.getComputedStyle(sidebar).getPropertyValue("visibility");
-    
-    if (sidebarVisibility === "visible") {
-        sidebar.style.visibility = "hidden";
+    const sidebarDisplay = window.getComputedStyle(sidebar).getPropertyValue("display");
+
+    if (sidebarDisplay === "block") {
+        sidebar.style.display = "none";
         toggleButton.innerHTML = "<i class=material-icons>navigate_next</i>";
-        toggleButton.style.left = "5px";
+        toggleButton.style.left = "0px";
     } else {
-        sidebar.style.visibility = "visible";
+        sidebar.style.display = "block";
         toggleButton.innerHTML = "<i class=material-icons>navigate_before</i>";
         toggleButton.style.left = "300px";
     }
