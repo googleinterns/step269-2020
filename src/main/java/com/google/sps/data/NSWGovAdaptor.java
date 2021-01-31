@@ -50,7 +50,7 @@ public class NSWGovAdaptor {
    * Wrapper function to convert all elements of a given NSWGovAQDataPoint ArrayList 
    * into an ArrayList of AQDataPoints, which will be the common class for AQ Data. 
    */
-  public ArrayList<AQDataPoint> convertAllDataPoints(ArrayList<NSWGovAQDataPoint> govDataPointList) {
+  private ArrayList<AQDataPoint> convertAllDataPoints(ArrayList<NSWGovAQDataPoint> govDataPointList) {
     ArrayList<AQDataPoint> convertedAQDataList = new ArrayList<AQDataPoint>();
     try {
       if (govDataPointList.isEmpty()) {
@@ -65,7 +65,7 @@ public class NSWGovAdaptor {
     return convertedAQDataList;
   }
 
-  public ArrayList<AQDataPoint> removeAlternateElements(ArrayList<AQDataPoint> repeatingConvertedDataList) {
+  private ArrayList<AQDataPoint> removeAlternateElements(ArrayList<AQDataPoint> repeatingConvertedDataList) {
     // The given list contains both the AQI and the AQI on a rolling 24 hr basis. 
     // Filter out every second element in the given list so the new returned list only has the AQI once. 
     ArrayList<AQDataPoint> noDupeAQDataList = new ArrayList<AQDataPoint>();
@@ -82,7 +82,7 @@ public class NSWGovAdaptor {
     return noDupeAQDataList;
   }
 
-  public Coordinates getCoord(Integer siteId) {
+  private Coordinates getCoord(Integer siteId) {
     Coordinates siteCoord = new Coordinates(); 
 
     try {
@@ -106,7 +106,7 @@ public class NSWGovAdaptor {
     return siteCoord;
   }
 
-  public void updateSiteInfo() throws Exception {
+  private void updateSiteInfo() throws Exception {
     // Creating a get request.
     URL url = new URL("https://data.airquality.nsw.gov.au/api/Data/get_SiteDetails");
     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -148,7 +148,7 @@ public class NSWGovAdaptor {
    * TODO(rosanna): This currently reports each data point twice, 
    *  due to a bad implementation of the filtering in the NSWGov Data API, add more filtering.
    */
-  public ArrayList<NSWGovAQDataPoint> extractAQI(LocalDate inputDate) throws Exception {
+  private ArrayList<NSWGovAQDataPoint> extractAQI(LocalDate inputDate) throws Exception {
     final URL url = new URL("https://data.airquality.nsw.gov.au/api/Data/get_Observations");
     final HttpURLConnection con = (HttpURLConnection) url.openConnection();
     con.setRequestMethod("POST");
