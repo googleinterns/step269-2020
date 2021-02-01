@@ -101,7 +101,7 @@ function loadHeatmap(data) {
     aqLayer.setMap(map);
 }
 
-// TODO: implement this
+// This function is not complete
 function convertGriddedDataToWeightedPoints(griddedData) {
     let weightedPoints = [];
     return weightedPoints;
@@ -122,7 +122,7 @@ function getGridIndex(resolution, originCoords, targetCoords) {
     *       |                                  |
     * sameLatCoords -------------------- targetCoords
     * 
-    * Note: Due to the curvature of the earth, the shape created by the four
+    * Note: Due to the curvature of the earth, the actual shape bounded by the four
     * points may not be exactly rectangular, however it should be close enough
     * for small distances.
     */
