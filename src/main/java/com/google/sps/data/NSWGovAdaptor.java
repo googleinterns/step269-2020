@@ -51,7 +51,8 @@ public class NSWGovAdaptor {
         this.updateSiteInfo();
       }
 
-      siteCoord.setCoordinates(this.dataMap.get(siteId).lng, this.dataMap.get(siteId).lat);
+      siteCoord.lat = this.dataMap.get(siteId).lat;
+      siteCoord.lng = this.dataMap.get(siteId).lng;
     } catch (final NullPointerException e) {
       System.out.println("getCoord getMessage(): " + e.getMessage() + 
           "\nNull pointer exception caught, because null is returned as siteId Key is not in the hashmap" +

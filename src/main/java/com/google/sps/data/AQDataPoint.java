@@ -15,6 +15,7 @@ public class AQDataPoint {
     this.lat = lat;
     this.lng = lng;
   }
+
   @Override
   public String toString() {
     return "lng: " + lng + " lat: " + lat + " aqi: " + aqi + " name: " + siteName;  
