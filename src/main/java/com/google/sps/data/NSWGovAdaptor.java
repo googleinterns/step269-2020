@@ -32,7 +32,7 @@ public class NSWGovAdaptor {
     return this.dataMap;
   }
 
-  public AQDataPoint convertDataPoint(NSWGovAQDataPoint givenPoint) { 
+  private AQDataPoint convertDataPoint(NSWGovAQDataPoint givenPoint) { 
     // Take the site id from given NSWGovAQDataPoint and fetch coordinates from map.
     int pointSiteid = givenPoint.siteId;
     Coordinates pointCoord = new Coordinates(this.dataMap.get(pointSiteid).lat, this.dataMap.get(pointSiteid).lng);
@@ -42,7 +42,7 @@ public class NSWGovAdaptor {
     return siteDataPoint;
   }
 
-  public Coordinates getCoord(Integer siteId) {
+  private Coordinates getCoord(Integer siteId) {
     Coordinates siteCoord = new Coordinates(); 
 
     try {
@@ -66,7 +66,7 @@ public class NSWGovAdaptor {
     return siteCoord;
   }
 
-  public void updateSiteInfo() throws Exception {
+  private void updateSiteInfo() throws Exception {
     // Creating a get request.
     URL url = new URL("https://data.airquality.nsw.gov.au/api/Data/get_SiteDetails");
     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -85,7 +85,7 @@ public class NSWGovAdaptor {
         while ((responseLine = br.readLine()) != null) {
           response.append(responseLine.trim());
         }
-  
+
         String responseString = response.toString();
         Gson gson = new Gson();
         convertedlist = gson.fromJson(responseString, new TypeToken<ArrayList<GovSiteDetails>>() {}.getType());
@@ -109,7 +109,7 @@ public class NSWGovAdaptor {
    * TODO(rosanna): This currently reports each data point twice, 
    * due to a bad implementation of the filtering in the NSWGov Data API, add more filtering.
    */
-  public ArrayList<NSWGovAQDataPoint> extractAQI(LocalDate inputDate) throws Exception {
+  private ArrayList<NSWGovAQDataPoint> extractAQI(LocalDate inputDate) throws Exception {
     final URL url = new URL("https://data.airquality.nsw.gov.au/api/Data/get_Observations");
     final HttpURLConnection con = (HttpURLConnection) url.openConnection();
     con.setRequestMethod("POST");
@@ -136,7 +136,7 @@ public class NSWGovAdaptor {
       "\"SubCategories\": [ \"Hourly\" ]," +
       "\"Frequency\": [ \"Hourly average\" ]" +
       "}";
- 
+
     // Output stream only flushes its output after its closed.
     try(OutputStream os = con.getOutputStream()) {
       final byte[] input = jsonInputString.getBytes("utf-8");
