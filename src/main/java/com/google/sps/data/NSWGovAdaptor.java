@@ -36,9 +36,10 @@ public class NSWGovAdaptor {
     // Take the site id from given NSWGovAQDataPoint and fetch coordinates from map.
     int pointSiteid = givenPoint.siteId;
     Coordinates pointCoord = new Coordinates(this.dataMap.get(pointSiteid).lat, this.dataMap.get(pointSiteid).lng);
+    GovSiteDetails siteDetails = this.dataMap.get(pointSiteid);
 
     // Fill all data into AQdatapoint.
-    AQDataPoint siteDataPoint = new AQDataPoint(this.dataMap.get(pointSiteid).siteName, givenPoint.aqi, pointCoord.lat, pointCoord.lng);
+    AQDataPoint siteDataPoint = new AQDataPoint(siteDetails.siteName, givenPoint.aqi, pointCoord.lat, pointCoord.lng);
     return siteDataPoint;
   }
 
