@@ -106,13 +106,7 @@ function selectLocation(place) {
     searchMarker.setPosition(place.geometry.location);
     searchMarker.setVisible(true);
 
-    locationInfo.innerHTML = buildLocationHTML(place);
-}
-
-function buildLocationHTML(place) {
-    htmlString = ""
-    htmlString += `<h3>${place.name}</h3>`;
-    return htmlString;
+    locationInfo.innerHTML = `<h3>${place.name}</h3>`;
 }
 
 function showRoutes() {
