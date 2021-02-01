@@ -32,7 +32,7 @@ public class NSWGovAdaptor {
     return this.dataMap;
   }
 
-  private AQDataPoint convertDataPoint(NSWGovAQDataPoint givenPoint) { 
+  private AQDataPoint convertDataPoint(NSWGovAQDataPoint givenPoint) {
     // Take the site id from given NSWGovAQDataPoint and fetch coordinates from map.
     int pointSiteid = givenPoint.siteId;
     GovSiteDetails pointSiteDetails = this.dataMap.get(pointSiteid);
@@ -40,6 +40,42 @@ public class NSWGovAdaptor {
     // Fill all data into AQdatapoint.
     AQDataPoint siteDataPoint = new AQDataPoint(pointSiteDetails.siteName, givenPoint.aqi, pointSiteDetails.lat, pointSiteDetails.lng);
     return siteDataPoint;
+  }
+
+  /**
+   * Wrapper function to convert all elements of a given NSWGovAQDataPoint ArrayList 
+   * into an ArrayList of AQDataPoints, which will be the common class for AQ Data. 
+   */
+  private ArrayList<AQDataPoint> convertAllDataPoints(ArrayList<NSWGovAQDataPoint> govDataPointList) {
+    ArrayList<AQDataPoint> convertedAQDataList = new ArrayList<AQDataPoint>();
+    try {
+      if (govDataPointList.isEmpty()) {
+        throw new EmptyListException("Exception: Given List is empty");
+      }
+      for (NSWGovAQDataPoint indvGovAQPoint : govDataPointList) {
+        convertedAQDataList.add(convertDataPoint(indvGovAQPoint));
+      }
+    } catch (final Exception e) {
+      System.out.println("convertAllDataPoints getMessage(): " + e.getMessage()); 
+    }
+    return convertedAQDataList;
+  }
+
+  private ArrayList<AQDataPoint> removeAlternateElements(ArrayList<AQDataPoint> repeatingConvertedDataList) {
+    // The given list contains both the AQI and the AQI on a rolling 24 hr basis. 
+    // Filter out every second element in the given list so the new returned list only has the AQI once. 
+    ArrayList<AQDataPoint> noDupeAQDataList = new ArrayList<AQDataPoint>();
+    try {
+      if (repeatingConvertedDataList.isEmpty()) {
+        throw new EmptyListException("Exception: Given List is empty");
+      }
+      for (int i = 0; i < repeatingConvertedDataList.size(); i += 2) {
+        noDupeAQDataList.add(repeatingConvertedDataList.get(i));
+      }
+    } catch (final Exception e) {
+      System.out.println("removeAlternateElements getMessage(): " + e.getMessage()); 
+    }
+    return noDupeAQDataList;
   }
 
   private Coordinates getCoord(Integer siteId) {
@@ -77,13 +113,12 @@ public class NSWGovAdaptor {
 
     int responseCode = connection.getResponseCode();
     ArrayList<GovSiteDetails> convertedlist = new ArrayList<GovSiteDetails>();
-    System.out.println(java.time.LocalDate.now());  
 
     try {
       if (responseCode == HttpURLConnection.HTTP_OK) {
         BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
         StringBuilder response = new StringBuilder();
-        String responseLine; 
+        String responseLine;
         while ((responseLine = br.readLine()) != null) {
           response.append(responseLine.trim());
         }
@@ -95,7 +130,7 @@ public class NSWGovAdaptor {
         // Convert the arrayList into a map. 
         for(GovSiteDetails details : convertedlist){
           dataMap.put(details.siteId , details);
-        } 
+        }
       } else {
         // Throw custom exception when the response code is not 200.
         throw new HTTPStatusCodeException("HTTP Status Code is not 200");
@@ -104,7 +139,6 @@ public class NSWGovAdaptor {
       System.out.println("updateSiteInfo getMessage(): " + e.getMessage()); 
     }
   }
-
 
   /**
    * Post request to extract the AQI from the government API, given a desired date.
@@ -143,7 +177,7 @@ public class NSWGovAdaptor {
     try(OutputStream os = con.getOutputStream()) {
       final byte[] input = jsonInputString.getBytes("utf-8");
       os.write(input, 0, input.length);
-    }	
+    } 
 
     // Read response from input stream into an array.
     ArrayList<NSWGovAQDataPoint> convertedlist = new ArrayList<NSWGovAQDataPoint>();
@@ -153,7 +187,7 @@ public class NSWGovAdaptor {
       while ((responseLine = br.readLine()) != null) {
         response.append(responseLine.trim());
       }
-      
+
       // Add it to the responseString to now reflect a string that contains json formatted data in an array.
       final String responseString = response.toString();
       final Gson gson = new Gson();
@@ -163,4 +197,4 @@ public class NSWGovAdaptor {
     }
     return convertedlist;
   }
-}  
+}
