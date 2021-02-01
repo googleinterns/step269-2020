@@ -32,7 +32,7 @@ public class NSWGovAdaptor {
     return this.dataMap;
   }
 
-  private AQDataPoint convertDataPoint(NSWGovAQDataPoint givenPoint) { 
+  private AQDataPoint convertDataPoint(NSWGovAQDataPoint givenPoint) {
     // Take the site id from given NSWGovAQDataPoint and fetch coordinates from map.
     int pointSiteid = givenPoint.siteId;
     GovSiteDetails pointSiteDetails = this.dataMap.get(pointSiteid);
