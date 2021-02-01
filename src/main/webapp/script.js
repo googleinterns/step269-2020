@@ -69,16 +69,18 @@ function toggleAQLayer() {
 }
 
 function populateAQVisualisationData() {
-    fetch("/visualisation").then(response => response.json()).then((data) => {
-        const aqData = [];
-        for (i = 0; i < data.length; i++) {
-            const dataItem = data[i];
-            let dataPoint = {};
-            dataPoint.location = new google.maps.LatLng(data[i].lat,data[i].long);
-            dataPoint.weight = dataItem.aqi;
-            aqData.push(dataPoint);
-        }
-        aqData.push({location: new google.maps.LatLng(-37.785, 150.435), weight: 3})
+    let fetchURL = "/visualisation";
+    fetchURL += `?zoom-level=${map.getZoom()}`;
+    const mapBounds = map.getBounds();
+    const swCorner = mapBounds[0];
+    const neCorner = mapBouns[1];
+    fetchURL += `&sw-lat=${swCorner.lat()}`;
+    fetchURL += `&sw-long=${swCorner.long()}`;
+    fetchURL += `&ne-lat=${neCorner.lat()}`;
+    fetchURL += `&ne-long=${neCorner.long()}`;
+    console.log(fetchURL);
+    fetch(fetchURL).then(response => response.json()).then((data) => {
+        const aqData = convertGriddedDataToWeightedPoints(data);
         loadHeatmap(aqData);
     });
 }
@@ -99,7 +101,36 @@ function loadHeatmap(data) {
     aqLayer.setMap(map);
 }
 
-function setEndpoint(place) {
+// TODO: implement this
+function convertGriddedDataToWeightedPoints(griddedData) {
+    let weightedPoints = [];
+    return weightedPoints;
+}
+
+/**
+ * @param {int} resolution The size of each grid cell in metres
+ * @param {coordinate pair} originCoords The lat & long of the top left corner of the grid
+ * @param {coordinate pair} targetCoords The lat & long of the location that is being converted to a grid index
+ * @return {index object} An object containing the zero-indexed column and row number for the grid index of the target location
+ */
+function getGridIndex(resolution, originCoords, targetCoords) {
+    const distance = haversineDistance(originCoords, targetCoords);
+    const index = {col:0, row:0};
+    return index;
+}
+
+function haversineDistance(point1, point2) {
+    var R = 6371.0710; // Radius of the Earth in kilometres
+    var rlat1 = mk1.position.lat * (Math.PI/180); // Convert degrees to radians
+    var rlat2 = mk2.position.lat * (Math.PI/180); // Convert degrees to radians
+    var difflat = rlat2-rlat1; // Radian difference (latitudes)
+    var difflon = (point2.lng-point1.lng) * (Math.PI/180); // Radian difference (longitudes)
+
+    var d = 2 * R * Math.asin(Math.sqrt(Math.sin(difflat/2)*Math.sin(difflat/2)+Math.cos(rlat1)*Math.cos(rlat2)*Math.sin(difflon/2)*Math.sin(difflon/2)));
+    return d;
+}
+
+function setEndPoint(place) {
     const locationInfo = document.getElementById("location-info");
     locationInfo.style.visibility = "visible"; 
     
