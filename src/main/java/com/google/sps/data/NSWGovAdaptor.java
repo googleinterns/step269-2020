@@ -39,7 +39,7 @@ public class NSWGovAdaptor {
     GovSiteDetails pointSiteDetails = this.dataMap.get(pointSiteid);
 
     // Fill all data into AQdatapoint.
-    AQDataPoint siteDataPoint = new AQDataPoint(siteDetails.siteName, givenPoint.aqi, pointCoord.lat, pointCoord.lng);
+    AQDataPoint siteDataPoint = new AQDataPoint(pointSiteDetails.siteName, givenPoint.aqi, pointCoord.lat, pointCoord.lng);
     return siteDataPoint;
   }
 
