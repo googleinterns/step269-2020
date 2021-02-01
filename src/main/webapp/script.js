@@ -114,19 +114,36 @@ function convertGriddedDataToWeightedPoints(griddedData) {
  * @return {index object} An object containing the zero-indexed column and row number for the grid index of the target location
  */
 function getGridIndex(resolution, originCoords, targetCoords) {
-    const distance = haversineDistance(originCoords, targetCoords);
-    const index = {col:0, row:0};
+    /*
+    * Layout of coordinates:
+    * originCoords -------------------- sameLngCoords
+    *       |                                  |
+    *       |                                  |
+    *       |                                  |
+    * sameLatCoords -------------------- targetCoords
+    * Note: Due to the curvature of the earth, the shape created by the four
+    * points may not be exactly rectangular, however it should be close enough
+    * for small distances.
+    */
+    const sameLatCoords = {lng:originCoords.lng, lat:targetCoords.lat};
+    const sameLngCoords = {lng:targetCoords.lng, lat:originCoords.lat};
+
+    const latDistance = Math.abs(haversineDistance(originCoords, sameLatCoords));
+    const lngDistance = Math.abs(haversineDistance(originCoords, sameLngCoords));
+    const colNum = Math.floor(latDistance/resolution);
+    const rowNum = Math.floor(lngDistance/resolution);
+    const index = {col:colNum, row:rowNum};
     return index;
 }
 
 function haversineDistance(point1, point2) {
-    var R = 6371.0710; // Radius of the Earth in kilometres
-    var rlat1 = mk1.position.lat * (Math.PI/180); // Convert degrees to radians
-    var rlat2 = mk2.position.lat * (Math.PI/180); // Convert degrees to radians
-    var difflat = rlat2-rlat1; // Radian difference (latitudes)
-    var difflon = (point2.lng-point1.lng) * (Math.PI/180); // Radian difference (longitudes)
+    const R = 6371.0710; // Radius of the Earth in kilometres
+    const rlat1 = mk1.position.lat * (Math.PI/180); // Convert degrees to radians
+    const rlat2 = mk2.position.lat * (Math.PI/180); // Convert degrees to radians
+    const difflat = rlat2-rlat1; // Radian difference (latitudes)
+    const difflon = (point2.lng-point1.lng) * (Math.PI/180); // Radian difference (longitudes)
 
-    var d = 2 * R * Math.asin(Math.sqrt(Math.sin(difflat/2)*Math.sin(difflat/2)+Math.cos(rlat1)*Math.cos(rlat2)*Math.sin(difflon/2)*Math.sin(difflon/2)));
+    const d = 2 * R * Math.asin(Math.sqrt(Math.sin(difflat/2)*Math.sin(difflat/2)+Math.cos(rlat1)*Math.cos(rlat2)*Math.sin(difflon/2)*Math.sin(difflon/2)));
     return d;
 }
 
