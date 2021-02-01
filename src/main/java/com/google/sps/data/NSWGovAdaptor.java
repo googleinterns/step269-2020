@@ -32,6 +32,16 @@ public class NSWGovAdaptor {
     return this.dataMap;
   }
 
+  private AQDataPoint convertDataPoint(NSWGovAQDataPoint givenPoint) { 
+    // Take the site id from given NSWGovAQDataPoint and fetch coordinates from map.
+    int pointSiteid = givenPoint.siteId;
+    GovSiteDetails pointSiteDetails = this.dataMap.get(pointSiteid);
+
+    // Fill all data into AQdatapoint.
+    AQDataPoint siteDataPoint = new AQDataPoint(pointSiteDetails.siteName, givenPoint.aqi, pointSiteDetails.lat, pointSiteDetails.lng);
+    return siteDataPoint;
+  }
+
   private Coordinates getCoord(Integer siteId) {
     Coordinates siteCoord = new Coordinates(); 
 
@@ -41,7 +51,9 @@ public class NSWGovAdaptor {
         this.updateSiteInfo();
       }
 
-      siteCoord.setCoordinates(this.dataMap.get(siteId).lng, this.dataMap.get(siteId).lat);
+      GovSiteDetails pointSiteDetails = this.dataMap.get(siteId);
+      siteCoord.lat = pointSiteDetails.lat;
+      siteCoord.lng = pointSiteDetails.lng;
     } catch (final NullPointerException e) {
       System.out.println("getCoord getMessage(): " + e.getMessage() + 
           "\nNull pointer exception caught, because null is returned as siteId Key is not in the hashmap" +
@@ -75,7 +87,7 @@ public class NSWGovAdaptor {
         while ((responseLine = br.readLine()) != null) {
           response.append(responseLine.trim());
         }
-  
+
         String responseString = response.toString();
         Gson gson = new Gson();
         convertedlist = gson.fromJson(responseString, new TypeToken<ArrayList<GovSiteDetails>>() {}.getType());
@@ -93,7 +105,12 @@ public class NSWGovAdaptor {
     }
   }
 
-  // Post request to extract the AQI from the government API, given a desired date.
+
+  /**
+   * Post request to extract the AQI from the government API, given a desired date.
+   * TODO(rosanna): This currently reports each data point twice, 
+   * due to a bad implementation of the filtering in the NSWGov Data API, add more filtering.
+   */
   private ArrayList<NSWGovAQDataPoint> extractAQI(LocalDate inputDate) throws Exception {
     final URL url = new URL("https://data.airquality.nsw.gov.au/api/Data/get_Observations");
     final HttpURLConnection con = (HttpURLConnection) url.openConnection();
@@ -121,7 +138,7 @@ public class NSWGovAdaptor {
       "\"SubCategories\": [ \"Hourly\" ]," +
       "\"Frequency\": [ \"Hourly average\" ]" +
       "}";
- 
+
     // Output stream only flushes its output after its closed.
     try(OutputStream os = con.getOutputStream()) {
       final byte[] input = jsonInputString.getBytes("utf-8");
