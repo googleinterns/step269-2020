@@ -54,7 +54,7 @@ function initMap() {
             map.setZoom(17); // 17 used because it is used in a sample in the documentation
         }
 
-        selectLocation(place);
+        setEndpoint(place);
     })
     // Initialise visualisation
     populateAQVisualisationData();
@@ -99,7 +99,7 @@ function loadHeatmap(data) {
     aqLayer.setMap(map);
 }
 
-function selectLocation(place) {
+function setEndpoint(place) {
     const locationInfo = document.getElementById("location-info");
     locationInfo.style.visibility = "visible"; 
     
