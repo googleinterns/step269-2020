@@ -70,7 +70,7 @@ public class NSWGovAdaptor {
         throw new EmptyListException("Exception: Given List is empty");
       }
       for (int i = 0; i < repeatingConvertedDataList.size(); i += 2) {
-      noDupeAQDataList.add(repeatingConvertedDataList.get(i));
+        noDupeAQDataList.add(repeatingConvertedDataList.get(i));
       }
     } catch (final Exception e) {
       System.out.println("removeAlternateElements getMessage(): " + e.getMessage()); 
@@ -112,13 +112,13 @@ public class NSWGovAdaptor {
     connection.setRequestProperty("Content-Type", "application/json");
 
     int responseCode = connection.getResponseCode();
-    ArrayList<GovSiteDetails> convertedlist = new ArrayList<GovSiteDetails>();  
+    ArrayList<GovSiteDetails> convertedlist = new ArrayList<GovSiteDetails>();
 
     try {
       if (responseCode == HttpURLConnection.HTTP_OK) {
         BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
         StringBuilder response = new StringBuilder();
-        String responseLine; 
+        String responseLine;
         while ((responseLine = br.readLine()) != null) {
           response.append(responseLine.trim());
         }
@@ -130,7 +130,7 @@ public class NSWGovAdaptor {
         // Convert the arrayList into a map. 
         for(GovSiteDetails details : convertedlist){
           dataMap.put(details.siteId , details);
-        } 
+        }
       } else {
         // Throw custom exception when the response code is not 200.
         throw new HTTPStatusCodeException("HTTP Status Code is not 200");
@@ -139,7 +139,6 @@ public class NSWGovAdaptor {
       System.out.println("updateSiteInfo getMessage(): " + e.getMessage()); 
     }
   }
-
 
   /**
    * Post request to extract the AQI from the government API, given a desired date.
@@ -188,7 +187,7 @@ public class NSWGovAdaptor {
       while ((responseLine = br.readLine()) != null) {
         response.append(responseLine.trim());
       }
-      
+
       // Add it to the responseString to now reflect a string that contains json formatted data in an array.
       final String responseString = response.toString();
       final Gson gson = new Gson();
@@ -198,4 +197,4 @@ public class NSWGovAdaptor {
     }
     return convertedlist;
   }
-}  
+}
