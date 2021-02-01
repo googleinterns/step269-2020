@@ -121,6 +121,7 @@ function getGridIndex(resolution, originCoords, targetCoords) {
     *       |                                  |
     *       |                                  |
     * sameLatCoords -------------------- targetCoords
+    * 
     * Note: Due to the curvature of the earth, the shape created by the four
     * points may not be exactly rectangular, however it should be close enough
     * for small distances.
