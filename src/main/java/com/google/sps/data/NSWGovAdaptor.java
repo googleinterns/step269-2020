@@ -33,14 +33,12 @@ public class NSWGovAdaptor {
   }
 
   public AQDataPoint convertDataPoint(NSWGovAQDataPoint givenPoint) { 
-    // Take the site id from given NSWGovAQDataPoint.
+    // Take the site id from given NSWGovAQDataPoint and fetch coordinates from map.
     int pointSiteid = givenPoint.siteId;
-
-    //Fetch coordinates from map.
-
+    Coordinates pointCoord = new Coordinates(this.dataMap.get(pointSiteid).lat, this.dataMap.get(pointSiteid).lng);
 
     // Fill all data into AQdatapoint.
-    AQDataPoint siteDataPoint = new AQDataPoint(this.dataMap.get(pointSiteid).siteName, givenPoint.aqi, this.dataMap.get(pointSiteid).lat, this.dataMap.get(pointSiteid).lng);
+    AQDataPoint siteDataPoint = new AQDataPoint(this.dataMap.get(pointSiteid).siteName, givenPoint.aqi, pointCoord.lat, pointCoord.lng);
     return siteDataPoint;
   }
 
@@ -109,7 +107,7 @@ public class NSWGovAdaptor {
   /**
    * Post request to extract the AQI from the government API, given a desired date.
    * TODO(rosanna): This currently reports each data point twice, 
-   *  due to a bad implementation of the filtering in the NSWGov Data API, add more filtering.
+   * due to a bad implementation of the filtering in the NSWGov Data API, add more filtering.
    */
   public ArrayList<NSWGovAQDataPoint> extractAQI(LocalDate inputDate) throws Exception {
     final URL url = new URL("https://data.airquality.nsw.gov.au/api/Data/get_Observations");
