@@ -7,22 +7,14 @@ import com.google.gson.annotations.SerializedName;
  */
 public class NSWGovAQDataPoint {
   @SerializedName(value = "Site_Id")
-  private final int siteId;
+  public int siteId;
   @SerializedName(value = "Value")
-  private final double aqi; 
-  
+  public double aqi; 
+
   // No arg constructor to help differentiate a initialised class with invalid values.
   public NSWGovAQDataPoint() {
     this.siteId = -1;
     this.aqi = -1;
-  }
-
-  public int getId() {
-    return this.siteId;
-  }
-
-  public double getAQI() {
-    return this.aqi;
   }
 
   @Override
