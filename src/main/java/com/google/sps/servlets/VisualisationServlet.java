@@ -34,7 +34,7 @@ public class VisualisationServlet extends HttpServlet {
     Coordinates neCorner = new Coordinates(neLong, neLat);
 
     Cache cache = new Cache();
-    GriddedData dataGrid = cache.getVisualisationGrid(zoomLevel, swCorner, neCorner);
+    GriddedData dataGrid = cache.getGrid(zoomLevel, swCorner, neCorner);
 
     // String testJsonString = "[" +
     // "{ \"stationName\":\"Sydney\"," +
