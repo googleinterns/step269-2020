@@ -5,6 +5,7 @@
 
 branch=$(git branch | sed -n -e 's/^\* \(.*\)/\1/p')
 branch_lowercase=${branch,,}
+branch_url_compliant=${branch_lowercase/_/-}
 
 set -x
 
@@ -12,5 +13,5 @@ if [ $branch == "master" ]
 then
     mvn package appengine:deploy -Dapp.deploy.version=1 -Dapp.deploy.promote=True
 else
-    mvn package appengine:deploy -Dapp.deploy.version="${branch_lowercase}" -Dapp.deploy.promote=False
+    mvn package appengine:deploy -Dapp.deploy.version="${branch_url_compliant}" -Dapp.deploy.promote=False
 fi
