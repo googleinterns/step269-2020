@@ -6,33 +6,49 @@ package com.google.sps.data;
  * inaccurate due to the curvature of the earth
  */
 public class GriddedData {
-    public int resolution; // the width & height of each grid cell, stored in metres
-    public double[][] data;
+  public int resolution; // the width & height of each grid cell, stored in metres
+  public double[][] data;
 
-    // the coordinates of the top left corner of the grid
-    public double originLat;
-    public double originLng;
+  // the coordinates of the top left corner of the grid
+  public double originLat;
+  public double originLng;
 
-    public GriddedData(int numColumns, int numRows, int resolution, Coordinates originCoords) {
-      this.resolution = resolution;
-      this.originLat = originCoords.lat;
-      this.originLng = originCoords.lng;
-      this.data = new double[numRows][numColumns];
-    }
+  public GriddedData(int numColumns, int numRows, int resolution, Coordinates originCoords) {
+    this.resolution = resolution;
+    this.originLat = originCoords.lat;
+    this.originLng = originCoords.lng;
+    this.data = new double[numRows][numColumns];
+  }
 
-    public GriddedData(GridCell[][] cells, int resolution, Coordinates originCoords) {
-      int numRows = cells.length;
-      int numColumns = cells[0].length;
-      this.resolution = resolution;
-      this.originLat = originCoords.lat;
-      this.originLng = originCoords.lng;
-      this.data = new double[numRows][numColumns];
+  public GriddedData(GridCell[][] cells, int resolution, Coordinates originCoords) {
+    int numRows = cells.length;
+    int numColumns = cells[0].length;
+    this.resolution = resolution;
+    this.originLat = originCoords.lat;
+    this.originLng = originCoords.lng;
+    this.data = new double[numRows][numColumns];
 
-      for (int rowNum = 0; rowNum < cells.length; rowNum ++) {
-        GridCell[] row = cells[rowNum];
-        for (int colNum = 0; colNum < row.length; colNum ++) {
-          data[rowNum][colNum] = cells[rowNum][colNum].averageAQI;
+    for (int rowNum = 0; rowNum < cells.length; rowNum++) {
+      GridCell[] row = cells[rowNum];
+      for (int colNum = 0; colNum < row.length; colNum++) {
+        GridCell cell = row[colNum];
+        if (cell == null) {
+          // There were no data points for this cell
+          // An AQI of 0 will not be displayed by the visualisation layer
+          data[rowNum][colNum] = 0;
+        } else {
+            System.out.println("non null cell");
+          data[rowNum][colNum] = cell.averageAQI;
         }
+      }
     }
-    }
+  }
+
+  @Override
+  public String toString() {
+    String returnString = "";
+    returnString += "Resolution: " + resolution + "\n";
+    returnString += "Origin: " + originLat + ", " + originLng + "\n";
+    return returnString;
+  }
 }

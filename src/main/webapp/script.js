@@ -76,15 +76,15 @@ function populateAQVisualisationData() {
     let fetchURL = "/visualisation";
     fetchURL += `?zoom-level=${map.getZoom()}`;
     const mapBounds = map.getBounds();
-    console.log(mapBounds);
-    const swCorner = mapBounds[0];
-    const neCorner = mapBounds[1];
+    const swCorner = mapBounds.getSouthWest();
+    const neCorner = mapBounds.getNorthEast();
     fetchURL += `&sw-lat=${swCorner.lat()}`;
-    fetchURL += `&sw-long=${swCorner.long()}`;
+    fetchURL += `&sw-long=${swCorner.lng()}`;
     fetchURL += `&ne-lat=${neCorner.lat()}`;
-    fetchURL += `&ne-long=${neCorner.long()}`;
+    fetchURL += `&ne-long=${neCorner.lng()}`;
     console.log(fetchURL);
     fetch(fetchURL).then(response => response.json()).then((data) => {
+        console.log(data);
         const aqData = convertGriddedDataToWeightedPoints(data);
         loadHeatmap(aqData);
     });
@@ -102,6 +102,7 @@ function loadHeatmap(data) {
             "rgba(86, 3, 23, 1)",
         ],
         maxIntensity: 200,
+        dissipating: false,
     });
     aqLayer.setMap(map);
 }
@@ -129,7 +130,7 @@ function convertGriddedDataToWeightedPoints(griddedData) {
             let weightedPoint = {}
             weightedPoint.location = new google.maps.LatLng(cellCoords.lat, cellCoords.lng);
             weightedPoint.weight = dataGrid[rowNum][colNum];
-            weightedPoint.push(weightedPoint);
+            weightedPoints.push(weightedPoint);
         }
     }
     return weightedPoints;
@@ -205,7 +206,7 @@ function degToRad(degrees) {
 }
 
 function radToDeg(radians) {
-    return rad / (Math.PI / 180);
+    return radians / (Math.PI / 180);
 }
 
 function setEndPoint(place) {

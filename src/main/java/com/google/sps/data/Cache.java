@@ -23,16 +23,25 @@ public class Cache {
 
     Coordinates nwCorner = new Coordinates(swCorner.lng, neCorner.lat);
     Coordinates seCorner = new Coordinates(neCorner.lng, swCorner.lat);
-    int resolution = 1000;
+    int resolution = 100000;
     GridIndex lowerRightIndex = getGridIndex(nwCorner, seCorner, resolution);
     int gridWidth = lowerRightIndex.col + 1;
     int gridHeight = lowerRightIndex.row + 1;
-    GridCell[][] processingGrid = new GridCell[gridWidth][gridHeight];
+    GridCell[][] processingGrid = new GridCell[gridHeight][gridWidth];
+    System.out.println(gridWidth);
+    System.out.println(gridHeight);
 
     for (AQDataPoint dataPoint : data) {
         GridIndex index = getGridIndex(nwCorner, new Coordinates(dataPoint.lng, dataPoint.lat),resolution);
-        processingGrid[index.col][index.row].addPoint(dataPoint);
+        System.out.println(index.row + ", " + index.col);
+        // Setting a variable such as cell = processingGrid[index.row][index.col] did not preserve the value of the new AQI,
+        // and caused null pointer exceptions
+        if (processingGrid[index.row][index.col] == null) {
+            processingGrid[index.row][index.col] = new GridCell();
+        }
+        processingGrid[index.row][index.col].addPoint(dataPoint);
     }
+
     dataGrid = new GriddedData(processingGrid, resolution, nwCorner);
     return dataGrid;
   }
