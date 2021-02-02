@@ -56,8 +56,12 @@ function initMap() {
 
         setEndpoint(place);
     })
-    // Initialise visualisation
-    populateAQVisualisationData();
+    // Initialise visualisation when the bounds of the map changed.
+    // map.getBounds() is undefined until the map tiles have finished loading,
+    // at which point the bounds change
+    google.maps.event.addListener(map, 'bounds_changed', function() {
+        populateAQVisualisationData();
+    });
 
     const aqLayerControlDiv = document.createElement("div");
     aqLayerControl(aqLayerControlDiv, map);
@@ -72,8 +76,9 @@ function populateAQVisualisationData() {
     let fetchURL = "/visualisation";
     fetchURL += `?zoom-level=${map.getZoom()}`;
     const mapBounds = map.getBounds();
+    console.log(mapBounds);
     const swCorner = mapBounds[0];
-    const neCorner = mapBouns[1];
+    const neCorner = mapBounds[1];
     fetchURL += `&sw-lat=${swCorner.lat()}`;
     fetchURL += `&sw-long=${swCorner.long()}`;
     fetchURL += `&ne-lat=${neCorner.lat()}`;
