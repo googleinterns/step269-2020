@@ -10,10 +10,30 @@ import java.util.ArrayList;
 public class Cache {
   private GriddedData dataGrid;
 
-  public GriddedData getGrid(int zoomLevel, Coordinates swCorner, Coordinates neCorner) throws Exception {
-    ArrayList<AQDataPoint> data = getNSWGovData();
+  public GriddedData getGrid(int zoomLevel, Coordinates swCorner, Coordinates neCorner) {
+    ArrayList<AQDataPoint> data = new ArrayList<>();
 
+    //catch the error here because the servlet cannot throw the Expection type
+    try {
+      data = getNSWGovData();
+    } catch (Exception e) {
+      System.out.println(e.getMessage());
+      return dataGrid; //return the old grid
+    }
 
+    Coordinates nwCorner = new Coordinates(swCorner.lng, neCorner.lat);
+    Coordinates seCorner = new Coordinates(neCorner.lng, swCorner.lat);
+    int resolution = 1000;
+    GridIndex lowerRightIndex = getGridIndex(nwCorner, seCorner, resolution);
+    int gridWidth = lowerRightIndex.col + 1;
+    int gridHeight = lowerRightIndex.row + 1;
+    GridCell[][] processingGrid = new GridCell[gridWidth][gridHeight];
+
+    for (AQDataPoint dataPoint : data) {
+        GridIndex index = getGridIndex(nwCorner, new Coordinates(dataPoint.lng, dataPoint.lat),resolution);
+        processingGrid[index.col][index.row].addPoint(dataPoint);
+    }
+    dataGrid = new GriddedData(processingGrid, resolution, nwCorner);
     return dataGrid;
   }
 

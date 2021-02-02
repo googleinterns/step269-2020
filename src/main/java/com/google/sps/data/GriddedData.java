@@ -19,4 +19,20 @@ public class GriddedData {
       this.originLng = originCoords.lng;
       this.data = new double[numRows][numColumns];
     }
+
+    public GriddedData(GridCell[][] cells, int resolution, Coordinates originCoords) {
+      int numRows = cells.length;
+      int numColumns = cells[0].length;
+      this.resolution = resolution;
+      this.originLat = originCoords.lat;
+      this.originLng = originCoords.lng;
+      this.data = new double[numRows][numColumns];
+
+      for (int rowNum = 0; rowNum < cells.length; rowNum ++) {
+        GridCell[] row = cells[rowNum];
+        for (int colNum = 0; colNum < row.length; colNum ++) {
+          data[rowNum][colNum] = cells[rowNum][colNum].averageAQI;
+        }
+    }
+    }
 }
