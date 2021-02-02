@@ -1,5 +1,6 @@
 let map;
 let aqLayer;
+let searchMarker;
 
 function aqLayerControl(controlDiv) {
     const controlUI = document.createElement("div");
@@ -30,13 +31,13 @@ function initMap() {
     });
     // Initialise places autocomplete in search bar
     const searchbar = document.getElementById("location-search-bar");
-    const searchMarker = new google.maps.Marker({
+    searchMarker = new google.maps.Marker({
         map,
         anchorPoint: new google.maps.Point(0,-29), // position the marker icon relative to the origin
     });
     searchMarker.setVisible(false);
     const autocomplete = new google.maps.places.Autocomplete(searchbar);
-    autocomplete.setFields(["address_components","geometry","icon","name"]);
+    autocomplete.setFields(["geometry","name"]);
     autocomplete.addListener("place_changed", () => {
         searchMarker.setVisible(false);
         const place = autocomplete.getPlace();
@@ -52,8 +53,8 @@ function initMap() {
             map.setCenter(place.geometry.viewport);
             map.setZoom(17); // 17 used because it is used in a sample in the documentation
         }
-        searchMarker.setPosition(place.geometry.location);
-        searchMarker.setVisible(true);
+
+        setEndpoint(place);
     })
     // Initialise visualisation
     populateAQVisualisationData();
@@ -98,21 +99,14 @@ function loadHeatmap(data) {
     aqLayer.setMap(map);
 }
 
-function searchLocation() {
-    const locationString = document.getElementById("location-search-bar").value;
-
+function setEndpoint(place) {
     const locationInfo = document.getElementById("location-info");
-    locationInfo.style.visibility = "visible";
+    locationInfo.style.visibility = "visible"; 
+    
+    searchMarker.setPosition(place.geometry.location);
+    searchMarker.setVisible(true);
 
-    if (locationString !== "wagga wagga") {
-        locationInfo.innerHTML = "The only location supported by this prototype is `wagga wagga`";
-        return;
-    }
-
-    htmlString = ""
-    htmlString += "<h3>Wagga Wagga</h3>\n";
-    htmlString += "<p>Current AQ score: 40 (Pretty good)</p>\n";
-    locationInfo.innerHTML = htmlString;
+    locationInfo.innerHTML = `<h3>${place.name}</h3>`;
 }
 
 function showRoutes() {
@@ -125,16 +119,15 @@ function hideRoutes() {
 
 function toggleSidebar() {
     const toggleButton = document.getElementById("toggle-sidebar");
-
     const sidebar = document.querySelector("#sidebar");
-    const sidebarVisibility = window.getComputedStyle(sidebar).getPropertyValue("visibility");
-    
-    if (sidebarVisibility === "visible") {
-        sidebar.style.visibility = "hidden";
+    const sidebarDisplay = window.getComputedStyle(sidebar).getPropertyValue("display");
+
+    if (sidebarDisplay === "block") {
+        sidebar.style.display = "none";
         toggleButton.innerHTML = "<i class=material-icons>navigate_next</i>";
-        toggleButton.style.left = "5px";
+        toggleButton.style.left = "0px";
     } else {
-        sidebar.style.visibility = "visible";
+        sidebar.style.display = "block";
         toggleButton.innerHTML = "<i class=material-icons>navigate_before</i>";
         toggleButton.style.left = "300px";
     }
