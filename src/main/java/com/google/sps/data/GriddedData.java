@@ -11,5 +11,12 @@ public class GriddedData {
 
     // the coordinates of the top left corner of the grid
     public double originLat;
-    public double originLong;
+    public double originLng;
+
+    public GriddedData(int numColumns, int numRows, int resolution, Coordinates originCoords) {
+      this.resolution = resolution;
+      this.originLat = originCoords.lat;
+      this.originLng = originCoords.lng;
+      this.data = new double[numRows][numColumns];
+    }
 }
