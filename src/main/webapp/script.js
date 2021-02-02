@@ -103,7 +103,30 @@ function loadHeatmap(data) {
 
 // This function is not complete
 function convertGriddedDataToWeightedPoints(griddedData) {
+    const dataGrid = griddedData.data;
+    const originLat = griddedData.originLat;
+    const originLng = griddedData.originLng;
+    const originCoords = {lat: originLat, lng: originLng};
+    const resolution = griddedData.resolution;
+
     let weightedPoints = [];
+    for (let rowNum = 0; rowNum < dataGrid.length; rowNum ++) {
+        const verticalDistance = resolution / 2 + rowNum * resolution;
+        for (let colNum = 0; colNum < dataGrid[0].length; colNum ++) {
+            //calculate the coordinates of the center of the current cell
+            const horizontalDistance = resolution / 2 + colNum * resolution;
+            const distance = Math.sqrt(verticalDistance ** 2 + horizontalDistance ** 2);
+            const theta = Math.tan(horizontalDistance / verticalDistance);
+            const bearing = Math.PI - theta;
+            const cellCoords = calcCoordFromDistanceAndBearing(originCoords, distance, bearing);
+
+            //create the WeightedLocation for the heatmap
+            let weightedPoint = {}
+            weightedPoint.location = new google.maps.LatLng(cellCoords.lat, cellCoords.lng);
+            weightedPoint.weight = dataGrid[rowNum][colNum];
+            weightedPoint.push(weightedPoint);
+        }
+    }
     return weightedPoints;
 }
 
@@ -137,15 +160,47 @@ function getGridIndex(resolution, originCoords, targetCoords) {
     return index;
 }
 
+/**
+ * Returns the distance between two coordinate points in metres,
+ * taking into account the curvature of the earth
+ * @param {*} point1 
+ * @param {*} point2 
+ */
 function haversineDistance(point1, point2) {
-    const R = 6371.0710; // Radius of the Earth in kilometres
-    const rlat1 = point1.lat * (Math.PI/180); // Convert degrees to radians
-    const rlat2 = point2.lat * (Math.PI/180); // Convert degrees to radians
-    const difflat = rlat2-rlat1; // Radian difference (latitudes)
-    const difflon = (point2.lng-point1.lng) * (Math.PI/180); // Radian difference (longitudes)
+    const R = 6370e3; // Radius of the Earth in metres
+    const rlat1 = degToRad(point1.lat);
+    const rlat2 = degToRad(point2.lat);
+    const difflat = rlat2-rlat1;
+    const difflon = degToRad(point2.lng-point1.lng);
 
     const d = 2 * R * Math.asin(Math.sqrt(Math.sin(difflat/2)*Math.sin(difflat/2)+Math.cos(rlat1)*Math.cos(rlat2)*Math.sin(difflon/2)*Math.sin(difflon/2)));
     return d;
+}
+
+/**
+ * Calculate the location of point 2 based on a distance and bearing from point 1
+ * @param {coordinates} coordinates of original point in degrees
+ * @param {integer} distance in metres
+ * @param {angle in radians} bearing in radians
+ */
+function calcCoordFromDistanceAndBearing(point1, distance, bearing) {
+    const R = 6370e3 //Radius of earth in metres
+    const rlat1 = degToRad(point1.lat);
+    const rlng1 = degToRad(point1.lng);
+
+    const rlat2 = Math.asin(Math.sin(rlat1) * Math.cos(distance / R) + Math.cos(rlat1) * Math.sin(distance / R) + Math.cos(bearing));
+    const rlng2 = rlng1 + Math.atan2(Math.sin(bearing) * Math.sin(distance / R) * Math.cos(rlat1),
+        Math.cos(distance / R) - Math.sin(rlat1) * Math.sin(rlat2));
+
+    return {lat:radToDeg(rlat2), lng: radToDeg(rlng2)};
+}
+
+function degToRad(degrees) {
+    return degrees * Math.PI / 180;
+}
+
+function radToDeg(radians) {
+    return rad / (Math.PI / 180);
 }
 
 function setEndPoint(place) {
