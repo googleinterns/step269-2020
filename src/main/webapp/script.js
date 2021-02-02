@@ -139,8 +139,8 @@ function getGridIndex(resolution, originCoords, targetCoords) {
 
 function haversineDistance(point1, point2) {
     const R = 6371.0710; // Radius of the Earth in kilometres
-    const rlat1 = mk1.position.lat * (Math.PI/180); // Convert degrees to radians
-    const rlat2 = mk2.position.lat * (Math.PI/180); // Convert degrees to radians
+    const rlat1 = point1.lat * (Math.PI/180); // Convert degrees to radians
+    const rlat2 = point2.lat * (Math.PI/180); // Convert degrees to radians
     const difflat = rlat2-rlat1; // Radian difference (latitudes)
     const difflon = (point2.lng-point1.lng) * (Math.PI/180); // Radian difference (longitudes)
 
