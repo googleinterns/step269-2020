@@ -14,12 +14,14 @@ public class Cache {
     ArrayList<AQDataPoint> data = new ArrayList<>();
 
     //catch the error here because the servlet cannot throw the Expection type
-    try {
-      data = getNSWGovData();
-    } catch (Exception e) {
-      System.out.println(e.getMessage());
-      return dataGrid; //return the old grid
-    }
+    // try {
+    //   data = getNSWGovData();
+    // } catch (Exception e) {
+    //   System.out.println(e.getMessage());
+    //   return dataGrid; //return the old grid
+    // }
+
+    data.add(new AQDataPoint("test site",24,-36.573387, 153.711497));
 
     Coordinates nwCorner = new Coordinates(swCorner.lng, neCorner.lat);
     Coordinates seCorner = new Coordinates(neCorner.lng, swCorner.lat);
@@ -28,8 +30,6 @@ public class Cache {
     int gridWidth = lowerRightIndex.col + 1;
     int gridHeight = lowerRightIndex.row + 1;
     GridCell[][] processingGrid = new GridCell[gridHeight][gridWidth];
-    System.out.println(gridWidth);
-    System.out.println(gridHeight);
 
     for (AQDataPoint dataPoint : data) {
         GridIndex index = getGridIndex(nwCorner, new Coordinates(dataPoint.lng, dataPoint.lat),resolution);

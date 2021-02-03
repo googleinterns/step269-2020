@@ -102,7 +102,7 @@ function loadHeatmap(data) {
             "rgba(86, 3, 23, 1)",
         ],
         maxIntensity: 200,
-        dissipating: false,
+        dissipating: true,
     });
     aqLayer.setMap(map);
 }
@@ -119,20 +119,31 @@ function convertGriddedDataToWeightedPoints(griddedData) {
     for (let rowNum = 0; rowNum < dataGrid.length; rowNum ++) {
         const verticalDistance = resolution / 2 + rowNum * resolution;
         for (let colNum = 0; colNum < dataGrid[0].length; colNum ++) {
+            if (dataGrid[rowNum][colNum] === 0) {
+                console.log("0 cell");
+                continue;
+            }
             //calculate the coordinates of the center of the current cell
             const horizontalDistance = resolution / 2 + colNum * resolution;
             const distance = Math.sqrt(verticalDistance ** 2 + horizontalDistance ** 2);
-            const theta = Math.tan(horizontalDistance / verticalDistance);
+            const theta = Math.atan(horizontalDistance / verticalDistance);
             const bearing = Math.PI - theta;
+            console.log("D:",distance)
+            console.log("B:",bearing);
             const cellCoords = calcCoordFromDistanceAndBearing(originCoords, distance, bearing);
+            console.log("Lat:", cellCoords.lat);
+            console.log("Lng:", cellCoords.lng);
 
             //create the WeightedLocation for the heatmap
             let weightedPoint = {}
             weightedPoint.location = new google.maps.LatLng(cellCoords.lat, cellCoords.lng);
+            console.log(weightedPoint.location.lat());
+            console.log(weightedPoint.location.lng());
             weightedPoint.weight = dataGrid[rowNum][colNum];
             weightedPoints.push(weightedPoint);
         }
     }
+    console.log(weightedPoints);
     return weightedPoints;
 }
 

@@ -37,7 +37,6 @@ public class GriddedData {
           // An AQI of 0 will not be displayed by the visualisation layer
           data[rowNum][colNum] = 0;
         } else {
-            System.out.println("non null cell");
           data[rowNum][colNum] = cell.averageAQI;
         }
       }
