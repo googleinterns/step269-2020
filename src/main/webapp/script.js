@@ -214,11 +214,11 @@ function calcCoordFromDistanceAndBearing(point1, distance, bearing) {
 }
 
 function calcLngFromWEDist(lng1, distance) {
-    return lng1 - distance/92000;
+    return lng1 + distance/92000;
 }
 
 function calcLatFromNSDist(lat1, distance) {
-    return lat1 + distance/110000;
+    return lat1 - distance/110000;
 }
 
 function calcCellCoords(originCoords, rowNum, colNum, resolution) {
