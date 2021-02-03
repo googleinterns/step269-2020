@@ -42,12 +42,4 @@ public class GriddedData {
       }
     }
   }
-
-  @Override
-  public String toString() {
-    String returnString = "";
-    returnString += "Resolution: " + resolution + "\n";
-    returnString += "Origin: " + originLat + ", " + originLng + "\n";
-    return returnString;
-  }
 }
