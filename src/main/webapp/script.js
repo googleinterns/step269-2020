@@ -117,20 +117,21 @@ function convertGriddedDataToWeightedPoints(griddedData) {
 
     let weightedPoints = [];
     for (let rowNum = 0; rowNum < dataGrid.length; rowNum ++) {
-        const verticalDistance = resolution / 2 + rowNum * resolution;
+        // const verticalDistance = resolution / 2 + rowNum * resolution;
         for (let colNum = 0; colNum < dataGrid[0].length; colNum ++) {
             if (dataGrid[rowNum][colNum] === 0) {
                 console.log("0 cell");
                 continue;
             }
             //calculate the coordinates of the center of the current cell
-            const horizontalDistance = resolution / 2 + colNum * resolution;
-            const distance = Math.sqrt(verticalDistance ** 2 + horizontalDistance ** 2);
-            const theta = Math.atan(horizontalDistance / verticalDistance);
-            const bearing = Math.PI - theta;
-            console.log("D:",distance)
-            console.log("B:",bearing);
-            const cellCoords = calcCoordFromDistanceAndBearing(originCoords, distance, bearing);
+            // const horizontalDistance = resolution / 2 + colNum * resolution;
+            // const distance = Math.sqrt(verticalDistance ** 2 + horizontalDistance ** 2);
+            // const theta = Math.atan(horizontalDistance / verticalDistance);
+            // const bearing = Math.PI - theta;
+            // console.log("D:",distance)
+            // console.log("B:",bearing);
+            // const cellCoords = calcCoordFromDistanceAndBearing(originCoords, distance, bearing);
+            const cellCoords = calcCellCoords(originCoords, rowNum, colNum, resolution);
             console.log("Lat:", cellCoords.lat);
             console.log("Lng:", cellCoords.lng);
 
@@ -212,6 +213,19 @@ function calcCoordFromDistanceAndBearing(point1, distance, bearing) {
     return {lat:radToDeg(rlat2), lng: radToDeg(rlng2)};
 }
 
+function calcLngFromWEDist(lng1, distance) {
+    return lng1 - distance/92000;
+}
+
+function calcLatFromNSDist(lat1, distance) {
+    return lat1 + distance/110000;
+}
+
+function calcCellCoords(originCoords, rowNum, colNum, resolution) {
+    const nsDistance = resolution / 2 + resolution * rowNum;
+    const weDistance = resolution / 2 + resolution * colNum;
+    return {lat:calcLatFromNSDist(originCoords.lat, nsDistance), lng:calcLngFromWEDist(originCoords.lng, weDistance)};
+}
 function degToRad(degrees) {
     return degrees * Math.PI / 180;
 }
