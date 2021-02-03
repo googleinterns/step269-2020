@@ -1,5 +1,6 @@
 let map;
 let aqLayer;
+let refreshAQLayerTimeout;
 let searchMarker;
 
 function aqLayerControl(controlDiv) {
@@ -60,7 +61,12 @@ function initMap() {
     // map.getBounds() is undefined until the map tiles have finished loading,
     // at which point the bounds change
     google.maps.event.addListener(map, 'bounds_changed', function() {
-        populateAQVisualisationData();
+        if (refreshAQLayerTimeout) {
+            clearTimeout(refreshAQLayerTimeout);
+        }
+        refreshAQLayerTimeout = setTimeout(function() {
+            populateAQVisualisationData();
+        }, 500);
     });
 
     const aqLayerControlDiv = document.createElement("div");
@@ -82,32 +88,32 @@ function populateAQVisualisationData() {
     fetchURL += `&sw-long=${swCorner.lng()}`;
     fetchURL += `&ne-lat=${neCorner.lat()}`;
     fetchURL += `&ne-long=${neCorner.lng()}`;
-    console.log(fetchURL);
     fetch(fetchURL).then(response => response.json()).then((data) => {
-        console.log(data);
         const aqData = convertGriddedDataToWeightedPoints(data);
         loadHeatmap(aqData);
     });
 }
 
 function loadHeatmap(data) {
-    aqLayer = new google.maps.visualization.HeatmapLayer({
-        data: data,
-        gradient: [
-            "rgba(65,169,60,0)",
-            "rgba(65, 169, 60, 1)",
-            "rgba(238, 201, 0, 1)",
-            "rgba(228, 116, 0, 1)",
-            "rgba(186, 0, 41, 1)",
-            "rgba(86, 3, 23, 1)",
-        ],
-        maxIntensity: 200,
-        dissipating: true,
-    });
+    if (!aqLayer) {
+        aqLayer = new google.maps.visualization.HeatmapLayer({
+            gradient: [
+                "rgba(65,169,60,0)",
+                "rgba(65, 169, 60, 1)",
+                "rgba(238, 201, 0, 1)",
+                "rgba(228, 116, 0, 1)",
+                "rgba(186, 0, 41, 1)",
+                "rgba(86, 3, 23, 1)",
+            ],
+            maxIntensity: 200,
+            dissipating: true,
+        });
+    }
+    aqLayer.setData([]);
+    aqLayer.setData(data);
     aqLayer.setMap(map);
 }
 
-// This function is not complete
 function convertGriddedDataToWeightedPoints(griddedData) {
     const dataGrid = griddedData.data;
     const originLat = griddedData.originLat;
@@ -120,31 +126,17 @@ function convertGriddedDataToWeightedPoints(griddedData) {
         // const verticalDistance = resolution / 2 + rowNum * resolution;
         for (let colNum = 0; colNum < dataGrid[0].length; colNum ++) {
             if (dataGrid[rowNum][colNum] === 0) {
-                console.log("0 cell");
                 continue;
             }
-            //calculate the coordinates of the center of the current cell
-            // const horizontalDistance = resolution / 2 + colNum * resolution;
-            // const distance = Math.sqrt(verticalDistance ** 2 + horizontalDistance ** 2);
-            // const theta = Math.atan(horizontalDistance / verticalDistance);
-            // const bearing = Math.PI - theta;
-            // console.log("D:",distance)
-            // console.log("B:",bearing);
-            // const cellCoords = calcCoordFromDistanceAndBearing(originCoords, distance, bearing);
             const cellCoords = calcCellCoords(originCoords, rowNum, colNum, resolution);
-            console.log("Lat:", cellCoords.lat);
-            console.log("Lng:", cellCoords.lng);
 
             //create the WeightedLocation for the heatmap
             let weightedPoint = {}
             weightedPoint.location = new google.maps.LatLng(cellCoords.lat, cellCoords.lng);
-            console.log(weightedPoint.location.lat());
-            console.log(weightedPoint.location.lng());
             weightedPoint.weight = dataGrid[rowNum][colNum];
             weightedPoints.push(weightedPoint);
         }
     }
-    console.log(weightedPoints);
     return weightedPoints;
 }
 
@@ -193,24 +185,6 @@ function haversineDistance(point1, point2) {
 
     const d = 2 * R * Math.asin(Math.sqrt(Math.sin(difflat/2)*Math.sin(difflat/2)+Math.cos(rlat1)*Math.cos(rlat2)*Math.sin(difflon/2)*Math.sin(difflon/2)));
     return d;
-}
-
-/**
- * Calculate the location of point 2 based on a distance and bearing from point 1
- * @param {coordinates} coordinates of original point in degrees
- * @param {integer} distance in metres
- * @param {angle in radians} bearing in radians
- */
-function calcCoordFromDistanceAndBearing(point1, distance, bearing) {
-    const R = 6370e3 //Radius of earth in metres
-    const rlat1 = degToRad(point1.lat);
-    const rlng1 = degToRad(point1.lng);
-
-    const rlat2 = Math.asin(Math.sin(rlat1) * Math.cos(distance / R) + Math.cos(rlat1) * Math.sin(distance / R) + Math.cos(bearing));
-    const rlng2 = rlng1 + Math.atan2(Math.sin(bearing) * Math.sin(distance / R) * Math.cos(rlat1),
-        Math.cos(distance / R) - Math.sin(rlat1) * Math.sin(rlat2));
-
-    return {lat:radToDeg(rlat2), lng: radToDeg(rlng2)};
 }
 
 function calcLngFromWEDist(lng1, distance) {

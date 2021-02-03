@@ -14,14 +14,12 @@ public class Cache {
     ArrayList<AQDataPoint> data = new ArrayList<>();
 
     //catch the error here because the servlet cannot throw the Expection type
-    // try {
-    //   data = getNSWGovData();
-    // } catch (Exception e) {
-    //   System.out.println(e.getMessage());
-    //   return dataGrid; //return the old grid
-    // }
-
-    data.add(new AQDataPoint("test site",24,-36.573387, 153.711497));
+    try {
+      data = getNSWGovData();
+    } catch (Exception e) {
+      System.out.println(e.getMessage());
+      return dataGrid; //return the old grid
+    }
 
     Coordinates nwCorner = new Coordinates(swCorner.lng, neCorner.lat);
     Coordinates seCorner = new Coordinates(neCorner.lng, swCorner.lat);
@@ -33,7 +31,10 @@ public class Cache {
 
     for (AQDataPoint dataPoint : data) {
         GridIndex index = getGridIndex(nwCorner, new Coordinates(dataPoint.lng, dataPoint.lat),resolution);
-        System.out.println(index.row + ", " + index.col);
+        if (index.row >= gridHeight || index.col >= gridWidth) {
+            // The data point is outside the area covered by the grid
+            continue;
+        }
         // Setting a variable such as cell = processingGrid[index.row][index.col] did not preserve the value of the new AQI,
         // and caused null pointer exceptions
         if (processingGrid[index.row][index.col] == null) {
