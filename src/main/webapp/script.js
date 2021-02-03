@@ -173,8 +173,6 @@ function getGridIndex(resolution, originCoords, targetCoords) {
 /**
  * Returns the distance between two coordinate points in metres,
  * taking into account the curvature of the earth
- * @param {*} point1 
- * @param {*} point2 
  */
 function haversineDistance(point1, point2) {
     const R = 6370e3; // Radius of the Earth in metres
@@ -200,12 +198,9 @@ function calcCellCoords(originCoords, rowNum, colNum, resolution) {
     const weDistance = resolution / 2 + resolution * colNum;
     return {lat:calcLatFromNSDist(originCoords.lat, nsDistance), lng:calcLngFromWEDist(originCoords.lng, weDistance)};
 }
+
 function degToRad(degrees) {
     return degrees * Math.PI / 180;
-}
-
-function radToDeg(radians) {
-    return radians / (Math.PI / 180);
 }
 
 function setEndPoint(place) {

@@ -2,7 +2,7 @@ package com.google.sps.data;
 
 /**
  * This class represents the AQI data grid used by the client for visualisation.
- * This grid is a linear approximation of the latitude and longitude, which may
+ * This grid is a linear approximation of the latitude and longitude, which may be
  * inaccurate due to the curvature of the earth
  */
 public class GriddedData {
