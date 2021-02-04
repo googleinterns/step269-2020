@@ -79,15 +79,10 @@ function toggleAQLayer() {
 }
 
 function populateAQVisualisationData() {
-    let fetchURL = "/visualisation";
-    fetchURL += `?zoom-level=${map.getZoom()}`;
     const mapBounds = map.getBounds();
     const swCorner = mapBounds.getSouthWest();
     const neCorner = mapBounds.getNorthEast();
-    fetchURL += `&sw-lat=${swCorner.lat()}`;
-    fetchURL += `&sw-long=${swCorner.lng()}`;
-    fetchURL += `&ne-lat=${neCorner.lat()}`;
-    fetchURL += `&ne-long=${neCorner.lng()}`;
+    let fetchURL = `/visualisation?zoom-level=${map.getZoom()}&sw-lat=${swCorner.lat()}&sw-long=${swCorner.lng()}&ne-lat=${neCorner.lat()}&ne-long=${neCorner.lng()}`;
     fetch(fetchURL).then(response => response.json()).then((data) => {
         const aqData = convertGriddedDataToWeightedPoints(data);
         loadHeatmap(aqData);
