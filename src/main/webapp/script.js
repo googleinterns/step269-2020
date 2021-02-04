@@ -165,8 +165,8 @@ function getGridIndex(resolution, originCoords, targetCoords) {
 
     const latDistance = Math.abs(haversineDistance(originCoords, sameLatCoords));
     const lngDistance = Math.abs(haversineDistance(originCoords, sameLngCoords));
-    const colNum = Math.floor(latDistance/resolution);
-    const rowNum = Math.floor(lngDistance/resolution);
+    const colNum = Math.floor(latDistance / resolution);
+    const rowNum = Math.floor(lngDistance / resolution);
     const index = {col:colNum, row:rowNum};
     return index;
 }
@@ -179,19 +179,19 @@ function haversineDistance(point1, point2) {
     const R = 6370e3; // Radius of the Earth in metres
     const rlat1 = degToRad(point1.lat);
     const rlat2 = degToRad(point2.lat);
-    const difflat = rlat2-rlat1;
+    const difflat = rlat2 - rlat1;
     const difflon = degToRad(point2.lng-point1.lng);
 
-    const d = 2 * R * Math.asin(Math.sqrt(Math.sin(difflat/2)*Math.sin(difflat/2)+Math.cos(rlat1)*Math.cos(rlat2)*Math.sin(difflon/2)*Math.sin(difflon/2)));
+    const d = 2 * R * Math.asin(Math.sqrt(Math.sin(difflat / 2)*Math.sin(difflat / 2) + Math.cos(rlat1) * Math.cos(rlat2) * Math.sin(difflon / 2)*Math.sin(difflon / 2)));
     return d;
 }
 
 function calcLngFromWEDist(lng1, distance) {
-    return lng1 + distance/92000;
+    return lng1 + distance / 92000;
 }
 
 function calcLatFromNSDist(lat1, distance) {
-    return lat1 - distance/110000;
+    return lat1 - distance / 110000;
 }
 
 function calcCellCoords(originCoords, rowNum, colNum, resolution) {
