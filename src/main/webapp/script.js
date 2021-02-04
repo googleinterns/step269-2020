@@ -19,6 +19,8 @@ function aqLayerControl(controlDiv) {
 }
 
 function initMap() {
+    const directionsRenderer = new google.maps.DirectionsRenderer();
+    const directionsService = new google.maps.DirectionsService();
     map = new google.maps.Map(document.getElementById("map"), {
         center: new google.maps.LatLng(-34.397, 150.644),
         zoom: 8,
@@ -29,6 +31,8 @@ function initMap() {
         streetViewControl: false,
         fullscreenControl: false,
     });
+    // Call setMap() on DirectionsRenderer to bind it to the passed map. 
+    directionsRenderer.setMap(map);
     // Initialise places autocomplete in search bar
     const searchbar = document.getElementById("location-search-bar");
     searchMarker = new google.maps.Marker({
@@ -40,7 +44,7 @@ function initMap() {
     autocomplete.setFields(["geometry","name"]);
     autocomplete.addListener("place_changed", () => {
         searchMarker.setVisible(false);
-        const place = autocomplete.getPlace();
+        const place = autocomplete.getPlace(); //THE PLACE THAT IS AUTOCOMPLETED
 
         if (!place.geometry) {
             console.log(`No details available for input '${place.name}'`);
@@ -62,6 +66,34 @@ function initMap() {
     const aqLayerControlDiv = document.createElement("div");
     aqLayerControl(aqLayerControlDiv, map);
     map.controls[google.maps.ControlPosition.RIGHT_TOP].push(aqLayerControlDiv);
+
+    //Calculate and Display routes from origin to destination
+    const onChangeHandler = function () {
+        calculateAndDisplayRoute(directionsService, directionsRenderer);
+    };
+    //BE CARE OF HER ID START AND END HERE!!!!!!!!!!!!!! ==================
+    document.getElementById("start").addEventListener("change", onChangeHandler); //=========
+    document.getElementById("end").addEventListener("change", onChangeHandler); ////========
+}
+
+function calculateAndDisplayRoute(directionsService, directionsRenderer) {
+    const start = document.getElementById("start").value;
+    const userStartInput = document.getElementById("location-info");
+    const end = document.getElementById("end").value;
+    directionsService.route(
+      {
+        origin: start,
+        destination: end,
+        travelMode: google.maps.TravelMode.DRIVING,
+      },
+      (response, status) => {
+        if (status === "OK") {
+          directionsRenderer.setDirections(response);
+        } else {
+          window.alert("Directions request failed due to " + status);
+        }
+      }
+    );
 }
 
 function toggleAQLayer() {

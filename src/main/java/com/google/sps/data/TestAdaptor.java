@@ -1,11 +1,14 @@
+/*
 package com.google.sps.data;
 
 import java.time.*;
 import java.util.ArrayList;
-
+*/
 /** 
  * File to test the GetGovAdator file.
  */
+
+ /*
 public class TestAdaptor { 
   public static void main(final String[] args) {
     try {
@@ -51,3 +54,4 @@ public class TestAdaptor {
     }
   }
 }
+*/
