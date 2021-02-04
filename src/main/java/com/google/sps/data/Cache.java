@@ -35,8 +35,7 @@ public class Cache {
             // The data point is outside the area covered by the grid
             continue;
         }
-        // Setting a variable such as cell = processingGrid[index.row][index.col] did not preserve the value of the new AQI,
-        // and caused null pointer exceptions
+
         if (processingGrid[index.row][index.col] == null) {
             processingGrid[index.row][index.col] = new GridCell();
         }
