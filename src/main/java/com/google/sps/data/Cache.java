@@ -71,8 +71,8 @@ public class Cache {
     double latDistance = haversineDistance(originCoords, sameLngCoords);
     double lngDistance = haversineDistance(originCoords, sameLatCoords);
 
-    int col = (int) Math.floor(latDistance/resolution);
-    int row = (int) Math.floor(lngDistance/resolution);
+    int col = (int) Math.floor(latDistance / resolution);
+    int row = (int) Math.floor(lngDistance / resolution);
 
     return new GridIndex(col,row);
   }
@@ -82,9 +82,9 @@ public class Cache {
     double rlat1 = Math.toRadians(point1.lat);
     double rlat2 = Math.toRadians(point2.lat);
     double difflat = rlat2-rlat1;
-    double difflng = Math.toRadians(point2.lng-point1.lng);
+    double difflng = Math.toRadians(point2.lng - point1.lng);
     double a = Math.pow(Math.sin(difflat / 2.0), 2) + Math.cos(rlat1) * Math.cos(rlat2) * Math.pow(Math.sin(difflng / 2.0),2);
-    double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     double distance = R * c;
     return distance;
   }
