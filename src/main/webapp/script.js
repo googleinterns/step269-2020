@@ -117,9 +117,7 @@ function loadHeatmap(data) {
 
 function convertGriddedDataToWeightedPoints(griddedData) {
     const dataGrid = griddedData.data;
-    const originLat = griddedData.originLat;
-    const originLng = griddedData.originLng;
-    const originCoords = {lat: originLat, lng: originLng};
+    const originCoords = {lat: griddedData.origin.Latitude, lng: griddedData.origin.Longitude};
     const resolution = griddedData.resolution;
 
     let weightedPoints = [];

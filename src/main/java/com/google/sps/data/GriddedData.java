@@ -10,13 +10,11 @@ public class GriddedData {
   public double[][] data;
 
   // the coordinates of the top left corner of the grid
-  public double originLat;
-  public double originLng;
+  public Coordinates origin;
 
   public GriddedData(int numColumns, int numRows, int resolution, Coordinates originCoords) {
     this.resolution = resolution;
-    this.originLat = originCoords.lat;
-    this.originLng = originCoords.lng;
+    this.origin = originCoords;
     this.data = new double[numRows][numColumns];
   }
 
@@ -24,8 +22,7 @@ public class GriddedData {
     int numRows = cells.length;
     int numColumns = cells[0].length;
     this.resolution = resolution;
-    this.originLat = originCoords.lat;
-    this.originLng = originCoords.lng;
+    this.origin = originCoords;
     this.data = new double[numRows][numColumns];
 
     for (int rowNum = 0; rowNum < cells.length; rowNum++) {
