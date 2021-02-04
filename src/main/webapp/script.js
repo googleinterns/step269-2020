@@ -123,9 +123,9 @@ function convertGriddedDataToWeightedPoints(griddedData) {
     const resolution = griddedData.resolution;
 
     let weightedPoints = [];
-    for (let rowNum = 0; rowNum < dataGrid.length; rowNum ++) {
+    for (let rowNum = 0; rowNum < dataGrid.length; rowNum++) {
         // const verticalDistance = resolution / 2 + rowNum * resolution;
-        for (let colNum = 0; colNum < dataGrid[0].length; colNum ++) {
+        for (let colNum = 0; colNum < dataGrid[0].length; colNum++) {
             if (dataGrid[rowNum][colNum] === 0) {
                 continue;
             }
