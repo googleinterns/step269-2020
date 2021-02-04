@@ -13,12 +13,12 @@ public class Cache {
   public GriddedData getGrid(int zoomLevel, Coordinates swCorner, Coordinates neCorner) {
     ArrayList<AQDataPoint> data = new ArrayList<>();
 
-    //catch the error here because the servlet cannot throw the Expection type
+    // Catch the error here because the servlet cannot throw the Expection type
     try {
       data = getNSWGovData();
     } catch (Exception e) {
       System.out.println(e.getMessage());
-      return dataGrid; //return the old grid
+      return dataGrid; // return the old grid
     }
 
     Coordinates nwCorner = new Coordinates(swCorner.lng, neCorner.lat);
@@ -78,7 +78,7 @@ public class Cache {
   }
 
   private double haversineDistance(Coordinates point1, Coordinates point2) {
-    final int R = 6371000; //Radius of earth in metres
+    final int R = 6371000; // Radius of earth in metres
     double rlat1 = Math.toRadians(point1.lat);
     double rlat2 = Math.toRadians(point2.lat);
     double difflat = rlat2 - rlat1;
