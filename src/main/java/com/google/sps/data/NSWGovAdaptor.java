@@ -40,8 +40,8 @@ public class NSWGovAdaptor {
    */
   public ArrayList<AQDataPoint> getAQIData() throws Exception {
     LocalDate currentDate = LocalDate.now();
-    ArrayList<AQDataPoint> dataWithDupes = convertAllDataPoints(extractAQI(currentDate));
-    return removeAlternateElements(dataWithDupes);
+    ArrayList<AQDataPoint> dataWithDupes = this.convertAllDataPoints(extractAQI(currentDate));
+    return this.removeAlternateElements(dataWithDupes);
   }
 
   private AQDataPoint convertDataPoint(NSWGovAQDataPoint givenPoint) {
