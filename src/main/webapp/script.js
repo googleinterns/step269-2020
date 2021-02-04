@@ -33,6 +33,8 @@ function initMap() {
     });
     // Call setMap() on DirectionsRenderer to bind it to the passed map. 
     directionsRenderer.setMap(map);
+    // Put directions in the directions panel
+    directionsRenderer.setPanel(document.getElementById("direction-panel"));
     // Initialise places autocomplete in search bar
     const searchbar = document.getElementById("location-search-bar");
     searchMarker = new google.maps.Marker({
