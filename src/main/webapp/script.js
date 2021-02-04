@@ -105,7 +105,7 @@ function loadHeatmap(data) {
             radius: 100, // arbitrary value used to make the points easily visible
         });
     }
-    aqLayer.setData([]);
+    //aqLayer.setData([]);
     aqLayer.setData(data);
     aqLayer.setMap(map);
 }
