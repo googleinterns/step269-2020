@@ -55,7 +55,7 @@ function initMap() {
             map.setZoom(17); // 17 used because it is used in a sample in the documentation
         }
 
-        setEndpoint(place);
+        setEndPoint(place);
     })
     // Initialise visualisation when the bounds of the map changed.
     // map.getBounds() is undefined until the map tiles have finished loading,
