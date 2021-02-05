@@ -32,6 +32,18 @@ public class NSWGovAdaptor {
     return this.dataMap;
   }
 
+  /**
+   * Manages the entire process of getting data from the NSW Gov API,
+   * from fetching the data to collating it into the unified AQDataPoint format.
+   * @return the AQI data for the current date with duplicate elements removed
+   * @throws Exception
+   */
+  public ArrayList<AQDataPoint> getAQIData() throws Exception {
+    LocalDate currentDate = LocalDate.now();
+    ArrayList<AQDataPoint> dataWithDupes = this.convertAllDataPoints(extractAQI(currentDate));
+    return this.removeAlternateElements(dataWithDupes);
+  }
+
   private AQDataPoint convertDataPoint(NSWGovAQDataPoint givenPoint) {
     // Take the site id from given NSWGovAQDataPoint and fetch coordinates from map.
     int pointSiteid = givenPoint.siteId;
