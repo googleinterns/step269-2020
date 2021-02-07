@@ -136,7 +136,7 @@ function convertGriddedDataToWeightedPoints(griddedData) {
 
 // TODO (Rosanna): implement scoring here
 function scoreRoute(griddedData) {
-    // note for Rosanna: griddedData is not exactly a grid, but a grid-like nested map
+    // Note for Rosanna: griddedData is not exactly a grid, but a grid-like nested map
     console.log("scoring route");
 }
 
