@@ -86,6 +86,7 @@ function populateAQVisualisationData() {
     fetch(fetchURL).then(response => response.json()).then((data) => {
         const aqData = convertGriddedDataToWeightedPoints(data);
         loadHeatmap(aqData);
+        scoreRoute(data);
     });
 }
 
@@ -131,6 +132,12 @@ function convertGriddedDataToWeightedPoints(griddedData) {
         }
     }
     return weightedPoints;
+}
+
+// TODO (Rosanna): implement scoring here
+function scoreRoute(griddedData) {
+    // note for Rosanna: griddedData is not exactly a grid, but a grid-like nested map
+    console.log("scoring route");
 }
 
 /**
