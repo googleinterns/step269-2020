@@ -27,7 +27,7 @@ public class Cache {
       GridIndex index = getGridIndex(new Coordinates(dataPoint.lng, dataPoint.lat), aqDataPointsPerDegree);
       HashMap<Integer,GridCell> row = dataGrid.getOrDefault(index.row, new HashMap<>());
       GridCell cell = row.getOrDefault(index.col, new GridCell());
-      cell.addPoint(dataPoint);\
+      cell.addPoint(dataPoint);
       row.put(index.col, cell);
       dataGrid.put(index.row, row);
     }
