@@ -19,6 +19,8 @@ function aqLayerControl(controlDiv) {
 }
 
 function initMap() {
+    const directionsRenderer = new google.maps.DirectionsRenderer();
+    const directionsService = new google.maps.DirectionsService();
     map = new google.maps.Map(document.getElementById("map"), {
         center: new google.maps.LatLng(-34.397, 150.644),
         zoom: 8,
@@ -29,158 +31,94 @@ function initMap() {
         streetViewControl: false,
         fullscreenControl: false,
     });
+    new AutocompleteDirectionsHandler(map);
+}
 
-    const originPlaceId = "";
-    const destinationPlaceId = "";
-    //const travelMode = google.maps.TravelMode.DRIVING;
-    const directionsRenderer = new google.maps.DirectionsRenderer();
-    const directionsService = new google.maps.DirectionsService();
-    const originInput = document.getElementById("origin-search-bar");
-    const destinationInput = document.getElementById("destination-search-bar");
-    //const modeSelector = document.getElementById("mode-selector");
+class AutocompleteDirectionsHandler {
+    constructor(map) {
+        this.map = map;
+        this.originPlaceId = "";
+        this.destinationPlaceId = "";
+        this.travelMode = google.maps.TravelMode.WALKING;
+        this.directionsService = new google.maps.DirectionsService();
+        this.directionsRenderer = new google.maps.DirectionsRenderer();
+        this.directionsRenderer.setMap(map);
+        // Put directions in the directions panel
+        directionsRenderer.setPanel(document.getElementById("direction-panel"));
 
-    // Call setMap() on DirectionsRenderer to bind it to the passed map. 
-    directionsRenderer.setMap(map);
-    // Put directions in the directions panel
-    directionsRenderer.setPanel(document.getElementById("direction-panel"));
-    // Initialise places autocomplete in search bar
-    const searchbar = document.getElementById("location-search-bar");
-    searchMarker = new google.maps.Marker({
-        map,
-        anchorPoint: new google.maps.Point(0,-29), // position the marker icon relative to the origin
-    });
-    searchMarker.setVisible(false);
-  
-    // Set Fields 
-    const autocomplete = new google.maps.places.Autocomplete(searchbar);
-    autocomplete.setFields(["geometry","name"]);
-    const originAutocomplete = new google.maps.places.Autocomplete(originInput);// <-- this is for autocomplete
-    originAutocomplete.setFields(["place_id", "geometry","name"]);
-    const destinationAutocomplete = new google.maps.places.Autocomplete(destinationInput);
-    destinationAutocomplete.setFields(["place_id","geometry","name"]);
-
-    destinationAutocomplete.addListener("place_changed", () => {
+        // Retrieve what was input by user 
+        const searchbar = document.getElementById("location-search-bar");
+        searchMarker = new google.maps.Marker({
+            map,
+            anchorPoint: new google.maps.Point(0,-29), // position the marker icon relative to the origin
+        });
         searchMarker.setVisible(false);
-        const place = destinationAutocomplete.getPlace(); //THE PLACE THAT IS AUTOCOMPLETED
 
-        if (!place.geometry) {
-            console.log(`No details available for input '${place.name}'`);
-            return;
-        }
+        const originInput = document.getElementById("origin-search-bar");
+        const destinationInput = document.getElementById("destination-search-bar");
+        const modeSelector = document.getElementById("mode-selector");
 
-        if (place.geometry.viewport) {
-            map.fitBounds(place.geometry.viewport);
-        } else {
-            map.setCenter(place.geometry.viewport);
-            map.setZoom(17); // 17 used because it is used in a sample in the documentation
-        }
-        setEndpoint(place);
-        //calculateAndDisplayRoute(directionsService, directionsRenderer);
-    })
+        // Initialise places autocomplete in search bar
+        const autocomplete = new google.maps.places.Autocomplete(searchbar);
 
-    autocomplete.addListener("place_changed", () => {
+
+
+
+
+
+        // Call setMap() on DirectionsRenderer to bind it to the passed map. 
+        directionsRenderer.setMap(map);
+        // Put directions in the directions panel
+        directionsRenderer.setPanel(document.getElementById("direction-panel"));
+        // Initialise places autocomplete in search bar
+        const searchbar = document.getElementById("location-search-bar");
+        searchMarker = new google.maps.Marker({
+            map,
+            anchorPoint: new google.maps.Point(0,-29), // position the marker icon relative to the origin
+        });
         searchMarker.setVisible(false);
-        const place = autocomplete.getPlace(); //THE PLACE THAT IS AUTOCOMPLETED
+        const autocomplete = new google.maps.places.Autocomplete(searchbar);
 
-        if (!place.geometry) {
-            console.log(`No details available for input '${place.name}'`);
-            return;
-        }
-
-        if (place.geometry.viewport) {
-            map.fitBounds(place.geometry.viewport);
-        } else {
-            map.setCenter(place.geometry.viewport);
-            map.setZoom(17); // 17 used because it is used in a sample in the documentation
-        }
-        setEndpoint(place);;
-    })
-    // Initialise visualisation
-    populateAQVisualisationData();
-
-    const aqLayerControlDiv = document.createElement("div");
-    aqLayerControl(aqLayerControlDiv, map);
-    map.controls[google.maps.ControlPosition.RIGHT_TOP].push(aqLayerControlDiv);
-
-    //Calculate and Display routes from origin to destination
-    const onChangeHandler = function () {
-        calculateAndDisplayRoute(directionsService, directionsRenderer);
-    };
-    //BE CARE OF HER ID START AND END HERE!!!!!!!!!!!!!! ==================
-    setupPlaceChanged(originAutocomplete, "ORIG");
-    setupPlaceChanged(destinationAutocomplete, "DEST");
-
-    document.getElementById("start").addEventListener("change", onChangeHandler); //==everytime the origin, calculate the route again
-    document.getElementById("end").addEventListener("change", onChangeHandler); ////========
-
-    // Helper function to setup the origin or destination placeID
-    function setupPlaceChanged(autocomplete, journeyPoint) {
-        autocomplete.bindTo("bounds", this.map);
+        autocomplete.setFields(["geometry","name"]);
         autocomplete.addListener("place_changed", () => {
-            const place = autocomplete.getPlace();
+            searchMarker.setVisible(false);
+            const place = autocomplete.getPlace(); //THE PLACE THAT IS AUTOCOMPLETED
 
-            if (!place.place_id) {
-                window.alert("Please select an option from the autocomplete dropdown list.");
+            if (!place.geometry) {
+                console.log(`No details available for input '${place.name}'`);
                 return;
             }
 
-            if (journeyPoint === "ORIG") {
-                originPlaceId = place.place_id;
+            if (place.geometry.viewport) {
+                map.fitBounds(place.geometry.viewport);
             } else {
-                destinationPlaceId = place.place_id;
+                map.setCenter(place.geometry.viewport);
+                map.setZoom(17); // 17 used because it is used in a sample in the documentation
             }
+
+            setEndpoint(place);
+        })
+        // Initialise visualisation
+        populateAQVisualisationData();
+
+        const aqLayerControlDiv = document.createElement("div");
+        aqLayerControl(aqLayerControlDiv, map);
+        map.controls[google.maps.ControlPosition.RIGHT_TOP].push(aqLayerControlDiv);
+
+        //Calculate and Display routes from origin to destination
+        const onChangeHandler = function () {
             calculateAndDisplayRoute(directionsService, directionsRenderer);
-        });
+        };
+        //BE CARE OF HER ID START AND END HERE!!!!!!!!!!!!!! ==================
+        document.getElementById("start").addEventListener("change", onChangeHandler); //=========
+        document.getElementById("end").addEventListener("change", onChangeHandler); ////========
     }
 
-    function calculateAndDisplayRoute(directionsService, directionsRenderer) {
-        if (!originPlaceId || !destinationPlaceId) {
-            return;
-        }
-        //const start = document.getElementById("start").value;
-        //const end = document.getElementById("end").value;
-        directionsService.route(
-            {
-                origin: { placeId: originPlaceId },
-                destination: { placeId: destinationPlaceId },
-                travelMode: google.maps.TravelMode.DRIVING,
-            },
-            (response, status) => {
-                if (status === "OK") {
-                    directionsRenderer.setDirections(response);
-                } else {
-                    window.alert("Directions request failed due to " + status);
-                }
-            }
-        );
-    }
-}
-
-/*
-function setupPlaceChanged(autocomplete, journeyPoint) {
-    autocomplete.bindTo("bounds", this.map);
-    autocomplete.addListener("place_changed", () => {
-        const place = autocomplete.getPlace();
-
-        if (!place.place_id) {
-            window.alert("Please select an option from the dropdown list.");
-            return;
-        }
-
-        if (journeyPoint === "ORIG") {
-            this.originPlaceId = place.place_id;
-        } else {
-            this.destinationPlaceId = place.place_id;
-        }
-        this.route();
-    });
 }
 
 function calculateAndDisplayRoute(directionsService, directionsRenderer) {
     const start = document.getElementById("start").value;
-    //const start = place;
-    //const userStartInput = document.getElementById("location-info");
-    //const start = document.getElementById("location-info").value;
+    const userStartInput = document.getElementById("location-info");
     const end = document.getElementById("end").value;
     directionsService.route(
       {
@@ -197,7 +135,6 @@ function calculateAndDisplayRoute(directionsService, directionsRenderer) {
       }
     );
 }
-*/ 
 
 function toggleAQLayer() {
     aqLayer.setMap(aqLayer.getMap() ? null : map);

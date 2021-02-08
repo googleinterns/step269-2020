@@ -88,6 +88,14 @@ button:hover {
   flex-grow: 1;
 }
 
+#origin-search-bar {
+  flex-grow: 1;
+}
+
+#destination-search-bar {
+  flex-grow: 1;
+}
+
 .feature-button {
   flex: 1;
   margin: 10px 5px 0 5px;
