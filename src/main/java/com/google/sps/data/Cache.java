@@ -46,11 +46,12 @@ public class Cache {
     return new GridIndex(col,row);
   }
 
-  // TODO (Rachel): add check for bounds crossing 180 degree boundary (not needed for NSW data)
+  // Note: this function does not support viewports that cross the 180 degree latitude or the poles
   private GriddedData convertToGriddedData(HashMap<Integer,HashMap<Integer,GridCell>> data, int aqDataPointsPerDegree, Coordinates swCorner, Coordinates neCorner) {
     GriddedData grid = new GriddedData(aqDataPointsPerDegree);
     GridIndex swIndex = getGridIndex(swCorner, aqDataPointsPerDegree);
     GridIndex neIndex = getGridIndex(neCorner, aqDataPointsPerDegree);
+
     for (HashMap.Entry<Integer, HashMap<Integer, GridCell>> rowEntry : data.entrySet()) {
       HashMap<Integer, Double> convertedRow = new HashMap<>();
 
