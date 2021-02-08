@@ -26,7 +26,6 @@ public class VisualisationServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    int zoomLevel = Integer.parseInt(request.getParameter("zoom-level"));
     double swLong = Double.parseDouble(request.getParameter("sw-long"));
     double swLat = Double.parseDouble(request.getParameter("sw-lat"));
     double neLong = Double.parseDouble(request.getParameter("ne-long"));
@@ -35,7 +34,7 @@ public class VisualisationServlet extends HttpServlet {
     Coordinates neCorner = new Coordinates(neLong, neLat);
 
     Cache cache = new Cache();
-    GriddedData dataGrid = cache.getGrid(zoomLevel, swCorner, neCorner);
+    GriddedData dataGrid = cache.getGrid(swCorner, neCorner);
     Gson gson = new Gson();
     String jsonDataGrid = gson.toJson(dataGrid);
 

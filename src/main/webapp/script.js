@@ -82,7 +82,7 @@ function populateAQVisualisationData() {
     const mapBounds = map.getBounds();
     const swCorner = mapBounds.getSouthWest();
     const neCorner = mapBounds.getNorthEast();
-    let fetchURL = `/visualisation?zoom-level=${map.getZoom()}&sw-lat=${swCorner.lat()}&sw-long=${swCorner.lng()}&ne-lat=${neCorner.lat()}&ne-long=${neCorner.lng()}`;
+    let fetchURL = `/visualisation?sw-lat=${swCorner.lat()}&sw-long=${swCorner.lng()}&ne-lat=${neCorner.lat()}&ne-long=${neCorner.lng()}`;
     fetch(fetchURL).then(response => response.json()).then((data) => {
         const aqData = convertGriddedDataToWeightedPoints(data);
         loadHeatmap(aqData);
@@ -112,22 +112,17 @@ function loadHeatmap(data) {
 
 function convertGriddedDataToWeightedPoints(griddedData) {
     const dataGrid = griddedData.data;
-    const originCoords = {lat: griddedData.origin.Latitude, lng: griddedData.origin.Longitude};
-    const resolution = griddedData.resolution;
-
+    const aqDataPointsPerDegree = griddedData.aqDataPointsPerDegree;
     let weightedPoints = [];
-    for (let rowNum = 0; rowNum < dataGrid.length; rowNum++) {
-        // const verticalDistance = resolution / 2 + rowNum * resolution;
-        for (let colNum = 0; colNum < dataGrid[0].length; colNum++) {
-            if (dataGrid[rowNum][colNum] === 0) {
-                continue;
-            }
-            const cellCoords = calcCellCoords(originCoords, rowNum, colNum, resolution);
 
-            //create the WeightedLocation for the heatmap
+    for (let [rowNum, row] of Object.entries(dataGrid)) {
+	    for (let [colNum, aqi] of Object.entries(row)) {
+            const cellCoords = calcCellCoords(rowNum, colNum, aqDataPointsPerDegree);
+
+            // create the weightedLocation for the heatmap
             let weightedPoint = {}
             weightedPoint.location = new google.maps.LatLng(cellCoords.lat, cellCoords.lng);
-            weightedPoint.weight = dataGrid[rowNum][colNum];
+            weightedPoint.weight = aqi;
             weightedPoints.push(weightedPoint);
         }
     }
@@ -140,67 +135,10 @@ function scoreRoute(griddedData) {
     console.log("scoring route");
 }
 
-/**
- * @param {int} resolution The size of each grid cell in metres
- * @param {coordinate pair} originCoords The lat & long of the top left corner of the grid
- * @param {coordinate pair} targetCoords The lat & long of the location that is being converted to a grid index
- * @return {index object} An object containing the zero-indexed column and row number for the grid index of the target location
- */
-function getGridIndex(resolution, originCoords, targetCoords) {
-    /*
-    * Layout of coordinates:
-    * originCoords -------------------- sameLngCoords
-    *       |                                  |
-    *       |                                  |
-    *       |                                  |
-    * sameLatCoords -------------------- targetCoords
-    * 
-    * Note: Due to the curvature of the earth, the actual shape bounded by the four
-    * points may not be exactly rectangular, however it should be close enough
-    * for small distances.
-    */
-    const sameLatCoords = {lng:originCoords.lng, lat:targetCoords.lat};
-    const sameLngCoords = {lng:targetCoords.lng, lat:originCoords.lat};
-
-    const latDistance = Math.abs(haversineDistance(originCoords, sameLatCoords));
-    const lngDistance = Math.abs(haversineDistance(originCoords, sameLngCoords));
-    const colNum = Math.floor(latDistance / resolution);
-    const rowNum = Math.floor(lngDistance / resolution);
-    const index = {col:colNum, row:rowNum};
-    return index;
-}
-
-/**
- * Returns the distance between two coordinate points in metres,
- * taking into account the curvature of the earth
- */
-function haversineDistance(point1, point2) {
-    const R = 6370e3; // Radius of the Earth in metres
-    const rlat1 = degToRad(point1.lat);
-    const rlat2 = degToRad(point2.lat);
-    const difflat = rlat2 - rlat1;
-    const difflon = degToRad(point2.lng-point1.lng);
-
-    const d = 2 * R * Math.asin(Math.sqrt(Math.sin(difflat / 2)*Math.sin(difflat / 2) + Math.cos(rlat1) * Math.cos(rlat2) * Math.sin(difflon / 2)*Math.sin(difflon / 2)));
-    return d;
-}
-
-function calcLngFromWEDist(lng1, distance) {
-    return lng1 + distance / 92000;
-}
-
-function calcLatFromNSDist(lat1, distance) {
-    return lat1 - distance / 110000;
-}
-
-function calcCellCoords(originCoords, rowNum, colNum, resolution) {
-    const nsDistance = resolution / 2 + resolution * rowNum;
-    const weDistance = resolution / 2 + resolution * colNum;
-    return {lat:calcLatFromNSDist(originCoords.lat, nsDistance), lng:calcLngFromWEDist(originCoords.lng, weDistance)};
-}
-
-function degToRad(degrees) {
-    return degrees * Math.PI / 180;
+function calcCellCoords(rowNum, colNum, aqDataPointsPerDegree) {
+    const cellLat = (parseInt(rowNum) + 0.5) / aqDataPointsPerDegree;
+    const cellLng = (parseInt(colNum) + 0.5) / aqDataPointsPerDegree;
+    return {lat:cellLat, lng:cellLng};
 }
 
 function setEndPoint(place) {
