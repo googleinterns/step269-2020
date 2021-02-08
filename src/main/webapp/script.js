@@ -56,9 +56,7 @@ function initMap() {
     autocomplete.setFields(["geometry","name"]);
     const originAutocomplete = new google.maps.places.Autocomplete(originInput);// <-- this is for autocomplete
     originAutocomplete.setFields(["place_id"]);
-    const destinationAutocomplete = new google.maps.places.Autocomplete(
-      destinationInput
-    );
+    const destinationAutocomplete = new google.maps.places.Autocomplete(destinationInput);
     destinationAutocomplete.setFields(["place_id"]);
 
 
@@ -97,13 +95,16 @@ function initMap() {
     };
     //BE CARE OF HER ID START AND END HERE!!!!!!!!!!!!!! ==================
     
-    document.getElementById("start").addEventListener("change", onChangeHandler); //=========
+    document.getElementById("start").addEventListener("change", onChangeHandler); //==everytime the origin, calculate the route again
     document.getElementById("end").addEventListener("change", onChangeHandler); ////========
 
 
-    this.setupPlaceChanged(autocomplete, journeyPoint);
-    
-    setupPlaceChanged(autocomplete, journeyPoint) {
+    setupPlaceChanged(originAutocomplete, "ORIG");
+    setupPlaceChanged(destinationAutocomplete, "DEST");
+
+
+    // Helper function to setup the origin or destination placeID
+    function setupPlaceChanged(autocomplete, journeyPoint) {
         autocomplete.bindTo("bounds", this.map);
         autocomplete.addListener("place_changed", () => {
             const place = autocomplete.getPlace();
@@ -114,12 +115,36 @@ function initMap() {
             }
 
             if (journeyPoint === "ORIG") {
-                this.originPlaceId = place.place_id;
+                originPlaceId = place.place_id;
             } else {
-                this.destinationPlaceId = place.place_id;
+                destinationPlaceId = place.place_id;
             }
             this.route();
     });
+
+    function calculateAndDisplayRoute(directionsService, directionsRenderer) {
+        const start = document.getElementById("start").value;
+        //const start = place;
+        //const userStartInput = document.getElementById("location-info");
+        //const start = document.getElementById("location-info").value;
+        const end = document.getElementById("end").value;
+        directionsService.route(
+          {
+            origin: start,
+            destination: end,
+            travelMode: google.maps.TravelMode.DRIVING,
+          },
+          (response, status) => {
+            if (status === "OK") {
+              directionsRenderer.setDirections(response);
+            } else {
+              window.alert("Directions request failed due to " + status);
+            }
+          }
+    );
+}
+
+
 }
       
 }
