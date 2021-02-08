@@ -10,21 +10,22 @@ import java.util.HashMap;
  */
 public class Cache {
   private HashMap<Integer,HashMap<Integer,GridCell>> dataGrid = new HashMap<>();
+  private int aqDataPointsPerDegree;
 
   public GriddedData getGrid(Coordinates swCorner, Coordinates neCorner) {
     ArrayList<AQDataPoint> data = new ArrayList<>();
-    final int aqDataPointsPerDegree = 1000;
+    aqDataPointsPerDegree = 1000;
 
     // Catch the error here because the servlet cannot throw the Exception type
     try {
       data = getNSWGovData();
     } catch (Exception e) {
       System.out.println(e.getMessage());
-      return convertToGriddedData(dataGrid, aqDataPointsPerDegree, swCorner, neCorner); // return the old grid
+      return convertToGriddedData(swCorner, neCorner); // return the old grid
     }
     
     for (AQDataPoint dataPoint : data) {
-      GridIndex index = getGridIndex(new Coordinates(dataPoint.lng, dataPoint.lat), aqDataPointsPerDegree);
+      GridIndex index = getGridIndex(new Coordinates(dataPoint.lng, dataPoint.lat));
       HashMap<Integer,GridCell> row = dataGrid.getOrDefault(index.row, new HashMap<>());
       GridCell cell = row.getOrDefault(index.col, new GridCell());
       cell.addPoint(dataPoint);
@@ -32,7 +33,7 @@ public class Cache {
       dataGrid.put(index.row, row);
     }
 
-    return convertToGriddedData(dataGrid, aqDataPointsPerDegree, swCorner, neCorner);
+    return convertToGriddedData(swCorner, neCorner);
   }
 
   private ArrayList<AQDataPoint> getNSWGovData() throws Exception {
@@ -40,19 +41,19 @@ public class Cache {
     return adaptor.getAQIData();
   }
 
-  private GridIndex getGridIndex(Coordinates targetCoords, int aqDataPointsPerDegree) {
-    int row = (int) Math.floor(targetCoords.lat * aqDataPointsPerDegree);
-    int col = (int) Math.floor(targetCoords.lng * aqDataPointsPerDegree);
+  private GridIndex getGridIndex(Coordinates targetCoords) {
+    int row = (int) Math.floor(targetCoords.lat * this.aqDataPointsPerDegree);
+    int col = (int) Math.floor(targetCoords.lng * this.aqDataPointsPerDegree);
     return new GridIndex(col,row);
   }
 
   // Note: this function does not support viewports that cross the 180 degree latitude or the poles
-  private GriddedData convertToGriddedData(HashMap<Integer,HashMap<Integer,GridCell>> data, int aqDataPointsPerDegree, Coordinates swCorner, Coordinates neCorner) {
-    GriddedData grid = new GriddedData(aqDataPointsPerDegree);
-    GridIndex swIndex = getGridIndex(swCorner, aqDataPointsPerDegree);
-    GridIndex neIndex = getGridIndex(neCorner, aqDataPointsPerDegree);
+  private GriddedData convertToGriddedData(Coordinates swCorner, Coordinates neCorner) {
+    GriddedData grid = new GriddedData(this.aqDataPointsPerDegree);
+    GridIndex swIndex = getGridIndex(swCorner);
+    GridIndex neIndex = getGridIndex(neCorner);
 
-    for (HashMap.Entry<Integer, HashMap<Integer, GridCell>> rowEntry : data.entrySet()) {
+    for (HashMap.Entry<Integer, HashMap<Integer, GridCell>> rowEntry : this.dataGrid.entrySet()) {
       HashMap<Integer, Double> convertedRow = new HashMap<>();
 
       int rowNum = rowEntry.getKey();
