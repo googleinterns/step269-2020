@@ -24,6 +24,8 @@ public class Cache {
       return convertToGriddedData(swCorner, neCorner); // return the old grid
     }
     
+    dataGrid = new HashMap<>();
+
     for (AQDataPoint dataPoint : data) {
       GridIndex index = getGridIndex(new Coordinates(dataPoint.lng, dataPoint.lat));
       HashMap<Integer,GridCell> row = dataGrid.getOrDefault(index.row, new HashMap<>());
