@@ -27,11 +27,7 @@ public class Cache {
       GridIndex index = getGridIndex(new Coordinates(dataPoint.lng, dataPoint.lat), aqDataPointsPerDegree);
       HashMap<Integer,GridCell> row = dataGrid.getOrDefault(index.row, new HashMap<>());
       GridCell cell = row.getOrDefault(index.col, new GridCell());
-      cell.addPoint(dataPoint);
-      if (index.row == 1153) {
-        System.out.println(index.row + ", " + index.col);
-        System.out.println(cell.averageAQI);
-      }
+      cell.addPoint(dataPoint);\
       row.put(index.col, cell);
       dataGrid.put(index.row, row);
     }
@@ -55,8 +51,6 @@ public class Cache {
     GriddedData grid = new GriddedData(aqDataPointsPerDegree);
     GridIndex swIndex = getGridIndex(swCorner, aqDataPointsPerDegree);
     GridIndex neIndex = getGridIndex(neCorner, aqDataPointsPerDegree);
-    System.out.println("SW: " + swIndex.row + ", " + swIndex.col);
-    System.out.println("NE: " + neIndex.row + ", " + neIndex.col);
     for (HashMap.Entry<Integer, HashMap<Integer, GridCell>> rowEntry : data.entrySet()) {
       HashMap<Integer, Double> convertedRow = new HashMap<>();
 
