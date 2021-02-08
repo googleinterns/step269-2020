@@ -35,8 +35,8 @@ function initMap() {
     //const travelMode = google.maps.TravelMode.DRIVING;
     const directionsRenderer = new google.maps.DirectionsRenderer();
     const directionsService = new google.maps.DirectionsService();
-    const originInput = document.getElementById("origin-input");
-    const destinationInput = document.getElementById("destination-input");
+    const originInput = document.getElementById("origin-search-bar");
+    const destinationInput = document.getElementById("destination-search-bar");
     //const modeSelector = document.getElementById("mode-selector");
 
     // Call setMap() on DirectionsRenderer to bind it to the passed map. 
@@ -59,8 +59,6 @@ function initMap() {
     const destinationAutocomplete = new google.maps.places.Autocomplete(destinationInput);
     destinationAutocomplete.setFields(["place_id"]);
 
-
-
     autocomplete.addListener("place_changed", () => {
         searchMarker.setVisible(false);
         const place = autocomplete.getPlace(); //THE PLACE THAT IS AUTOCOMPLETED
@@ -76,7 +74,6 @@ function initMap() {
             map.setCenter(place.geometry.viewport);
             map.setZoom(17); // 17 used because it is used in a sample in the documentation
         }
-
         setEndpoint(place);
 
         console.log(place); //its a class use .name to refer it 
@@ -95,13 +92,11 @@ function initMap() {
     };
     //BE CARE OF HER ID START AND END HERE!!!!!!!!!!!!!! ==================
     
-    document.getElementById("start").addEventListener("change", onChangeHandler); //==everytime the origin, calculate the route again
-    document.getElementById("end").addEventListener("change", onChangeHandler); ////========
-
-
     setupPlaceChanged(originAutocomplete, "ORIG");
     setupPlaceChanged(destinationAutocomplete, "DEST");
 
+    document.getElementById("start").addEventListener("change", onChangeHandler); //==everytime the origin, calculate the route again
+    document.getElementById("end").addEventListener("change", onChangeHandler); ////========
 
     // Helper function to setup the origin or destination placeID
     function setupPlaceChanged(autocomplete, journeyPoint) {
@@ -110,7 +105,7 @@ function initMap() {
             const place = autocomplete.getPlace();
 
             if (!place.place_id) {
-                window.alert("Please select an option from the dropdown list.");
+                window.alert("Please select an option from the autocomplete dropdown list.");
                 return;
             }
 
@@ -119,35 +114,33 @@ function initMap() {
             } else {
                 destinationPlaceId = place.place_id;
             }
-            this.route();
-    });
+            calculateAndDisplayRoute(directionsService, directionsRenderer);
+        });
+    }
 
     function calculateAndDisplayRoute(directionsService, directionsRenderer) {
+        if (!originPlaceId || !destinationPlaceId) {
+            return;
+        }
         const start = document.getElementById("start").value;
-        //const start = place;
-        //const userStartInput = document.getElementById("location-info");
-        //const start = document.getElementById("location-info").value;
         const end = document.getElementById("end").value;
         directionsService.route(
-          {
-            origin: start,
-            destination: end,
-            travelMode: google.maps.TravelMode.DRIVING,
-          },
-          (response, status) => {
-            if (status === "OK") {
-              directionsRenderer.setDirections(response);
-            } else {
-              window.alert("Directions request failed due to " + status);
+            {
+                origin: { placeId: originPlaceId },
+                destination: { placeId: destinationPlaceId },
+                travelMode: google.maps.TravelMode.DRIVING,
+            },
+            (response, status) => {
+                if (status === "OK") {
+                    directionsRenderer.setDirections(response);
+                } else {
+                    window.alert("Directions request failed due to " + status);
+                }
             }
-          }
-    );
+        );
+    }
 }
 
-
-}
-      
-}
 /*
 function setupPlaceChanged(autocomplete, journeyPoint) {
     autocomplete.bindTo("bounds", this.map);
@@ -167,7 +160,6 @@ function setupPlaceChanged(autocomplete, journeyPoint) {
         this.route();
     });
 }
-*/ 
 
 function calculateAndDisplayRoute(directionsService, directionsRenderer) {
     const start = document.getElementById("start").value;
@@ -190,6 +182,7 @@ function calculateAndDisplayRoute(directionsService, directionsRenderer) {
       }
     );
 }
+*/ 
 
 function toggleAQLayer() {
     aqLayer.setMap(aqLayer.getMap() ? null : map);
