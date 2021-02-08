@@ -19,8 +19,6 @@ function aqLayerControl(controlDiv) {
 }
 
 function initMap() {
-    const directionsRenderer = new google.maps.DirectionsRenderer();
-    const directionsService = new google.maps.DirectionsService();
     map = new google.maps.Map(document.getElementById("map"), {
         center: new google.maps.LatLng(-34.397, 150.644),
         zoom: 8,
@@ -31,6 +29,16 @@ function initMap() {
         streetViewControl: false,
         fullscreenControl: false,
     });
+
+    const originPlaceId = "";
+    const destinationPlaceId = "";
+    //const travelMode = google.maps.TravelMode.DRIVING;
+    const directionsRenderer = new google.maps.DirectionsRenderer();
+    const directionsService = new google.maps.DirectionsService();
+    const originInput = document.getElementById("origin-input");
+    const destinationInput = document.getElementById("destination-input");
+    //const modeSelector = document.getElementById("mode-selector");
+
     // Call setMap() on DirectionsRenderer to bind it to the passed map. 
     directionsRenderer.setMap(map);
     // Put directions in the directions panel
@@ -43,7 +51,18 @@ function initMap() {
     });
     searchMarker.setVisible(false);
     const autocomplete = new google.maps.places.Autocomplete(searchbar);
+
+    // Set Fields 
     autocomplete.setFields(["geometry","name"]);
+    const originAutocomplete = new google.maps.places.Autocomplete(originInput);// <-- this is for autocomplete
+    originAutocomplete.setFields(["place_id"]);
+    const destinationAutocomplete = new google.maps.places.Autocomplete(
+      destinationInput
+    );
+    destinationAutocomplete.setFields(["place_id"]);
+
+
+
     autocomplete.addListener("place_changed", () => {
         searchMarker.setVisible(false);
         const place = autocomplete.getPlace(); //THE PLACE THAT IS AUTOCOMPLETED
@@ -61,6 +80,9 @@ function initMap() {
         }
 
         setEndpoint(place);
+
+        console.log(place); //its a class use .name to refer it 
+        console.log(document.getElementById("start").value);
     })
     // Initialise visualisation
     populateAQVisualisationData();
@@ -74,13 +96,59 @@ function initMap() {
         calculateAndDisplayRoute(directionsService, directionsRenderer);
     };
     //BE CARE OF HER ID START AND END HERE!!!!!!!!!!!!!! ==================
+    
     document.getElementById("start").addEventListener("change", onChangeHandler); //=========
     document.getElementById("end").addEventListener("change", onChangeHandler); ////========
+
+
+    this.setupPlaceChanged(autocomplete, journeyPoint);
+    
+    setupPlaceChanged(autocomplete, journeyPoint) {
+        autocomplete.bindTo("bounds", this.map);
+        autocomplete.addListener("place_changed", () => {
+            const place = autocomplete.getPlace();
+
+            if (!place.place_id) {
+                window.alert("Please select an option from the dropdown list.");
+                return;
+            }
+
+            if (journeyPoint === "ORIG") {
+                this.originPlaceId = place.place_id;
+            } else {
+                this.destinationPlaceId = place.place_id;
+            }
+            this.route();
+    });
 }
+      
+}
+/*
+function setupPlaceChanged(autocomplete, journeyPoint) {
+    autocomplete.bindTo("bounds", this.map);
+    autocomplete.addListener("place_changed", () => {
+        const place = autocomplete.getPlace();
+
+        if (!place.place_id) {
+            window.alert("Please select an option from the dropdown list.");
+            return;
+        }
+
+        if (journeyPoint === "ORIG") {
+            this.originPlaceId = place.place_id;
+        } else {
+            this.destinationPlaceId = place.place_id;
+        }
+        this.route();
+    });
+}
+*/ 
 
 function calculateAndDisplayRoute(directionsService, directionsRenderer) {
     const start = document.getElementById("start").value;
-    const userStartInput = document.getElementById("location-info");
+    //const start = place;
+    //const userStartInput = document.getElementById("location-info");
+    //const start = document.getElementById("location-info").value;
     const end = document.getElementById("end").value;
     directionsService.route(
       {
