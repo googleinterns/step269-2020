@@ -50,14 +50,33 @@ function initMap() {
         anchorPoint: new google.maps.Point(0,-29), // position the marker icon relative to the origin
     });
     searchMarker.setVisible(false);
-    const autocomplete = new google.maps.places.Autocomplete(searchbar);
-
+  
     // Set Fields 
+    const autocomplete = new google.maps.places.Autocomplete(searchbar);
     autocomplete.setFields(["geometry","name"]);
     const originAutocomplete = new google.maps.places.Autocomplete(originInput);// <-- this is for autocomplete
-    originAutocomplete.setFields(["place_id"]);
+    originAutocomplete.setFields(["place_id", "geometry","name"]);
     const destinationAutocomplete = new google.maps.places.Autocomplete(destinationInput);
-    destinationAutocomplete.setFields(["place_id"]);
+    destinationAutocomplete.setFields(["place_id","geometry","name"]);
+
+    destinationAutocomplete.addListener("place_changed", () => {
+        searchMarker.setVisible(false);
+        const place = destinationAutocomplete.getPlace(); //THE PLACE THAT IS AUTOCOMPLETED
+
+        if (!place.geometry) {
+            console.log(`No details available for input '${place.name}'`);
+            return;
+        }
+
+        if (place.geometry.viewport) {
+            map.fitBounds(place.geometry.viewport);
+        } else {
+            map.setCenter(place.geometry.viewport);
+            map.setZoom(17); // 17 used because it is used in a sample in the documentation
+        }
+        setEndpoint(place);
+        //calculateAndDisplayRoute(directionsService, directionsRenderer);
+    })
 
     autocomplete.addListener("place_changed", () => {
         searchMarker.setVisible(false);
@@ -74,10 +93,7 @@ function initMap() {
             map.setCenter(place.geometry.viewport);
             map.setZoom(17); // 17 used because it is used in a sample in the documentation
         }
-        setEndpoint(place);
-
-        console.log(place); //its a class use .name to refer it 
-        console.log(document.getElementById("start").value);
+        setEndpoint(place);;
     })
     // Initialise visualisation
     populateAQVisualisationData();
@@ -91,7 +107,6 @@ function initMap() {
         calculateAndDisplayRoute(directionsService, directionsRenderer);
     };
     //BE CARE OF HER ID START AND END HERE!!!!!!!!!!!!!! ==================
-    
     setupPlaceChanged(originAutocomplete, "ORIG");
     setupPlaceChanged(destinationAutocomplete, "DEST");
 
@@ -122,8 +137,8 @@ function initMap() {
         if (!originPlaceId || !destinationPlaceId) {
             return;
         }
-        const start = document.getElementById("start").value;
-        const end = document.getElementById("end").value;
+        //const start = document.getElementById("start").value;
+        //const end = document.getElementById("end").value;
         directionsService.route(
             {
                 origin: { placeId: originPlaceId },
