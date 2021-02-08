@@ -44,7 +44,7 @@ class AutocompleteDirectionsHandler {
         this.directionsRenderer = new google.maps.DirectionsRenderer();
         this.directionsRenderer.setMap(map);
         // Put directions in the directions panel
-        directionsRenderer.setPanel(document.getElementById("direction-panel"));
+        this.directionsRenderer.setPanel(document.getElementById("direction-panel"));
 
         // Retrieve what was input by user 
         const searchbar = document.getElementById("location-search-bar");
