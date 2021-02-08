@@ -42,8 +42,8 @@ public class Cache {
   }
 
   private GridIndex getGridIndex(Coordinates targetCoords) {
-    int row = (int) Math.floor(targetCoords.lat * this.aqDataPointsPerDegree);
-    int col = (int) Math.floor(targetCoords.lng * this.aqDataPointsPerDegree);
+    int row = (int) (targetCoords.lat * this.aqDataPointsPerDegree);
+    int col = (int) (targetCoords.lng * this.aqDataPointsPerDegree);
     return new GridIndex(col,row);
   }
 
