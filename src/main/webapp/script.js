@@ -82,7 +82,7 @@ function populateAQVisualisationData() {
     const mapBounds = map.getBounds();
     const swCorner = mapBounds.getSouthWest();
     const neCorner = mapBounds.getNorthEast();
-    let fetchURL = `/visualisation?zoom-level=${map.getZoom()}&sw-lat=${swCorner.lat()}&sw-long=${swCorner.lng()}&ne-lat=${neCorner.lat()}&ne-long=${neCorner.lng()}`;
+    let fetchURL = `/visualisation?sw-lat=${swCorner.lat()}&sw-long=${swCorner.lng()}&ne-lat=${neCorner.lat()}&ne-long=${neCorner.lng()}`;
     fetch(fetchURL).then(response => response.json()).then((data) => {
         const aqData = convertGriddedDataToWeightedPoints(data);
         loadHeatmap(aqData);
@@ -112,25 +112,24 @@ function loadHeatmap(data) {
 
 function convertGriddedDataToWeightedPoints(griddedData) {
     const dataGrid = griddedData.data;
-    const originCoords = {lat: griddedData.origin.Latitude, lng: griddedData.origin.Longitude};
-    const resolution = griddedData.resolution;
-
+    const aqDataPointsPerDegree = griddedData.aqDataPointsPerDegree;
+    console.log(griddedData);
     let weightedPoints = [];
-    for (let rowNum = 0; rowNum < dataGrid.length; rowNum++) {
-        // const verticalDistance = resolution / 2 + rowNum * resolution;
-        for (let colNum = 0; colNum < dataGrid[0].length; colNum++) {
-            if (dataGrid[rowNum][colNum] === 0) {
-                continue;
-            }
-            const cellCoords = calcCellCoords(originCoords, rowNum, colNum, resolution);
+    // for (let rowNum = 0; rowNum < dataGrid.length; rowNum++) {
+    //     // const verticalDistance = resolution / 2 + rowNum * resolution;
+    //     for (let colNum = 0; colNum < dataGrid[0].length; colNum++) {
+    //         if (dataGrid[rowNum][colNum] === 0) {
+    //             continue;
+    //         }
+    //         const cellCoords = calcCellCoords(originCoords, rowNum, colNum, resolution);
 
-            //create the WeightedLocation for the heatmap
-            let weightedPoint = {}
-            weightedPoint.location = new google.maps.LatLng(cellCoords.lat, cellCoords.lng);
-            weightedPoint.weight = dataGrid[rowNum][colNum];
-            weightedPoints.push(weightedPoint);
-        }
-    }
+    //         //create the WeightedLocation for the heatmap
+    //         let weightedPoint = {}
+    //         weightedPoint.location = new google.maps.LatLng(cellCoords.lat, cellCoords.lng);
+    //         weightedPoint.weight = dataGrid[rowNum][colNum];
+    //         weightedPoints.push(weightedPoint);
+    //     }
+    // }
     return weightedPoints;
 }
 

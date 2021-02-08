@@ -9,7 +9,7 @@ import java.util.HashMap;
  * only that needed by the servlet and collating the data from multiple sources.
  */
 public class Cache {
-  private HashMap<Integer,HashMap<Integer,GridCell>> dataGrid;
+  private HashMap<Integer,HashMap<Integer,GridCell>> dataGrid = new HashMap<>();
 
   public GriddedData getGrid(Coordinates swCorner, Coordinates neCorner) {
     ArrayList<AQDataPoint> data = new ArrayList<>();
@@ -28,6 +28,10 @@ public class Cache {
       HashMap<Integer,GridCell> row = dataGrid.getOrDefault(index.row, new HashMap<>());
       GridCell cell = row.getOrDefault(index.col, new GridCell());
       cell.addPoint(dataPoint);
+      if (index.row == 1153) {
+        System.out.println(index.row + ", " + index.col);
+        System.out.println(cell.averageAQI);
+      }
       row.put(index.col, cell);
       dataGrid.put(index.row, row);
     }
@@ -46,15 +50,32 @@ public class Cache {
     return new GridIndex(col,row);
   }
 
+  // TODO (Rachel): add check for bounds crossing 180 degree boundary (not needed for NSW data)
   private GriddedData convertToGriddedData(HashMap<Integer,HashMap<Integer,GridCell>> data, int aqDataPointsPerDegree, Coordinates swCorner, Coordinates neCorner) {
     GriddedData grid = new GriddedData(aqDataPointsPerDegree);
-    // work out the range of indices to prune to
-    // should be easy unless the coords cross the 180 degree point, in which case the range between the indices are the ones that get pruned out
     GridIndex swIndex = getGridIndex(swCorner, aqDataPointsPerDegree);
     GridIndex neIndex = getGridIndex(neCorner, aqDataPointsPerDegree);
+    System.out.println("SW: " + swIndex.row + ", " + swIndex.col);
+    System.out.println("NE: " + neIndex.row + ", " + neIndex.col);
+    for (HashMap.Entry<Integer, HashMap<Integer, GridCell>> rowEntry : data.entrySet()) {
+      HashMap<Integer, Double> convertedRow = new HashMap<>();
 
-    for (HashMap.Entry<Integer, HashMap<Integer, GridCell>> entry : data.entrySet()) {
-      continue;
+      int rowNum = rowEntry.getKey();
+      if (rowNum > neIndex.row || rowNum < swIndex.row) {
+        continue;
+      }
+      HashMap<Integer, GridCell> row = rowEntry.getValue();
+      for (HashMap.Entry<Integer, GridCell> cellEntry : row.entrySet()) {
+        int colNum = cellEntry.getKey();
+        if (colNum > neIndex.col || colNum < swIndex.col) {
+          continue;
+        }
+        GridCell cell = cellEntry.getValue();
+        convertedRow.put(colNum,cell.averageAQI);
+      }
+      if (!convertedRow.isEmpty()) {
+        grid.data.put(rowNum, convertedRow);
+      }
     }
     return grid;
   }
