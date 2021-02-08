@@ -9,7 +9,6 @@ import java.util.HashMap;
  */
 public class GriddedData {
   public int aqDataPointsPerDegree; // The number of cells it takes to cover a degree of lng/lat
-  
   public HashMap<Integer,HashMap<Integer,Double>> data;
 
   public GriddedData(int aqDataPointsPerDegree) {

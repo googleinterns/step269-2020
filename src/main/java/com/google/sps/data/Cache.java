@@ -1,6 +1,7 @@
 package com.google.sps.data;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * This class coordinates retrieving information from the data sources needed by
@@ -8,42 +9,30 @@ import java.util.ArrayList;
  * only that needed by the servlet and collating the data from multiple sources.
  */
 public class Cache {
-  private GriddedData dataGrid;
+  private HashMap<Integer,HashMap<Integer,GridCell>> dataGrid;
 
-  public GriddedData getGrid(int zoomLevel, Coordinates swCorner, Coordinates neCorner) {
+  public GriddedData getGrid(Coordinates swCorner, Coordinates neCorner) {
     ArrayList<AQDataPoint> data = new ArrayList<>();
+    final int aqDataPointsPerDegree = 1000;
 
-    // Catch the error here because the servlet cannot throw the Expection type
+    // Catch the error here because the servlet cannot throw the Exception type
     try {
       data = getNSWGovData();
     } catch (Exception e) {
       System.out.println(e.getMessage());
-      return dataGrid; // return the old grid
+      return convertToGriddedData(dataGrid, aqDataPointsPerDegree, swCorner, neCorner); // return the old grid
     }
-
-    Coordinates nwCorner = new Coordinates(swCorner.lng, neCorner.lat);
-    Coordinates seCorner = new Coordinates(neCorner.lng, swCorner.lat);
-    int resolution = 100000;
-    GridIndex lowerRightIndex = getGridIndex(nwCorner, seCorner, resolution);
-    int gridWidth = lowerRightIndex.col + 1;
-    int gridHeight = lowerRightIndex.row + 1;
-    GridCell[][] processingGrid = new GridCell[gridHeight][gridWidth];
-
+    
     for (AQDataPoint dataPoint : data) {
-        GridIndex index = getGridIndex(nwCorner, new Coordinates(dataPoint.lng, dataPoint.lat),resolution);
-        if (index.row >= gridHeight || index.col >= gridWidth) {
-            // The data point is outside the area covered by the grid
-            continue;
-        }
-
-        if (processingGrid[index.row][index.col] == null) {
-            processingGrid[index.row][index.col] = new GridCell();
-        }
-        processingGrid[index.row][index.col].addPoint(dataPoint);
+      GridIndex index = getGridIndex(new Coordinates(dataPoint.lng, dataPoint.lat), aqDataPointsPerDegree);
+      HashMap<Integer,GridCell> row = dataGrid.getOrDefault(index.row, new HashMap<>());
+      GridCell cell = row.getOrDefault(index.col, new GridCell());
+      cell.addPoint(dataPoint);
+      row.put(index.col, cell);
+      dataGrid.put(index.row, row);
     }
 
-    dataGrid = new GriddedData(processingGrid, resolution, nwCorner);
-    return dataGrid;
+    return convertToGriddedData(dataGrid, aqDataPointsPerDegree, swCorner, neCorner);
   }
 
   private ArrayList<AQDataPoint> getNSWGovData() throws Exception {
@@ -51,40 +40,22 @@ public class Cache {
     return adaptor.getAQIData();
   }
 
-  private GridIndex getGridIndex(Coordinates originCoords, Coordinates targetCoords, int resolution) {
-    /*
-    * Layout of coordinates:
-    * originCoords -------------------- sameLngCoords
-    *       |                                  |
-    *       |                                  |
-    *       |                                  |
-    * sameLatCoords -------------------- targetCoords
-    * 
-    * Note: Due to the curvature of the earth, the actual shape bounded by the four
-    * points may not be exactly rectangular, however it should be close enough
-    * for small distances.
-    */
-    Coordinates sameLatCoords = new Coordinates(originCoords.lng,targetCoords.lat);
-    Coordinates sameLngCoords = new Coordinates(targetCoords.lng,originCoords.lat);
-
-    double latDistance = haversineDistance(originCoords, sameLngCoords);
-    double lngDistance = haversineDistance(originCoords, sameLatCoords);
-
-    int col = (int) Math.floor(latDistance / resolution);
-    int row = (int) Math.floor(lngDistance / resolution);
-
+  private GridIndex getGridIndex(Coordinates targetCoords, int aqDataPointsPerDegree) {
+    int row = (int) Math.floor(targetCoords.lng + aqDataPointsPerDegree);
+    int col = (int) Math.floor(targetCoords.lat + aqDataPointsPerDegree);
     return new GridIndex(col,row);
   }
 
-  private double haversineDistance(Coordinates point1, Coordinates point2) {
-    final int R = 6371000; // Radius of earth in metres
-    double rlat1 = Math.toRadians(point1.lat);
-    double rlat2 = Math.toRadians(point2.lat);
-    double difflat = rlat2 - rlat1;
-    double difflng = Math.toRadians(point2.lng - point1.lng);
-    double a = Math.pow(Math.sin(difflat / 2.0), 2) + Math.cos(rlat1) * Math.cos(rlat2) * Math.pow(Math.sin(difflng / 2.0),2);
-    double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    double distance = R * c;
-    return distance;
+  private GriddedData convertToGriddedData(HashMap<Integer,HashMap<Integer,GridCell>> data, int aqDataPointsPerDegree, Coordinates swCorner, Coordinates neCorner) {
+    GriddedData grid = new GriddedData(aqDataPointsPerDegree);
+    // work out the range of indices to prune to
+    // should be easy unless the coords cross the 180 degree point, in which case the range between the indices are the ones that get pruned out
+    GridIndex swIndex = getGridIndex(swCorner, aqDataPointsPerDegree);
+    GridIndex neIndex = getGridIndex(neCorner, aqDataPointsPerDegree);
+
+    for (HashMap.Entry<Integer, HashMap<Integer, GridCell>> entry : data.entrySet()) {
+      continue;
+    }
+    return grid;
   }
 }
