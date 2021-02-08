@@ -53,21 +53,18 @@ public class Cache {
     GridIndex swIndex = getGridIndex(swCorner);
     GridIndex neIndex = getGridIndex(neCorner);
 
-    for (HashMap.Entry<Integer, HashMap<Integer, GridCell>> rowEntry : this.dataGrid.entrySet()) {
+    for (int rowNum = swIndex.row; rowNum <= neIndex.row; rowNum ++) {
       HashMap<Integer, Double> convertedRow = new HashMap<>();
-
-      int rowNum = rowEntry.getKey();
-      if (rowNum > neIndex.row || rowNum < swIndex.row) {
+      HashMap<Integer, GridCell> row = this.dataGrid.get(rowNum);
+      if (row == null) {
         continue;
       }
-      HashMap<Integer, GridCell> row = rowEntry.getValue();
-      for (HashMap.Entry<Integer, GridCell> cellEntry : row.entrySet()) {
-        int colNum = cellEntry.getKey();
-        if (colNum > neIndex.col || colNum < swIndex.col) {
+      for (int colNum = swIndex.col; colNum <= neIndex.col; colNum ++) {
+        GridCell cell = row.get(colNum);
+        if (cell == null) {
           continue;
         }
-        GridCell cell = cellEntry.getValue();
-        convertedRow.put(colNum,cell.averageAQI);
+        convertedRow.put(colNum, cell.averageAQI);
       }
       if (!convertedRow.isEmpty()) {
         grid.data.put(rowNum, convertedRow);
