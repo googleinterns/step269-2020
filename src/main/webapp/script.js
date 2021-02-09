@@ -141,6 +141,12 @@ function calcCellCoords(rowNum, colNum, aqDataPointsPerDegree) {
     return {lat:cellLat, lng:cellLng};
 }
 
+function getGridIndex(lat, lng, aqDataPointsPerDegree) {
+    row = Math.floor(lat * aqDataPointsPerDegree);
+    col = Math.floor(lng * aqDataPointsPerDegree);
+    return {row:row, col:col};
+}
+
 function setEndPoint(place) {
     const locationInfo = document.getElementById("location-info");
     locationInfo.style.visibility = "visible"; 
