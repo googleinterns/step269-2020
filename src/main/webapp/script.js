@@ -40,7 +40,7 @@ class AutocompleteDirectionsHandler {
         this.map = map;
         this.originPlaceId = "";
         this.destinationPlaceId = "";
-        this.travelMode = google.maps.TravelMode.WALKING; ////BECASE  HERE DONT HAVE IN INDEX 
+        this.travelMode = google.maps.TravelMode.DRIVING; ////BECASE  HERE DONT HAVE IN INDEX 
         this.directionsService = new google.maps.DirectionsService();
         this.directionsRenderer = new google.maps.DirectionsRenderer();
         this.directionsRenderer.setMap(map);
@@ -90,26 +90,14 @@ class AutocompleteDirectionsHandler {
             setEndPoint(place);
         })
 
-        this.setupClickListener(
-            "changemode-walking",
-            google.maps.TravelMode.WALKING
-        );
-        this.setupClickListener(
-            "changemode-transit",
-            google.maps.TravelMode.TRANSIT
-        );
-        this.setupClickListener(
-            "changemode-driving",
-            google.maps.TravelMode.DRIVING
-        );
+        // Detect if user clicks another travel mode, and changes the mode on the route returned
+        this.detectClickListener("changemode-walking", google.maps.TravelMode.WALKING);
+        this.detectClickListener("changemode-transit", google.maps.TravelMode.TRANSIT);
+        this.detectClickListener("changemode-driving", google.maps.TravelMode.DRIVING); 
         
-        //put in user inputs and calculate direction
-        this.setupPlaceChangedListener(originAutocomplete, "ORIG");
-        this.setupPlaceChangedListener(destinationAutocomplete, "DEST");
-
-        this.map.controls[google.maps.ControlPosition.TOP_LEFT].push(originInput);
-        this.map.controls[google.maps.ControlPosition.TOP_LEFT].push(destinationInput);
-        this.map.controls[google.maps.ControlPosition.TOP_LEFT].push(modeSelector);
+        // Detect if user has input origin/destination and calculate direction
+        this.detectPlaceChangedListener(originAutocomplete, "ORIG");
+        this.detectPlaceChangedListener(destinationAutocomplete, "DEST");
 
         // Initialise visualisation when the bounds of the map changed.
         // map.getBounds() is undefined until the map tiles have finished loading,
@@ -130,16 +118,15 @@ class AutocompleteDirectionsHandler {
     }
 
     // Sets a listener on a radio button to change the travel mode on Places Autocomplete.
-    //NOT IMPLEMENTED IN HTML YET 
-    setupClickListener(id, mode) {
+    detectClickListener(id, mode) {
         const radioButton = document.getElementById(id);
         radioButton.addEventListener("click", () => {
           this.travelMode = mode;
-          this.route();
+          this.calculateAndDisplayRoute();
         });
     }
 
-    setupPlaceChangedListener(autocompletedInput, journeyPoint) {
+    detectPlaceChangedListener(autocompletedInput, journeyPoint) {
         autocompletedInput.bindTo("bounds", this.map);
         autocompletedInput.addListener("place_changed", () => {
             const place = autocompletedInput.getPlace();
@@ -154,11 +141,11 @@ class AutocompleteDirectionsHandler {
             } else {
               this.destinationPlaceId = place.place_id;
             }
-            this.route();
+            this.calculateAndDisplayRoute();
           });
     }
 
-    route() {
+    calculateAndDisplayRoute() {
         if (!this.originPlaceId || !this.destinationPlaceId) {
             return;
         }
