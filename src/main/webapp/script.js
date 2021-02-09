@@ -93,14 +93,14 @@ function populateAQVisualisationData() {
 function loadHeatmap(data) {
     if (!aqLayer) {
         aqLayer = new google.maps.visualization.HeatmapLayer({
-            // gradient: [
-            //     "rgba(65,169,60,0)",
-            //     "rgba(65, 169, 60, 1)",
-            //     "rgba(238, 201, 0, 1)",
-            //     "rgba(228, 116, 0, 1)",
-            //     "rgba(186, 0, 41, 1)",
-            //     "rgba(86, 3, 23, 1)",
-            // ],
+            gradient: [
+                "rgba(65,169,60,0)",
+                "rgba(65, 169, 60, 1)",
+                "rgba(238, 201, 0, 1)",
+                "rgba(228, 116, 0, 1)",
+                "rgba(186, 0, 41, 1)",
+                "rgba(86, 3, 23, 1)",
+            ],
             maxIntensity: 200,
             dissipating: true,
             radius: 10, // arbitrary value
