@@ -21,11 +21,13 @@
     <div id="sidebar">
       <!-- The top "nav" in the sidebar -->
       <div class="topnav">
-        <input id="origin-input" class="userInput" type="text" placeholder="Enter an origin location"/>
-        <input id="destination-input" class="userInput" type="text" placeholder="Enter a destination location"/>
         <div class="search-container">
-          <input type="text" placeholder="Search a location..." name="search" id="location-search-bar" alt="Search location">
+          <input type="text" placeholder="Search a location for its infomation..." name="search" id="location-search-bar" alt="Search location">
           <button class="button Search" id="location-search-button" onClick="searchLocation()"><i class="material-icons">search</i></button>
+        </div>
+        <div>
+          <input id="origin-input" class="userInput" type="text" placeholder="Enter an origin location"/>
+          <input id="destination-input" class="userInput" type="text" placeholder="Enter a destination location"/>
         </div>
         <div id="feature-buttons-container" class="flex-container">
           <button class="feature-button" id="clean-air-button" alt="Find rest stops with clean air near this location">Clean air near here</button>

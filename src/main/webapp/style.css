@@ -39,7 +39,7 @@ body {
 .topnav .search-container {
   box-shadow: 0 2px 4px rgb(0 0 0 / 20%), 0 -1px 0px rgb(0 0 0 / 2%);
   display: flex;
-  margin: 0 10px 0 10px;
+  margin: 5px 10px 5px 10px;
 }
 
 .topnav input[type=text] {
@@ -88,17 +88,9 @@ button:hover {
   flex-grow: 1;
 }
 
-#origin-search-bar {
-  flex-grow: 1;
-}
-
-#origin-search-bar {
-  flex-grow: 1;
-}
-
 .feature-button {
   flex: 1;
-  margin: 10px 5px 0 5px;
+  margin: 10px 0 5px 10px;
 }
 
 #toggle-sidebar {
@@ -126,31 +118,43 @@ button:hover {
 }
 
 .userInput {
-  margin-top: 10px;
+  /*margin-top: 10px;*/
+  margin: 5px 10px 5px 10px;
   border: 1px solid transparent;
   border-radius: 2px 0 0 2px;
   box-sizing: border-box;
   -moz-box-sizing: border-box;
   height: 32px;
   outline: none;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 4px rgb(0 0 0 / 20%), 0 -1px 0px rgb(0 0 0 / 2%);
 }
 
 #origin-input,
-#destination-input {
+#destination-input, 
+#location-search-bar {
   background-color: #fff;
   font-family: Roboto;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 300;
-  margin-left: 12px;
+  margin-left: 10px;
   padding: 0 11px 0 13px;
   text-overflow: ellipsis;
   width: 200px;
 }
 
+/* When clicked, border turns blue to tell user is typing in the selected input box. */
+/* Note to self: lookings kinda ugly only works on location serach bar, havent detected reason yet*/
 #origin-input:focus,
-#destination-input:focus {
+#destination-input:focus,
+#location-search-bar:focus {
   border-color: #4d90fe;
+  border: 7px
+}
+
+#mode-selector {
+  font-family: Roboto;
+  font-size: 14px;
+  font-weight: 300;
 }
 
 .main {

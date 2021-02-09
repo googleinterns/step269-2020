@@ -20,8 +20,6 @@ function aqLayerControl(controlDiv) {
 }
 
 function initMap() {
-    const directionsRenderer = new google.maps.DirectionsRenderer();
-    const directionsService = new google.maps.DirectionsService();
     map = new google.maps.Map(document.getElementById("map"), {
         center: new google.maps.LatLng(-34.397, 150.644),
         zoom: 8,
@@ -40,14 +38,15 @@ class AutocompleteDirectionsHandler {
         this.map = map;
         this.originPlaceId = "";
         this.destinationPlaceId = "";
-        this.travelMode = google.maps.TravelMode.DRIVING; ////BECASE  HERE DONT HAVE IN INDEX 
+        this.travelMode = google.maps.TravelMode.DRIVING; // Set default mode as Driving.
         this.directionsService = new google.maps.DirectionsService();
         this.directionsRenderer = new google.maps.DirectionsRenderer();
         this.directionsRenderer.setMap(map);
+        
         // Put directions in the directions panel
         this.directionsRenderer.setPanel(document.getElementById("direction-panel"));
 
-        // Retrieve what was input by user 
+        // Retrieve what was input by user for the location search bar.  
         const searchbar = document.getElementById("location-search-bar");
         searchMarker = new google.maps.Marker({
             map,
