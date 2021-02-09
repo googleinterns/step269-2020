@@ -154,6 +154,7 @@ class AutocompleteDirectionsHandler {
                 origin: { placeId: this.originPlaceId },
                 destination: { placeId: this.destinationPlaceId },
                 travelMode: this.travelMode,
+                provideRouteAlternatives: true
             },
             (response, status) => {
                 if (status === "OK") {
