@@ -21,6 +21,8 @@
     <div id="sidebar">
       <!-- The top "nav" in the sidebar -->
       <div class="topnav">
+        <input id="origin-input" class="userInput" type="text" placeholder="Enter an origin location"/>
+        <input id="destination-input" class="userInput" type="text" placeholder="Enter a destination location"/>
         <div class="search-container">
           <input type="text" placeholder="Search a location..." name="search" id="location-search-bar" alt="Search location">
           <button class="button Search" id="location-search-button" onClick="searchLocation()"><i class="material-icons">search</i></button>
@@ -30,9 +32,19 @@
           <button class="feature-button" id="directions" onClick="showRoutes()" alt="Plan a route to this location">Plan route</button>
           <button class="feature-button" id="close-directions" onClick="hideRoutes()">Close directions</button>
         </div>
+        <div id="mode-selector" class="userInput">
+          <input type="radio" name="type" id="changemode-walking" checked="checked"/>
+          <label for="changemode-walking">Walking</label>
+  
+          <input type="radio" name="type" id="changemode-transit" />
+          <label for="changemode-transit">Transit</label>
+  
+          <input type="radio" name="type" id="changemode-driving" />
+          <label for="changemode-driving">Driving</label>
+        </div>
       </div>
-      
       <div id="location-info"></div>
+      <div id="direction-panel"></div>
     </div>
     <button id="toggle-sidebar" onClick="toggleSidebar()"><i class="material-icons">navigate_before</i></button>
   </div>

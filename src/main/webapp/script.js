@@ -20,6 +20,8 @@ function aqLayerControl(controlDiv) {
 }
 
 function initMap() {
+    const directionsRenderer = new google.maps.DirectionsRenderer();
+    const directionsService = new google.maps.DirectionsService();
     map = new google.maps.Map(document.getElementById("map"), {
         center: new google.maps.LatLng(-34.397, 150.644),
         zoom: 8,
@@ -30,48 +32,152 @@ function initMap() {
         streetViewControl: false,
         fullscreenControl: false,
     });
-    // Initialise places autocomplete in search bar
-    const searchbar = document.getElementById("location-search-bar");
-    searchMarker = new google.maps.Marker({
-        map,
-        anchorPoint: new google.maps.Point(0,-29), // position the marker icon relative to the origin
-    });
-    searchMarker.setVisible(false);
-    const autocomplete = new google.maps.places.Autocomplete(searchbar);
-    autocomplete.setFields(["geometry","name"]);
-    autocomplete.addListener("place_changed", () => {
-        searchMarker.setVisible(false);
-        const place = autocomplete.getPlace();
+    new AutocompleteDirectionsHandler(map);
+}
 
-        if (!place.geometry) {
-            console.log(`No details available for input '${place.name}'`);
+class AutocompleteDirectionsHandler {
+    constructor(map) {
+        this.map = map;
+        this.originPlaceId = "";
+        this.destinationPlaceId = "";
+        this.travelMode = google.maps.TravelMode.WALKING; ////BECASE  HERE DONT HAVE IN INDEX 
+        this.directionsService = new google.maps.DirectionsService();
+        this.directionsRenderer = new google.maps.DirectionsRenderer();
+        this.directionsRenderer.setMap(map);
+        // Put directions in the directions panel
+        this.directionsRenderer.setPanel(document.getElementById("direction-panel"));
+
+        // Retrieve what was input by user 
+        const searchbar = document.getElementById("location-search-bar");
+        searchMarker = new google.maps.Marker({
+            map,
+            anchorPoint: new google.maps.Point(0,-29), // position the marker icon relative to the origin
+        });
+        searchMarker.setVisible(false);
+
+        //const originInput = document.getElementById("origin-search-bar");
+        //const destinationInput = document.getElementById("destination-search-bar");
+        const originInput = document.getElementById("origin-input");
+        const destinationInput = document.getElementById("destination-input");
+        const modeSelector = document.getElementById("mode-selector"); ////BECASE  HERE DONT HAVE IN INDEX 
+
+        // Initialise places autocomplete in search bar
+        const autocomplete = new google.maps.places.Autocomplete(searchbar);
+        autocomplete.setFields(["geometry","name", "place_id"]);
+        const originAutocomplete = new google.maps.places.Autocomplete(originInput);
+        originAutocomplete.setFields(["place_id"]);
+        const destinationAutocomplete = new google.maps.places.Autocomplete(destinationInput);
+        destinationAutocomplete.setFields(["place_id"]);
+
+
+        //for individual search and marker function, temporarily contained here for test runs
+        autocomplete.addListener("place_changed", () => {
+            searchMarker.setVisible(false);
+            const place = autocomplete.getPlace(); //THE PLACE THAT IS AUTOCOMPLETED -> for marker and single search piuposes
+
+            if (!place.geometry) {
+                console.log(`No details available for input '${place.name}'`);
+                return;
+            }
+
+            if (place.geometry.viewport) {
+                map.fitBounds(place.geometry.viewport);
+            } else {
+                map.setCenter(place.geometry.viewport);
+                map.setZoom(17); // 17 used because it is used in a sample in the documentation
+            }
+
+            setEndPoint(place);
+        })
+
+        this.setupClickListener(
+            "changemode-walking",
+            google.maps.TravelMode.WALKING
+        );
+        this.setupClickListener(
+            "changemode-transit",
+            google.maps.TravelMode.TRANSIT
+        );
+        this.setupClickListener(
+            "changemode-driving",
+            google.maps.TravelMode.DRIVING
+        );
+        
+        //put in user inputs and calculate direction
+        this.setupPlaceChangedListener(originAutocomplete, "ORIG");
+        this.setupPlaceChangedListener(destinationAutocomplete, "DEST");
+
+        this.map.controls[google.maps.ControlPosition.TOP_LEFT].push(originInput);
+        this.map.controls[google.maps.ControlPosition.TOP_LEFT].push(destinationInput);
+        this.map.controls[google.maps.ControlPosition.TOP_LEFT].push(modeSelector);
+
+        // Initialise visualisation when the bounds of the map changed.
+        // map.getBounds() is undefined until the map tiles have finished loading,
+        // at which point the bounds change
+        google.maps.event.addListener(map, 'bounds_changed', function() {
+            if (refreshAQLayerTimeout) {
+                clearTimeout(refreshAQLayerTimeout);
+            }
+            refreshAQLayerTimeout = setTimeout(function() {
+                populateAQVisualisationData();
+            }, 500);
+        });
+
+        const aqLayerControlDiv = document.createElement("div");
+        aqLayerControl(aqLayerControlDiv, map);
+        this.map.controls[google.maps.ControlPosition.RIGHT_TOP].push(aqLayerControlDiv);
+
+    }
+
+    // Sets a listener on a radio button to change the travel mode on Places Autocomplete.
+    //NOT IMPLEMENTED IN HTML YET 
+    setupClickListener(id, mode) {
+        const radioButton = document.getElementById(id);
+        radioButton.addEventListener("click", () => {
+          this.travelMode = mode;
+          this.route();
+        });
+    }
+
+    setupPlaceChangedListener(autocompletedInput, journeyPoint) {
+        autocompletedInput.bindTo("bounds", this.map);
+        autocompletedInput.addListener("place_changed", () => {
+            const place = autocompletedInput.getPlace();
+      
+            if (!place.place_id) {
+              window.alert("Please select an option from the dropdown list.");
+              return;
+            }
+      
+            if (journeyPoint === "ORIG") {
+              this.originPlaceId = place.place_id;
+            } else {
+              this.destinationPlaceId = place.place_id;
+            }
+            this.route();
+          });
+    }
+
+    route() {
+        if (!this.originPlaceId || !this.destinationPlaceId) {
             return;
         }
-
-        if (place.geometry.viewport) {
-            map.fitBounds(place.geometry.viewport);
-        } else {
-            map.setCenter(place.geometry.viewport);
-            map.setZoom(17); // 17 used because it is used in a sample in the documentation
-        }
-
-        setEndPoint(place);
-    })
-    // Initialise visualisation when the bounds of the map changed.
-    // map.getBounds() is undefined until the map tiles have finished loading,
-    // at which point the bounds change
-    google.maps.event.addListener(map, 'bounds_changed', function() {
-        if (refreshAQLayerTimeout) {
-            clearTimeout(refreshAQLayerTimeout);
-        }
-        refreshAQLayerTimeout = setTimeout(function() {
-            populateAQVisualisationData();
-        }, 500);
-    });
-
-    const aqLayerControlDiv = document.createElement("div");
-    aqLayerControl(aqLayerControlDiv, map);
-    map.controls[google.maps.ControlPosition.RIGHT_TOP].push(aqLayerControlDiv);
+        const me = this;
+        this.directionsService.route(
+            {
+                origin: { placeId: this.originPlaceId },
+                destination: { placeId: this.destinationPlaceId },
+                travelMode: this.travelMode,
+            },
+            (response, status) => {
+                if (status === "OK") {
+                    me.directionsRenderer.setDirections(response);
+                } else {
+                    window.alert("Directions request failed due to " + status);
+                }
+            }
+        );   
+    }
 }
 
 function toggleAQLayer() {
