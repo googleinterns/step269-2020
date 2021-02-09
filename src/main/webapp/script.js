@@ -129,8 +129,8 @@ class AutocompleteDirectionsHandler {
 
     setupPlaceChangedListener(autocompletedInput, journeyPoint) {
         autocompletedInput.bindTo("bounds", this.map);
-        autocomplete.addListener("place_changed", () => {
-            const place = autocomplete.getPlace();
+        autocompletedInput.addListener("place_changed", () => {
+            const place = autocompletedInput.getPlace();
       
             if (!place.place_id) {
               window.alert("Please select an option from the dropdown list.");
