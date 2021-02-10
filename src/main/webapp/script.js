@@ -30,48 +30,139 @@ function initMap() {
         streetViewControl: false,
         fullscreenControl: false,
     });
-    // Initialise places autocomplete in search bar
-    const searchbar = document.getElementById("location-search-bar");
-    searchMarker = new google.maps.Marker({
-        map,
-        anchorPoint: new google.maps.Point(0,-29), // position the marker icon relative to the origin
-    });
-    searchMarker.setVisible(false);
-    const autocomplete = new google.maps.places.Autocomplete(searchbar);
-    autocomplete.setFields(["geometry","name"]);
-    autocomplete.addListener("place_changed", () => {
-        searchMarker.setVisible(false);
-        const place = autocomplete.getPlace();
+    new AutocompleteDirectionsHandler(map);
+}
 
-        if (!place.geometry) {
-            console.log(`No details available for input '${place.name}'`);
+class AutocompleteDirectionsHandler {
+    constructor(map) {
+        this.map = map;
+        this.originPlaceId = "";
+        this.destinationPlaceId = "";
+        this.travelMode = google.maps.TravelMode.DRIVING; // Set default mode as Driving.
+        this.directionsService = new google.maps.DirectionsService();
+        this.directionsRenderer = new google.maps.DirectionsRenderer();
+        this.directionsRenderer.setMap(map);
+        
+        // Put directions in the directions panel
+        this.directionsRenderer.setPanel(document.getElementById("direction-panel"));
+
+        // Retrieve what was input by user for the location search bar.  
+        const searchbar = document.getElementById("location-search-bar");
+        searchMarker = new google.maps.Marker({
+            map,
+            anchorPoint: new google.maps.Point(0,-29), // position the marker icon relative to the origin
+        });
+        searchMarker.setVisible(false);
+
+        const originInput = document.getElementById("origin-input");
+        const destinationInput = document.getElementById("destination-input");
+        const modeSelector = document.getElementById("mode-selector"); 
+
+        // Initialise places autocomplete in search bar
+        const autocomplete = new google.maps.places.Autocomplete(searchbar);
+        autocomplete.setFields(["geometry","name", "place_id"]);
+        const originAutocomplete = new google.maps.places.Autocomplete(originInput);
+        originAutocomplete.setFields(["place_id"]);
+        const destinationAutocomplete = new google.maps.places.Autocomplete(destinationInput);
+        destinationAutocomplete.setFields(["place_id"]);
+
+
+        //for individual search and marker function, temporarily contained here for test runs
+        autocomplete.addListener("place_changed", () => {
+            searchMarker.setVisible(false);
+            const place = autocomplete.getPlace(); 
+
+            if (!place.geometry) {
+                console.log(`No details available for input '${place.name}'`);
+                return;
+            }
+
+            if (place.geometry.viewport) {
+                map.fitBounds(place.geometry.viewport);
+            } else {
+                map.setCenter(place.geometry.viewport);
+                map.setZoom(17); // 17 used because it is used in a sample in the documentation
+            }
+
+            setEndPoint(place);
+        })
+
+        // Detect if user clicks another travel mode, and changes the mode on the route returned
+        this.detectClickListener("changemode-walking", google.maps.TravelMode.WALKING);
+        this.detectClickListener("changemode-transit", google.maps.TravelMode.TRANSIT);
+        this.detectClickListener("changemode-driving", google.maps.TravelMode.DRIVING); 
+        
+        // Detect if user has input origin/destination and calculate direction
+        this.detectPlaceChangedListener(originAutocomplete, "ORIG");
+        this.detectPlaceChangedListener(destinationAutocomplete, "DEST");
+
+        // Initialise visualisation when the bounds of the map changed.
+        // map.getBounds() is undefined until the map tiles have finished loading,
+        // at which point the bounds change
+        google.maps.event.addListener(map, 'bounds_changed', function() {
+            if (refreshAQLayerTimeout) {
+                clearTimeout(refreshAQLayerTimeout);
+            }
+            refreshAQLayerTimeout = setTimeout(function() {
+                populateAQVisualisationData();
+            }, 500);
+        });
+
+        const aqLayerControlDiv = document.createElement("div");
+        aqLayerControl(aqLayerControlDiv, map);
+        this.map.controls[google.maps.ControlPosition.RIGHT_TOP].push(aqLayerControlDiv);
+
+    }
+
+    // Sets a listener on a radio button to change the travel mode on Places Autocomplete.
+    detectClickListener(id, mode) {
+        const radioButton = document.getElementById(id);
+        radioButton.addEventListener("click", () => {
+          this.travelMode = mode;
+          this.calculateAndDisplayRoute();
+        });
+    }
+
+    detectPlaceChangedListener(autocompletedInput, journeyPoint) {
+        autocompletedInput.bindTo("bounds", this.map);
+        autocompletedInput.addListener("place_changed", () => {
+            const place = autocompletedInput.getPlace();
+      
+            if (!place.place_id) {
+              window.alert("Please select an option from the dropdown list.");
+              return;
+            }
+      
+            if (journeyPoint === "ORIG") {
+              this.originPlaceId = place.place_id;
+            } else {
+              this.destinationPlaceId = place.place_id;
+            }
+            this.calculateAndDisplayRoute();
+          });
+    }
+
+    calculateAndDisplayRoute() {
+        if (!this.originPlaceId || !this.destinationPlaceId) {
             return;
         }
-
-        if (place.geometry.viewport) {
-            map.fitBounds(place.geometry.viewport);
-        } else {
-            map.setCenter(place.geometry.viewport);
-            map.setZoom(17); // 17 used because it is used in a sample in the documentation
-        }
-
-        setEndPoint(place);
-    })
-    // Initialise visualisation when the bounds of the map changed.
-    // map.getBounds() is undefined until the map tiles have finished loading,
-    // at which point the bounds change
-    google.maps.event.addListener(map, 'bounds_changed', function() {
-        if (refreshAQLayerTimeout) {
-            clearTimeout(refreshAQLayerTimeout);
-        }
-        refreshAQLayerTimeout = setTimeout(function() {
-            populateAQVisualisationData();
-        }, 500);
-    });
-
-    const aqLayerControlDiv = document.createElement("div");
-    aqLayerControl(aqLayerControlDiv, map);
-    map.controls[google.maps.ControlPosition.RIGHT_TOP].push(aqLayerControlDiv);
+        const me = this;
+        this.directionsService.route(
+            {
+                origin: { placeId: this.originPlaceId },
+                destination: { placeId: this.destinationPlaceId },
+                travelMode: this.travelMode,
+                provideRouteAlternatives: true
+            },
+            (response, status) => {
+                if (status === "OK") {
+                    me.directionsRenderer.setDirections(response);
+                } else {
+                    window.alert("Directions request failed due to " + status);
+                }
+            }
+        );   
+    }
 }
 
 function toggleAQLayer() {
