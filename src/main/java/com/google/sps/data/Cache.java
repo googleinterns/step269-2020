@@ -18,10 +18,15 @@ public class Cache {
 
     // Catch the error here because the servlet cannot throw the Exception type
     try {
-      data = getNSWGovData();
+      data.addAll(getNSWGovData());
     } catch (Exception e) {
       System.out.println(e.getMessage());
-      return convertToGriddedData(swCorner, neCorner); // return the old grid
+    }
+
+    try {
+      data.addAll(getOpenAQData());
+    } catch (Exception e) {
+      System.out.println(e.getMessage());
     }
     
     dataGrid = new HashMap<>();
@@ -55,6 +60,11 @@ public class Cache {
     return adaptor.getAQIData();
   }
 
+  private ArrayList<AQDataPoint> getOpenAQData() throws Exception {
+    OpenAQAdaptor adaptor = new OpenAQAdaptor();
+    return adaptor.getAQIData();
+  }
+  
   private GridIndex getGridIndex(Coordinates targetCoords) {
     int row = (int) (targetCoords.lat * this.aqDataPointsPerDegree);
     int col = (int) (targetCoords.lng * this.aqDataPointsPerDegree);
