@@ -29,11 +29,6 @@ public class Cache {
     for (AQDataPoint dataPoint : data) {
       GridIndex index = getGridIndex(new Coordinates(dataPoint.lng, dataPoint.lat));
       addDataPointWithWeighting(dataPoint, 5, index);
-      // HashMap<Integer,GridCell> row = dataGrid.getOrDefault(index.row, new HashMap<>());
-      // GridCell cell = row.getOrDefault(index.col, new GridCell());
-      // cell.addPoint(dataPoint);
-      // row.put(index.col, cell);
-      // dataGrid.put(index.row, row);
     }
 
     return convertToGriddedData(swCorner, neCorner);
@@ -44,7 +39,7 @@ public class Cache {
     int centreCol = centreCellIndex.col;
     for (int ring = numRings -1; ring >= 0; ring--) {
       for (int rowNum = centreRow - ring; rowNum <= centreRow + ring; rowNum ++) {
-        HashMap<Integer,GridCell> row = dataGrid.getOrDefault(rowNum, new HashMap<>());
+        HashMap<Integer, GridCell> row = dataGrid.getOrDefault(rowNum, new HashMap<>());
         for (int colNum = centreCol - ring; colNum <= centreCol + ring; colNum ++) {
           GridCell cell = row.getOrDefault(colNum, new GridCell());
           cell.addPoint(dataPoint);

@@ -103,7 +103,7 @@ function loadHeatmap(data) {
             ],
             maxIntensity: 200,
             dissipating: true,
-            radius: 10, // arbitrary value
+            radius: 10, // Arbitrary value.
         });
     }
     aqLayer.setData(data);
@@ -112,7 +112,6 @@ function loadHeatmap(data) {
 
 function convertGriddedDataToWeightedPoints(griddedData) {
     const dataGrid = griddedData.data;
-    console.log(dataGrid);
     const aqDataPointsPerDegree = griddedData.aqDataPointsPerDegree;
     let weightedPoints = [];
 
