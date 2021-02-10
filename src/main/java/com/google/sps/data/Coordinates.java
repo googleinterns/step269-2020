@@ -6,10 +6,10 @@ import com.google.gson.annotations.SerializedName;
  * This class represents the coordinates of a site location.
  */
 public class Coordinates {
-  @SerializedName(value = "Longitude")
+  @SerializedName(value = "Longitude", alternate = {"longitude"})
   public double lng;
 
-  @SerializedName(value = "Latitude")
+  @SerializedName(value = "Latitude", alternate = {"latitude"})
   public double lat;
   
   public Coordinates(double lng, double lat) {
