@@ -103,7 +103,7 @@ function loadHeatmap(data) {
             ],
             maxIntensity: 200,
             dissipating: true,
-            radius: 100, // arbitrary value used to make the points easily visible
+            radius: 10, // Arbitrary value.
         });
     }
     aqLayer.setData(data);

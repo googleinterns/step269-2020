@@ -28,14 +28,26 @@ public class Cache {
 
     for (AQDataPoint dataPoint : data) {
       GridIndex index = getGridIndex(new Coordinates(dataPoint.lng, dataPoint.lat));
-      HashMap<Integer,GridCell> row = dataGrid.getOrDefault(index.row, new HashMap<>());
-      GridCell cell = row.getOrDefault(index.col, new GridCell());
-      cell.addPoint(dataPoint);
-      row.put(index.col, cell);
-      dataGrid.put(index.row, row);
+      addDataPointWithWeighting(dataPoint, 5, index);
     }
 
     return convertToGriddedData(swCorner, neCorner);
+  }
+
+  private void addDataPointWithWeighting(AQDataPoint dataPoint, int numRings, GridIndex centreCellIndex) {
+    int centreRow = centreCellIndex.row;
+    int centreCol = centreCellIndex.col;
+    for (int ring = numRings -1; ring >= 0; ring--) {
+      for (int rowNum = centreRow - ring; rowNum <= centreRow + ring; rowNum ++) {
+        HashMap<Integer, GridCell> row = dataGrid.getOrDefault(rowNum, new HashMap<>());
+        for (int colNum = centreCol - ring; colNum <= centreCol + ring; colNum ++) {
+          GridCell cell = row.getOrDefault(colNum, new GridCell());
+          cell.addPoint(dataPoint);
+          row.put(colNum,cell);
+        }
+        dataGrid.put(rowNum,row);
+      }
+    }
   }
 
   private ArrayList<AQDataPoint> getNSWGovData() throws Exception {
@@ -55,13 +67,13 @@ public class Cache {
     GridIndex swIndex = getGridIndex(swCorner);
     GridIndex neIndex = getGridIndex(neCorner);
 
-    for (int rowNum = swIndex.row; rowNum <= neIndex.row; rowNum ++) {
+    for (int rowNum = swIndex.row; rowNum <= neIndex.row; rowNum++) {
       HashMap<Integer, Double> convertedRow = new HashMap<>();
       HashMap<Integer, GridCell> row = this.dataGrid.get(rowNum);
       if (row == null) {
         continue;
       }
-      for (int colNum = swIndex.col; colNum <= neIndex.col; colNum ++) {
+      for (int colNum = swIndex.col; colNum <= neIndex.col; colNum++) {
         GridCell cell = row.get(colNum);
         if (cell == null) {
           continue;

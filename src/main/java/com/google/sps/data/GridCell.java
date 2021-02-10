@@ -13,7 +13,7 @@ public class GridCell {
    * already added to avoid creating bias towards the new point
    */
   public void addPoint(AQDataPoint point) {
-    if (point.aqi == -1) {
+    if (point.aqi < 0) {
         return;
     }
     averageAQI = (averageAQI * numPoints + point.aqi) / (numPoints + 1);
