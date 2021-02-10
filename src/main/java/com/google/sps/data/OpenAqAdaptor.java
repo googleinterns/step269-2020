@@ -2,7 +2,7 @@ package com.google.sps.data;
 
 import java.util.ArrayList;
 
-public class OpenAqAdaptor {
+public class OpenAQAdaptor {
   private ArrayList<AQDataPoint> getAQIData() {
     // get data from get request
     // calculate the aqi for each point
