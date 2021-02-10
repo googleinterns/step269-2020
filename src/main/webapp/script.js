@@ -54,11 +54,9 @@ class AutocompleteDirectionsHandler {
         });
         searchMarker.setVisible(false);
 
-        //const originInput = document.getElementById("origin-search-bar");
-        //const destinationInput = document.getElementById("destination-search-bar");
         const originInput = document.getElementById("origin-input");
         const destinationInput = document.getElementById("destination-input");
-        const modeSelector = document.getElementById("mode-selector"); ////BECASE  HERE DONT HAVE IN INDEX 
+        const modeSelector = document.getElementById("mode-selector"); 
 
         // Initialise places autocomplete in search bar
         const autocomplete = new google.maps.places.Autocomplete(searchbar);
@@ -72,7 +70,7 @@ class AutocompleteDirectionsHandler {
         //for individual search and marker function, temporarily contained here for test runs
         autocomplete.addListener("place_changed", () => {
             searchMarker.setVisible(false);
-            const place = autocomplete.getPlace(); //THE PLACE THAT IS AUTOCOMPLETED -> for marker and single search piuposes
+            const place = autocomplete.getPlace(); 
 
             if (!place.geometry) {
                 console.log(`No details available for input '${place.name}'`);
