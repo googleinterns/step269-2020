@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
- * This class coordinates retrieving information from the data sources needed by
+ * This class coordinates the retrieval of information from the data sources needed by
  * the servlets. This includes filtering the data from the data sources into
  * only that needed by the servlet and collating the data from multiple sources.
  */
@@ -64,7 +64,7 @@ public class Cache {
     OpenAQAdaptor adaptor = new OpenAQAdaptor();
     return adaptor.getAQIData();
   }
-  
+
   private GridIndex getGridIndex(Coordinates targetCoords) {
     int row = (int) (targetCoords.lat * this.aqDataPointsPerDegree);
     int col = (int) (targetCoords.lng * this.aqDataPointsPerDegree);

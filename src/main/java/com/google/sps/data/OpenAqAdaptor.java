@@ -10,14 +10,11 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 public class OpenAQAdaptor {
-  public ArrayList<AQDataPoint> getAQIData() throws Exception {
-    // get data from get request, convert it to [OpenAQDataPoint]
-    // calculate the aqi for each point
-    //    calc AQC for each param
-    //    use max AQC to get AQI - midpoint/max of range?
-    // use calculated aqi to create an AQDataPoint
-    // return list of AQDataPoints
+  private class OpenAQResponse {
+    public ArrayList<OpenAQDataPoint> results;
+  }
 
+  public ArrayList<AQDataPoint> getAQIData() throws Exception {
     ArrayList<OpenAQDataPoint> rawData = fetchRawData();
     ArrayList<AQDataPoint> data = convertToAQDataPoints(rawData);
     return data;
@@ -42,9 +39,9 @@ public class OpenAQAdaptor {
         }
 
         String responseString = response.toString();
-        System.out.println(responseString); // TODO
         Gson gson = new Gson();
-        data = gson.fromJson(responseString, new TypeToken<ArrayList<OpenAQDataPoint>>() {}.getType());
+        OpenAQResponse dataObject = gson.fromJson(responseString, new TypeToken<OpenAQResponse>() {}.getType());
+        data = dataObject.results;
       }
     } catch (final Exception e) {
       System.out.println("Error in OpenAQAdaptor.fetchRawData(): " + e.getMessage());

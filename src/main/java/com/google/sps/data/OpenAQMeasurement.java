@@ -24,7 +24,7 @@ public class OpenAQMeasurement {
   * Note: the category names differ from above, instead the names from the following site are used:
   * https://soe.environment.gov.au/theme/ambient-air-quality/topic/2016/air-quality-index
   * The category is returned as a number 1-5 or -1:
-  * -1: the conversion for the given unit is the parameter is not known
+  * -1: The either the conversion for the given unit or the parameter is not supported
   * 1: Very Good
   * 2: Good
   * 3: Fair
