@@ -14,7 +14,7 @@ public class Cache {
 
   public GriddedData getGrid(Coordinates swCorner, Coordinates neCorner) {
     ArrayList<AQDataPoint> data = new ArrayList<>();
-    aqDataPointsPerDegree = 1000;
+    aqDataPointsPerDegree = 100;
 
     //TODO (Rachel) implement a better failsafe for when both data fetches fail (i.e. a way of checking so the old grid can be returned)
     // Catch the error here because the servlet cannot throw the Exception type
@@ -34,7 +34,7 @@ public class Cache {
 
     for (AQDataPoint dataPoint : data) {
       GridIndex index = getGridIndex(new Coordinates(dataPoint.lng, dataPoint.lat));
-      addDataPointWithWeighting(dataPoint, 50, index);
+      addDataPointWithWeighting(dataPoint, 10, index);
     }
 
     return this.convertToGriddedData(swCorner, neCorner);
