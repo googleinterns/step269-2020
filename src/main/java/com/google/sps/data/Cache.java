@@ -43,11 +43,19 @@ public class Cache {
     int centreRow = centreCellIndex.row;
     int centreCol = centreCellIndex.col;
     for (int ring = numRings -1; ring >= 0; ring--) {
+      int bottomRow = centreRow - ring;
+      int topRow = centreRow + ring;
+      int leftMostColumn = centreCol - ring;
+      int rightMostColumn = centreCol + ring;
       for (int rowNum = centreRow - ring; rowNum <= centreRow + ring; rowNum ++) {
         HashMap<Integer, GridCell> row = dataGrid.getOrDefault(rowNum, new HashMap<>());
         for (int colNum = centreCol - ring; colNum <= centreCol + ring; colNum ++) {
+          if (colNum != leftMostColumn && colNum != rightMostColumn && rowNum != topRow && rowNum != bottomRow) {
+            continue;
+          }
           GridCell cell = row.getOrDefault(colNum, new GridCell());
-          cell.addPoint(dataPoint);
+          double weight = 1 / (double) (ring + 1);
+          cell.addPointWithWeight(dataPoint, weight);
           row.put(colNum,cell);
         }
         dataGrid.put(rowNum,row);
@@ -88,7 +96,7 @@ public class Cache {
         if (cell == null) {
           continue;
         }
-        convertedRow.put(colNum, cell.averageAQI);
+        convertedRow.put(colNum, cell.getAQI());
       }
       if (!convertedRow.isEmpty()) {
         grid.data.put(rowNum, convertedRow);

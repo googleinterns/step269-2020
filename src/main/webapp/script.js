@@ -2,6 +2,7 @@ let map;
 let aqLayer;
 let refreshAQLayerTimeout;
 let searchMarker;
+let printDebugData = false;
 
 function aqLayerControl(controlDiv) {
     const controlUI = document.createElement("div");
@@ -176,6 +177,7 @@ function populateAQVisualisationData() {
     let fetchURL = `/visualisation?sw-lat=${swCorner.lat()}&sw-long=${swCorner.lng()}&ne-lat=${neCorner.lat()}&ne-long=${neCorner.lng()}`;
     fetch(fetchURL).then(response => response.json()).then((data) => {
         const aqData = convertGriddedDataToWeightedPoints(data);
+        if (printDebugData) {console.log(data);}
         loadHeatmap(aqData);
         scoreRoute(data);
     });
