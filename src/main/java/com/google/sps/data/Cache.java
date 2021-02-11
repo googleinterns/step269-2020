@@ -16,6 +16,7 @@ public class Cache {
     ArrayList<AQDataPoint> data = new ArrayList<>();
     aqDataPointsPerDegree = 1000;
 
+    //TODO (Rachel) implement a better failsafe for when both data fetches fail (i.e. a way of checking so the old grid can be returned)
     // Catch the error here because the servlet cannot throw the Exception type
     try {
       data.addAll(getNSWGovData());
@@ -33,10 +34,10 @@ public class Cache {
 
     for (AQDataPoint dataPoint : data) {
       GridIndex index = getGridIndex(new Coordinates(dataPoint.lng, dataPoint.lat));
-      addDataPointWithWeighting(dataPoint, 25, index);
+      addDataPointWithWeighting(dataPoint, 50, index);
     }
 
-    return convertToGriddedData(swCorner, neCorner);
+    return this.convertToGriddedData(swCorner, neCorner);
   }
 
   private void addDataPointWithWeighting(AQDataPoint dataPoint, int numRings, GridIndex centreCellIndex) {
