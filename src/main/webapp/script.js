@@ -4,6 +4,33 @@ let refreshAQLayerTimeout;
 let searchMarker;
 let printDebugData = false;
 
+// key = zoom level, value = point radius in pixels
+let heatmapPointRadius = new Map([
+    [0, 1],
+    [1, 1],
+    [2, 1],
+    [3, 1],
+    [4, 1],
+    [5, 1],
+    [6, 1],
+    [7, 1],
+    [8, 1],
+    [9, 1],
+    [10, 1],
+    [11, 1],
+    [12, 1],
+    [13, 1],
+    [14, 1],
+    [15, 1],
+    [16, 1],
+    [17, 1],
+    [18, 1],
+    [19, 1],
+    [20, 1],
+    [21, 1],
+    [22, 1],
+]);
+
 function aqLayerControl(controlDiv) {
     const controlUI = document.createElement("div");
     controlUI.className = "mapControlUI";
@@ -196,9 +223,10 @@ function loadHeatmap(data) {
             ],
             maxIntensity: 200,
             dissipating: true,
-            radius: 10, // Arbitrary value.
         });
     }
+    const pixelRadius = heatmapPointRadius.get(map.getZoom());
+    aqLayer.setOptions({radius: pixelRadius});
     aqLayer.setData(data);
     aqLayer.setMap(map);
 }

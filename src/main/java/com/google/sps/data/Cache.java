@@ -33,7 +33,7 @@ public class Cache {
 
     for (AQDataPoint dataPoint : data) {
       GridIndex index = getGridIndex(new Coordinates(dataPoint.lng, dataPoint.lat));
-      addDataPointWithWeighting(dataPoint, 5, index);
+      addDataPointWithWeighting(dataPoint, 25, index);
     }
 
     return convertToGriddedData(swCorner, neCorner);
