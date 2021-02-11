@@ -6,29 +6,16 @@ let printDebugData = false;
 
 // key = zoom level, value = point radius in pixels
 let heatmapPointRadius = new Map([
-    [0, 1],
-    [1, 1],
-    [2, 1],
-    [3, 1],
-    [4, 1],
-    [5, 1],
-    [6, 1],
     [7, 1],
-    [8, 1],
-    [9, 1],
-    [10, 1],
-    [11, 3],
-    [12, 6],
-    [13, 9],
-    [14, 19],
-    [15, 35],
-    [16, 73],
-    [17, 145],
-    [18, 290],
-    [19, 575],
-    [20, 2750],
-    [21, 5000],
-    [22, 5000],
+    [8, 2],
+    [9, 6],
+    [10, 12],
+    [11, 24],
+    [12, 46],
+    [13, 105],
+    [14, 195],
+    [15, 390],
+    [16, 800]
 ]);
 
 function aqLayerControl(controlDiv) {
@@ -51,6 +38,8 @@ function initMap() {
     map = new google.maps.Map(document.getElementById("map"), {
         center: new google.maps.LatLng(-34.397, 150.644),
         zoom: 8,
+        minZoom: 7,
+        maxZoom: 16,
         mapTypeControl: true,
         mapTypeControlOptions: {
             position: google.maps.ControlPosition.TOP_RIGHT,

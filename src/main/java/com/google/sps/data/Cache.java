@@ -16,7 +16,7 @@ public class Cache {
     ArrayList<AQDataPoint> data = new ArrayList<>();
     aqDataPointsPerDegree = 100;
 
-    //TODO (Rachel) implement a better failsafe for when both data fetches fail (i.e. a way of checking so the old grid can be returned)
+    // TODO (Rachel) implement a better failsafe for when both data fetches fail (i.e. a way of checking so the old grid can be returned)
     // Catch the error here because the servlet cannot throw the Exception type
     try {
       data.addAll(getNSWGovData());
@@ -86,13 +86,13 @@ public class Cache {
     GridIndex swIndex = getGridIndex(swCorner);
     GridIndex neIndex = getGridIndex(neCorner);
 
-    for (int rowNum = swIndex.row; rowNum <= neIndex.row; rowNum++) {
+    for (int rowNum = swIndex.row - 1; rowNum <= neIndex.row + 1; rowNum++) {
       HashMap<Integer, Double> convertedRow = new HashMap<>();
       HashMap<Integer, GridCell> row = this.dataGrid.get(rowNum);
       if (row == null) {
         continue;
       }
-      for (int colNum = swIndex.col; colNum <= neIndex.col; colNum++) {
+      for (int colNum = swIndex.col - 1; colNum <= neIndex.col + 1; colNum++) {
         GridCell cell = row.get(colNum);
         if (cell == null) {
           continue;
