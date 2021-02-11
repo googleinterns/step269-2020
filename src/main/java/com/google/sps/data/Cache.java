@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
- * This class coordinates retrieving information from the data sources needed by
+ * This class coordinates the retrieval of information from the data sources needed by
  * the servlets. This includes filtering the data from the data sources into
  * only that needed by the servlet and collating the data from multiple sources.
  */
@@ -18,10 +18,15 @@ public class Cache {
 
     // Catch the error here because the servlet cannot throw the Exception type
     try {
-      data = getNSWGovData();
+      data.addAll(getNSWGovData());
     } catch (Exception e) {
       System.out.println(e.getMessage());
-      return convertToGriddedData(swCorner, neCorner); // return the old grid
+    }
+
+    try {
+      data.addAll(getOpenAQData());
+    } catch (Exception e) {
+      System.out.println(e.getMessage());
     }
     
     dataGrid = new HashMap<>();
@@ -52,6 +57,11 @@ public class Cache {
 
   private ArrayList<AQDataPoint> getNSWGovData() throws Exception {
     NSWGovAdaptor adaptor = new NSWGovAdaptor();
+    return adaptor.getAQIData();
+  }
+
+  private ArrayList<AQDataPoint> getOpenAQData() throws Exception {
+    OpenAQAdaptor adaptor = new OpenAQAdaptor();
     return adaptor.getAQIData();
   }
 
