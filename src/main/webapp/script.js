@@ -6,6 +6,7 @@ let placesService;
 let cleanAirPlaces = [];
 let cleanAirMarkers = [];
 let lastOpenedInfoWindow;
+let selectedLocation;
 
 let printDebugData = false;
 
@@ -205,6 +206,7 @@ function populateAQVisualisationData() {
         loadHeatmap(aqData);
         scoreRoute(data);
         updateCleanAirPlaces(data, mapBounds); // TODO (Rachel): disable clean air button until data is ready
+        if (selectedLocation) {updateSelectedLocationInfo(data);}
     });
 }
 
@@ -274,6 +276,8 @@ function setEndPoint(place) {
     searchMarker.setVisible(true);
 
     locationInfo.innerHTML = `<h3>${place.name}</h3>`;
+
+    selectedLocation = place;
 }
 
 function showRoutes() {
@@ -300,6 +304,19 @@ function toggleSidebar() {
     }
 }
 
+// This function returns the aqi from the data at the specified index.
+// If the aqi is unknown at that index, it will return -1.
+function getAQI(data, index) {
+    let aqi = -1;
+    const row = data.data[index.row];
+    if (row) {
+        if (row[index.col]) {
+            aqi = row[index.col];
+        }
+    }
+    return aqi;
+}
+
 // Functionality for Clean Air Near Me feature
 
 function updateCleanAirPlaces(data, bounds) {
@@ -314,14 +331,9 @@ function updateCleanAirPlaces(data, bounds) {
             cleanAirPlaces = [];
             for (const place of places) {
                 if (place.geometry && place.geometry.location) {
-                    let aqi = "?";
                     const index = getGridIndex(place.geometry.location.lat(), place.geometry.location.lng(), data.aqDataPointsPerDegree);
-                    const row = data.data[index.row];
-                    if (row) {
-                        if (row[index.col]) {
-                            aqi = row[index.col];
-                        }
-                    }
+                    let aqi = getAQI(data, index);
+                    aqi = aqi === -1 ? "?" : Math.round(aqi).toString();
                     cleanAirPlaces.push({place: place, aqi: aqi});
                 }
             }
@@ -375,4 +387,19 @@ function hideCleanAirMarkers() {
     for (const marker of cleanAirMarkers) {
         marker.setMap(null);
     }
+}
+
+function updateSelectedLocationInfo(data) {
+    const index = getGridIndex(selectedLocation.geometry.location.lat(), selectedLocation.geometry.location.lng(), data.aqDataPointsPerDegree);
+    const aqi = getAQI(data, index);
+    let aqiString;
+    if (aqi === -1) {
+        aqiString = "AQI is unknown at this location.";
+    } else {
+        aqiString = `AQI: ${Math.round(aqi)}`;
+    }
+
+    const locationInfo = document.getElementById("location-info");
+    locationInfo.innerHTML = `<h3>${selectedLocation.name}</h3>`
+    locationInfo.innerHTML += `<p>${aqiString}</p>`;
 }
