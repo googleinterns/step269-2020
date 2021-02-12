@@ -43,7 +43,7 @@ public class Cache {
   private void addDataPointWithWeighting(AQDataPoint dataPoint, int numRings, GridIndex centreCellIndex) {
     int centreRow = centreCellIndex.row;
     int centreCol = centreCellIndex.col;
-    for (int ring = numRings -1; ring >= 0; ring--) {
+    for (int ring = numRings - 1; ring >= 0; ring--) {
       int bottomRow = centreRow - ring;
       int topRow = centreRow + ring;
       int leftMostColumn = centreCol - ring;
