@@ -2,6 +2,10 @@ let map;
 let aqLayer;
 let refreshAQLayerTimeout;
 let searchMarker;
+let placesService;
+let cleanAirPlaces = [];
+let cleanAirMarkers = [];
+
 let printDebugData = false;
 
 // key = zoom level, value = point radius in pixels
@@ -48,7 +52,8 @@ function initMap() {
         fullscreenControl: false,
     });
     new AutocompleteDirectionsHandler(map);
-}
+    placesService = new google.maps.places.PlacesService(map);
+} 
 
 class AutocompleteDirectionsHandler {
     constructor(map) {
@@ -196,6 +201,7 @@ function populateAQVisualisationData() {
         if (printDebugData) {console.log(data);}
         loadHeatmap(aqData);
         scoreRoute(data);
+        updateCleanAirPlaces(data, mapBounds);
     });
 }
 
@@ -288,5 +294,60 @@ function toggleSidebar() {
         sidebar.style.display = "block";
         toggleButton.innerHTML = "<i class=material-icons>navigate_before</i>";
         toggleButton.style.left = "300px";
+    }
+}
+
+// Functionality for Clean Air Near Me feature
+
+function updateCleanAirPlaces(data, bounds) {
+    // Perform a nearby search bounded by the current viewport
+    // Any locations outside the viewport would not have an AQI
+    placesService.nearbySearch(
+        //{fields: ["geometry","place_id", "name"], query: "park", locationBias: bounds},
+        {bounds: bounds, type: "park"},
+        (places, status) => {
+            if (status !== "OK" || !places) return;
+            
+            // update list of clean air places
+            cleanAirPlaces = [];
+            for (const place of places) {
+                if (place.geometry && place.geometry.location) {
+                    let aqi = "?";
+                    const index = getGridIndex(place.geometry.location.lat(), place.geometry.location.lng(),data.aqDataPointsPerDegree);
+                    const row = data.data[index.row];
+                    if (row) {
+                        if (row[index.col]) {
+                            aqi = row[index.col];
+                        }
+                    }
+                    cleanAirPlaces.push({place: place, aqi: aqi});
+                }
+            }
+        }
+    )
+}
+
+function createCleanAirMarkers() {
+    for (const element of cleanAirPlaces) {
+        const place = element.place;
+        const labelText = element.aqi === "?" ? "?" : Math.round(element.aqi).toString();
+        const marker = new google.maps.Marker({
+            map,
+            icon: {
+                url: "http://maps.google.com/mapfiles/kml/paddle/grn-blank.png",
+                labelOrigin: new google.maps.Point(32, 20),
+                //scaledSize: new google.maps.Size(42, 68),
+            },
+            label: labelText,
+            position: place.geometry.location,
+            title: place.name,
+        })
+        cleanAirMarkers.push(marker);
+    }
+}
+
+function hideCleanAirMarkers() {
+    for (const marker of cleanAirMarkers) {
+        marker.setMap(null);
     }
 }
