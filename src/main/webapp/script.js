@@ -1,4 +1,5 @@
-let map;
+let map; // Defining a global script variable
+let routeHandler; //in the globar scope, there is a thing call route handlers 
 let aqLayer;
 let refreshAQLayerTimeout;
 let searchMarker;
@@ -30,7 +31,7 @@ function initMap() {
         streetViewControl: false,
         fullscreenControl: false,
     });
-    new AutocompleteDirectionsHandler(map);
+    routeHandler = new AutocompleteDirectionsHandler(map); //now have a global scope reference to the route handelr to be access in diff places
 }
 
 class AutocompleteDirectionsHandler {
@@ -42,6 +43,7 @@ class AutocompleteDirectionsHandler {
         this.directionsService = new google.maps.DirectionsService();
         this.directionsRenderer = new google.maps.DirectionsRenderer();
         this.directionsRenderer.setMap(map);
+        this.directionsResponse = null;
         
         // Put directions in the directions panel
         this.directionsRenderer.setPanel(document.getElementById("direction-panel"));
@@ -112,6 +114,8 @@ class AutocompleteDirectionsHandler {
         aqLayerControl(aqLayerControlDiv, map);
         this.map.controls[google.maps.ControlPosition.RIGHT_TOP].push(aqLayerControlDiv);
 
+        //console.log("print to see if the reponse is saved outside");
+        //console.log("this is the same line as directions reponse outside" + this.directionsResponse);
     }
 
     // Sets a listener on a radio button to change the travel mode on Places Autocomplete.
@@ -142,10 +146,53 @@ class AutocompleteDirectionsHandler {
           });
     }
 
+
+    // TODO (Rosanna): implement scoring here
+    scoreRoute(griddedData) {
+        // Note for Rosanna: griddedData is not exactly a grid, but a grid-like nested map
+
+        // If directions repsonse is null (which means a route isnt calcualted yet), dont score. 
+        if (!this.directionsResponse) {
+            return;
+        }
+        console.log("scoring route");
+        //when i have calc and displate route. do if... if this.directionsresponse isnt set so dont do things with undefined data
+        //the class has repsonse data, pass in gridded data. now have two things to process response with data 
+        console.log("printing the first route of response\n");
+        console.log(this.directionsResponse["routes"][0]);
+        let legs = this.directionsResponse["routes"][0]["legs"];
+
+        let value = 0;
+        let weight = 0; 
+        for (const leg of legs) {
+          console.log("In leg " + legs.indexOf(leg) + "  of the legs array in the 1st route of the response.");
+          for (const step of leg["steps"]) {
+            //inside a step 
+            console.log("printing out start point of a step in a leg. In step " + leg["steps"].indexOf(step) + " " + step["start_point"]);
+            //choose for each step, what weight ot use. a step has a distance and time on it. pick either of those. 
+            //using time as weight
+            let w = step["duration"]["value"];
+            let aqi = 1; //need to use the coordinates of the start point to find the AQ from the gridded data.
+            //use that instead of 1
+            value += w*aqi;
+            weight += w;
+
+          }
+        }
+        let score = value / weight; 
+        //once get values out f gridded data, has a weighted average on the duration of each step . 
+        //keep a map of scored route where the key is the scored line, then at the beginning of the function, if i dont have a r epsonse
+        /// have a score in the map? 
+        // dont have it create one and score in the map 
+    }
+
     calculateAndDisplayRoute() {
+        // If PlaceIDs are not placed in yet, dont calculate a route yet. 
         if (!this.originPlaceId || !this.destinationPlaceId) {
             return;
         }
+        // Saving the class "this" as "me", as the definition of "this." 
+        // changed in the reponse section and does not refer to the AutocompleteDirectionsHandler Class.
         const me = this;
         this.directionsService.route(
             {
@@ -156,6 +203,14 @@ class AutocompleteDirectionsHandler {
             },
             (response, status) => {
                 if (status === "OK") {
+                    // "Me." is used as it is saved as the old "this." 
+                    me.directionsResponse = response;
+                    //when we trigger the render, it will cause the map will redraw. when it redarws, we score the route. 
+                    // when we score the route, we want it somewhere to use it
+                    // in the this . directions sreposne. 
+                    //directionservice.route the seocnd is is where rspons comma stats becomes a close. is a functiont hat gets called
+                    //when the map complete, but will be call from the context of somewhere else, inside the direction service. so "this" has a new meaning
+                    //so "me" still ahs the context of the og parent object, but "this" has changed because it is in a class. 
                     me.directionsRenderer.setDirections(response);
                 } else {
                     window.alert("Directions request failed due to " + status);
@@ -177,7 +232,7 @@ function populateAQVisualisationData() {
     fetch(fetchURL).then(response => response.json()).then((data) => {
         const aqData = convertGriddedDataToWeightedPoints(data);
         loadHeatmap(aqData);
-        scoreRoute(data);
+        routeHandler.scoreRoute(data);
     });
 }
 
@@ -220,12 +275,6 @@ function convertGriddedDataToWeightedPoints(griddedData) {
     return weightedPoints;
 }
 
-// TODO (Rosanna): implement scoring here
-function scoreRoute(griddedData) {
-    // Note for Rosanna: griddedData is not exactly a grid, but a grid-like nested map
-    console.log("scoring route");
-}
-
 function calcCellCoords(rowNum, colNum, aqDataPointsPerDegree) {
     const cellLat = (parseInt(rowNum) + 0.5) / aqDataPointsPerDegree;
     const cellLng = (parseInt(colNum) + 0.5) / aqDataPointsPerDegree;
@@ -237,6 +286,8 @@ function getGridIndex(lat, lng, aqDataPointsPerDegree) {
     col = Math.floor(lng * aqDataPointsPerDegree);
     return {row:row, col:col};
 }
+
+//coord, with special data -> row col - > aqi 
 
 function setEndPoint(place) {
     const locationInfo = document.getElementById("location-info");
