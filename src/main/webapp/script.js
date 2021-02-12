@@ -204,7 +204,7 @@ function populateAQVisualisationData() {
         if (printDebugData) {console.log(data);}
         loadHeatmap(aqData);
         scoreRoute(data);
-        updateCleanAirPlaces(data, mapBounds);
+        updateCleanAirPlaces(data, mapBounds); // TODO (Rachel): disable clean air button until data is ready
     });
 }
 
