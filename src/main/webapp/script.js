@@ -148,6 +148,11 @@ class AutocompleteDirectionsHandler {
     // TODO (Rosanna): implement scoring here
     scoreRoute(griddedData) {
         // Note for Rosanna: griddedData is not exactly a grid, but a grid-like nested map
+        //const dataGrid = griddedData.data;
+        //let dataGrid = new Map();
+        //let map = new Map<Integer, Map<Integer, Double>>()
+        const dataGrid =  griddedData.data;
+        const aqDataPointsPerDegree = griddedData.aqDataPointsPerDegree;
 
         // If directions repsonse is null (which means a route isnt calcualted yet), dont score. 
         if (!this.directionsResponse) {
@@ -166,17 +171,59 @@ class AutocompleteDirectionsHandler {
           console.log("In leg " + legs.indexOf(leg) + "  of the legs array in the 1st route of the response.");
           for (const step of leg["steps"]) {
             //inside a step 
-            console.log("printing out start point of a step in a leg. In step " + leg["steps"].indexOf(step) + " " + step["start_point"]);
+            console.log("printing out start point of a step in a leg. In step " + leg["steps"].indexOf(step) + " " + step["start_location"]);
             //choose for each step, what weight ot use. a step has a distance and time on it. pick either of those. 
             //using time as weight
+
+            // The duration value indicates duration in seconds. 
             let w = step["duration"]["value"];
-            let aqi = 1; //need to use the coordinates of the start point to find the AQ from the gridded data.
+            let stepStartLat = step["start_location"].lat();
+            let stepStartLng = step["start_location"].lng();
+
+            console.log("starting location indv lat lng");
+            console.log(stepStartLat);
+            console.log(stepStartLng);
+
+            //let aqi = 1; //need to use the coordinates of the start point to find the AQ from the gridded data.
             //use that instead of 1
+            //coord, with special data -> row col - > aqi
+
+            // get the grid index
+            let mapRowCol = getGridIndex(stepStartLat, stepStartLng, aqDataPointsPerDegree);
+            let mapRow = mapRowCol.row;
+            let mapCol = mapRowCol.col;
+
+            //get the aqi in that map. 
+            console.log(typeof dataGrid);
+            console.log(mapRow);
+            console.log(mapCol);
+            console.log(aqDataPointsPerDegree);
+            console.log(dataGrid);
+            
+            //let testaqi = dataGrid[-33722][150699];
+            //console.log(testaqi);
+            //let rowMap = dataGrid.get(mapRow);
+            let rowMap = dataGrid[mapRow];
+            //let aqi = rowMap.get(mapCol);
+            console.log(rowMap);
+            //console.log(aqi);
+            let aqi = dataGrid[mapRow][mapCol];
+
+            //var row: any = dataGrid["row"];
+            //let row = dataGrid["mapRow"];
+            //aqi = row["mapCol"];
+            //console.log(typeof row);
+
+            //for ([mapRow, row ]of Object.entries.(dataGrid))
+
+            console.log(aqi);
+
+
             value += w*aqi;
             weight += w;
-
           }
         }
+
         let score = value / weight; 
         //once get values out f gridded data, has a weighted average on the duration of each step . 
         //keep a map of scored route where the key is the scored line, then at the beginning of the function, if i dont have a r epsonse
