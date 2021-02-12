@@ -165,18 +165,18 @@ class AutocompleteDirectionsHandler {
         console.log(this.directionsResponse["routes"][0]);
         let legs = this.directionsResponse["routes"][0]["legs"];
 
-        let value = 0;
-        let weight = 0; 
+        let totalValue = 0;
+        let totalWeight = 0; 
         for (const leg of legs) {
           console.log("In leg " + legs.indexOf(leg) + "  of the legs array in the 1st route of the response.");
           for (const step of leg["steps"]) {
             //inside a step 
-            console.log("printing out start point of a step in a leg. In step " + leg["steps"].indexOf(step) + " " + step["start_location"]);
+            console.log("printing out start point of a step in a leg. In step " + (leg["steps"].indexOf(step) + 1) + " " + step["start_location"]);
             //choose for each step, what weight ot use. a step has a distance and time on it. pick either of those. 
             //using time as weight
 
             // The duration value indicates duration in seconds. 
-            let w = step["duration"]["value"];
+            let stepWeight = step["duration"]["value"];
             let stepStartLat = step["start_location"].lat();
             let stepStartLng = step["start_location"].lng();
 
@@ -194,37 +194,39 @@ class AutocompleteDirectionsHandler {
             let mapCol = mapRowCol.col;
 
             //get the aqi in that map. 
-            console.log(typeof dataGrid);
+            console.log(typeof dataGrid); // Object 
             console.log(mapRow);
             console.log(mapCol);
-            console.log(aqDataPointsPerDegree);
+            console.log(aqDataPointsPerDegree); //1000
             console.log(dataGrid);
             
-            //let testaqi = dataGrid[-33722][150699];
-            //console.log(testaqi);
-            //let rowMap = dataGrid.get(mapRow);
             let rowMap = dataGrid[mapRow];
-            //let aqi = rowMap.get(mapCol);
             console.log(rowMap);
-            //console.log(aqi);
-            let aqi = dataGrid[mapRow][mapCol];
 
-            //var row: any = dataGrid["row"];
-            //let row = dataGrid["mapRow"];
-            //aqi = row["mapCol"];
-            //console.log(typeof row);
+            // AQI is only available for routes passing through the grid exactly. 
+            // Or else no data available and will have error saying it is undefined (because it doesnt exist). 
 
-            //for ([mapRow, row ]of Object.entries.(dataGrid))
+            //===== HAVE SOMETHING FOR WHEN IT DOESNT EXIST AKA THE MAP ROW OR MAP COLM IS NOT EXISTENT COSE IT IS UNDEFINED WITH NO VALUES. =====
+            /* 
+            if 
+            */ 
 
-            console.log(aqi);
-
-
-            value += w*aqi;
-            weight += w;
+            let stepAQI = dataGrid[mapRow][mapCol];
+            console.log(stepAQI);
+            if (!stepAQI) {
+                console.log("PRINT !STEPAQI WORKS! IT IS UNDEFINED");
+                // if it doesnt have a AQI value cose it doesnt exist in the grid, make the value = 0 
+                stepAQI = 0; 
+            }
+            console.log(stepAQI);
+            totalValue += stepWeight * stepAQI;
+            totalWeight += stepWeight;
+            console.log("so far total value is: " + totalValue + " total weight is: "+ totalWeight);
           }
         }
-
-        let score = value / weight; 
+        let routeScore = totalValue / totalWeight; 
+        console.log("total value is: " + totalValue + " totalweight is: " + totalWeight);
+        console.log("The Route Score is: " + routeScore);
         //once get values out f gridded data, has a weighted average on the duration of each step . 
         //keep a map of scored route where the key is the scored line, then at the beginning of the function, if i dont have a r epsonse
         /// have a score in the map? 
