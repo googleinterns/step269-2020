@@ -5,6 +5,7 @@ let searchMarker;
 let placesService;
 let cleanAirPlaces = [];
 let cleanAirMarkers = [];
+let lastOpenedInfoWindow;
 
 let printDebugData = false;
 
@@ -126,6 +127,8 @@ class AutocompleteDirectionsHandler {
                 clearTimeout(refreshAQLayerTimeout);
             }
             refreshAQLayerTimeout = setTimeout(function() {
+                hideCleanAirMarkers();
+                cleanAirMarkers = [];
                 populateAQVisualisationData();
             }, 500);
         });
@@ -303,7 +306,6 @@ function updateCleanAirPlaces(data, bounds) {
     // Perform a nearby search bounded by the current viewport
     // Any locations outside the viewport would not have an AQI
     placesService.nearbySearch(
-        //{fields: ["geometry","place_id", "name"], query: "park", locationBias: bounds},
         {bounds: bounds, type: "park"},
         (places, status) => {
             if (status !== "OK" || !places) return;
@@ -336,13 +338,36 @@ function createCleanAirMarkers() {
             icon: {
                 url: "http://maps.google.com/mapfiles/kml/paddle/grn-blank.png",
                 labelOrigin: new google.maps.Point(32, 20),
-                //scaledSize: new google.maps.Size(42, 68),
             },
             label: labelText,
             position: place.geometry.location,
             title: place.name,
         })
+        
+        let infoWindowHTML = `<h3>${place.name}</h3>
+            <p>This place is close to: ${place.vicinity}</p>`
+        const infoWindow = new google.maps.InfoWindow({
+            content: infoWindowHTML,
+        })
+        marker.addListener("click", () => {
+            if (lastOpenedInfoWindow) {
+                lastOpenedInfoWindow.close();
+            }
+            infoWindow.open(map, marker);
+            lastOpenedInfoWindow = infoWindow;
+        })
+
         cleanAirMarkers.push(marker);
+    }
+}
+
+function showCleanAirMarkers() {
+    if (cleanAirMarkers.length == 0) {
+        createCleanAirMarkers();
+        return;
+    }
+    for (const marker of cleanAirMarkers) {
+        marker.setMap(map);
     }
 }
 
