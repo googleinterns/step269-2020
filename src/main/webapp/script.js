@@ -315,7 +315,7 @@ function updateCleanAirPlaces(data, bounds) {
             for (const place of places) {
                 if (place.geometry && place.geometry.location) {
                     let aqi = "?";
-                    const index = getGridIndex(place.geometry.location.lat(), place.geometry.location.lng(),data.aqDataPointsPerDegree);
+                    const index = getGridIndex(place.geometry.location.lat(), place.geometry.location.lng(), data.aqDataPointsPerDegree);
                     const row = data.data[index.row];
                     if (row) {
                         if (row[index.col]) {
