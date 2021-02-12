@@ -48,9 +48,9 @@ public class Cache {
       int topRow = centreRow + ring;
       int leftMostColumn = centreCol - ring;
       int rightMostColumn = centreCol + ring;
-      for (int rowNum = centreRow - ring; rowNum <= centreRow + ring; rowNum ++) {
+      for (int rowNum = centreRow - ring; rowNum <= centreRow + ring; rowNum++) {
         HashMap<Integer, GridCell> row = dataGrid.getOrDefault(rowNum, new HashMap<>());
-        for (int colNum = centreCol - ring; colNum <= centreCol + ring; colNum ++) {
+        for (int colNum = centreCol - ring; colNum <= centreCol + ring; colNum++) {
           if (colNum != leftMostColumn && colNum != rightMostColumn && rowNum != topRow && rowNum != bottomRow) {
             continue;
           }
