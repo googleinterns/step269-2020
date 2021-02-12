@@ -58,7 +58,6 @@ class AutocompleteDirectionsHandler {
 
         const originInput = document.getElementById("origin-input");
         const destinationInput = document.getElementById("destination-input");
-        const modeSelector = document.getElementById("mode-selector"); 
 
         // Initialise places autocomplete in search bar
         const autocomplete = new google.maps.places.Autocomplete(searchbar);
@@ -67,7 +66,6 @@ class AutocompleteDirectionsHandler {
         originAutocomplete.setFields(["place_id"]);
         const destinationAutocomplete = new google.maps.places.Autocomplete(destinationInput);
         destinationAutocomplete.setFields(["place_id"]);
-
 
         //for individual search and marker function, temporarily contained here for test runs
         autocomplete.addListener("place_changed", () => {
