@@ -190,101 +190,13 @@ class AutocompleteDirectionsHandler {
         console.log("printing the legs array in fist repsonse\n");
         console.log(this.directionsResponse["routes"][0]["legs"]);
 
-        //let routes = this.directionsResponse["routes"];
-
-        /*
-        for (const route of routes) {
-            let routeScore = this.scoreIndvRoute(route);
-            console.log("The score of this route is: " + routeScore);
-        }*/
-
-        
-
         let routes = this.directionsResponse["routes"];
         for (const route of routes) {
             console.log("In route " + routes.indexOf(route) + "  of the route array of the response.");
             console.log(route);
             let score = this.scoreIndvRoute(route, griddedData);
             console.log("The score of this route is: " + score);
-            //for (const leg of route["legs"]) {
-            //    console.log("In leg " + route["legs"].indexOf(leg) + "  of the legs array in the route of the response.");
-            //}
         }
-
-
-        //let legs = this.directionsResponse["routes"][0]["legs"];
-
-        //=== MAYBE MAKE BELOW FNUCTION SCORE LEG FUNCTION??    
-        /*
-        let totalValue = 0;
-        let totalWeight = 0; 
-        for (const leg of legs) {
-          console.log("In leg " + legs.indexOf(leg) + "  of the legs array in the 1st route of the response.");
-          for (const step of leg["steps"]) {
-            //inside a step 
-            console.log("printing out start point of a step in a leg. In step " + (leg["steps"].indexOf(step) + 1) + " " + step["start_location"]);
-            //choose for each step, what weight ot use. a step has a distance and time on it. pick either of those. 
-            //using time as weight
-
-            // The duration value indicates duration in seconds. 
-            let stepWeight = step["duration"]["value"];
-            let stepStartLat = step["start_location"].lat();
-            let stepStartLng = step["start_location"].lng();
-
-            console.log("starting location indv lat lng");
-            console.log(stepStartLat);
-            console.log(stepStartLng);
-
-            //need to use the coordinates of the start point to find the AQ from the gridded data.
-            //use that instead of 1
-            //coord, with special data -> row col - > aqi
-
-            // get the grid index
-            let mapRowCol = getGridIndex(stepStartLat, stepStartLng, aqDataPointsPerDegree);
-            let mapRow = mapRowCol.row;
-            let mapCol = mapRowCol.col;
-
-            //get the aqi in that map. 
-            console.log(typeof dataGrid); // Object 
-            console.log(mapRow);
-            console.log(mapCol);
-            console.log(aqDataPointsPerDegree); //1000
-            console.log(dataGrid);
-            
-            let rowMap = dataGrid[mapRow];
-            console.log(rowMap);
-
-            // AQI is only available for routes passing through the grid exactly. 
-            // Or else no data available and will have error saying it is undefined (because it doesnt exist). 
-
-            //===== HAVE SOMETHING FOR WHEN IT DOESNT EXIST AKA THE MAP ROW OR MAP COLM IS NOT EXISTENT COSE IT IS UNDEFINED WITH NO VALUES. =====
-            ///* 
-            //if 
-            //
-
-            let stepAQI = dataGrid[mapRow][mapCol];
-            console.log(stepAQI);
-            if (!stepAQI) {
-                console.log("PRINT !STEPAQI WORKS! IT IS UNDEFINED");
-                // if it doesnt have a AQI value cose it doesnt exist in the grid, make the value = 0 
-                stepAQI = 0; 
-            }
-            console.log(stepAQI);
-            totalValue += stepWeight * stepAQI;
-            totalWeight += stepWeight;
-            console.log("so far total value is: " + totalValue + " total weight is: "+ totalWeight);
-          }
-        }
-        let routeScore = totalValue / totalWeight; 
-        console.log("total value is: " + totalValue + " totalweight is: " + totalWeight);
-        console.log("The Route Score is: " + routeScore);
-        //once get values out f gridded data, has a weighted average on the duration of each step . 
-        //keep a map of scored route where the key is the scored line, then at the beginning of the function, if i dont have a r epsonse
-        /// have a score in the map? 
-        // dont have it create one and score in the map 
-        
-        //*/
-        
     }
 
     // Given A Route, by going through all of the legs, and each step inside each leg. 
@@ -292,10 +204,7 @@ class AutocompleteDirectionsHandler {
         const dataGrid =  griddedData.data;
         const aqDataPointsPerDegree = griddedData.aqDataPointsPerDegree;
         let legs = Route["legs"];
-        //let legs = this.directionsResponse["routes"][0]["legs"];
 
-        //=== MAYBE MAKE BELOW FNUCTION SCORE LEG FUNCTION??    
-        
         let totalValue = 0;
         let totalWeight = 0; 
         for (const leg of legs) {
@@ -345,12 +254,11 @@ class AutocompleteDirectionsHandler {
             if (!rowMap) {
                 console.log("the row mao doesnt exist and is undefined!! cant declase stepAQI");
                 // if it doesnt have a AQI value cose it doesnt exist in the grid, make the value = 0 
-                //stepAQI = 0; 
+
             } else {
                 stepAQI = dataGrid[mapRow][mapCol];
             }
 
-            //stepAQI = dataGrid[mapRow][mapCol];
             console.log(stepAQI);
             if (!stepAQI || !rowMap) {
                 console.log("PRINT !STEPAQI WORKS! IT IS UNDEFINED");
