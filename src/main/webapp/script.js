@@ -91,6 +91,8 @@ class AutocompleteDirectionsHandler {
         this.detectClickListener("changemode-walking", google.maps.TravelMode.WALKING);
         this.detectClickListener("changemode-transit", google.maps.TravelMode.TRANSIT);
         this.detectClickListener("changemode-driving", google.maps.TravelMode.DRIVING); 
+
+        this.detectWaypointClickListener("waypoints");
         
         // Detect if user has input origin/destination and calculate direction
         this.detectPlaceChangedListener(originAutocomplete, "ORIG");
@@ -121,6 +123,13 @@ class AutocompleteDirectionsHandler {
         const radioButton = document.getElementById(id);
         radioButton.addEventListener("click", () => {
           this.travelMode = mode;
+          this.calculateAndDisplayRoute();
+        });
+    }
+
+    detectWaypointClickListener(id) {
+        const waypt = document.getElementById(id);
+        waypt.addEventListener("click", () => {
           this.calculateAndDisplayRoute();
         });
     }
@@ -287,6 +296,18 @@ class AutocompleteDirectionsHandler {
         if (!this.originPlaceId || !this.destinationPlaceId) {
             return;
         }
+        const waypts = [];
+        const checkedWayptsArray = document.getElementById("waypoints");
+
+        for (let i = 0; i < checkedWayptsArray.length; i++) {
+            if (checkedWayptsArray.options[i].selected) {
+                // If the option is selcted, add it to the array. 
+                waypts.push({
+                    location: checkedWayptsArray[i].value,
+                    stopover: true,
+                });
+            }
+        }
         // Saving the class "this" as "me", as the definition of "this." 
         // changed in the reponse section and does not refer to the AutocompleteDirectionsHandler Class.
         const me = this;
@@ -295,7 +316,9 @@ class AutocompleteDirectionsHandler {
                 origin: { placeId: this.originPlaceId },
                 destination: { placeId: this.destinationPlaceId },
                 travelMode: this.travelMode,
-                provideRouteAlternatives: true
+                provideRouteAlternatives: true,
+                waypoints: waypts,
+                optimizeWaypoints: true,
             },
             (response, status) => {
                 if (status === "OK") {
