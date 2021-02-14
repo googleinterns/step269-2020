@@ -178,24 +178,20 @@ class AutocompleteDirectionsHandler {
         console.log("scoring route");
         //when i have calc and displate route. do if... if this.directionsresponse isnt set so dont do things with undefined data
         //the class has repsonse data, pass in gridded data. now have two things to process response with data 
-        console.log("printing the response");
-        console.log(this.directionsResponse); // works and prints 
+        //console.log("printing the response");
+        //console.log(this.directionsResponse); // works and prints 
 
-        console.log("printing routes array");
-        console.log(this.directionsResponse["routes"]); // prints an array 
-
-        //console.log("printing the first route of response\n");
-        //console.log(this.directionsResponse["routes"][0]); // print the single route array
-
-        console.log("printing the legs array in fist repsonse\n");
-        console.log(this.directionsResponse["routes"][0]["legs"]);
+        //console.log("printing routes array");
+        //console.log(this.directionsResponse["routes"]); // prints an array 
+        //console.log("printing the legs array in fist repsonse\n");
+        //console.log(this.directionsResponse["routes"][0]["legs"]);
 
         let routes = this.directionsResponse["routes"];
         for (const route of routes) {
-            console.log("In route " + routes.indexOf(route) + "  of the route array of the response.");
-            console.log(route);
+            console.log("In route " + (routes.indexOf(route) + 1) + " of " + routes.length + "  of the route array of the response.");
+            //console.log(route);
             let score = this.scoreIndvRoute(route, griddedData);
-            console.log("The score of this route is: " + score);
+            console.log("The score of route " + (routes.indexOf(route) + 1)  + " of " + routes.length + "in the route array is: " + score);
         }
     }
 
@@ -208,10 +204,10 @@ class AutocompleteDirectionsHandler {
         let totalValue = 0;
         let totalWeight = 0; 
         for (const leg of legs) {
-          console.log("In leg " + legs.indexOf(leg) + "  of the legs array in the 1st route of the response.");
+          console.log("In leg " + (legs.indexOf(leg) + 1) + "  of "+ legs.length +" the legs array in the 1st route of the response.");
           for (const step of leg["steps"]) {
             //inside a step 
-            console.log("printing out start point of a step in a leg. In step " + (leg["steps"].indexOf(step) + 1) + " " + step["start_location"]);
+            console.log("printing out start point of a step in a leg. In step " + (leg["steps"].indexOf(step) + 1) + " of " + leg["steps"].length + step["start_location"]);
             //choose for each step, what weight ot use. a step has a distance and time on it. pick either of those. 
             //using time as weight
 
@@ -225,7 +221,6 @@ class AutocompleteDirectionsHandler {
             console.log(stepStartLng);
 
             //need to use the coordinates of the start point to find the AQ from the gridded data.
-            //use that instead of 1
             //coord, with special data -> row col - > aqi
 
             // get the grid index
@@ -248,23 +243,26 @@ class AutocompleteDirectionsHandler {
 
             //===== HAVE SOMETHING FOR WHEN IT DOESNT EXIST AKA THE MAP ROW OR MAP COLM IS NOT EXISTENT COSE IT IS UNDEFINED WITH NO VALUES. =====
             /* 
-            if 
-            */ 
-            let stepAQI = 0;
-            if (!rowMap) {
-                console.log("the row mao doesnt exist and is undefined!! cant declase stepAQI");
-                // if it doesnt have a AQI value cose it doesnt exist in the grid, make the value = 0 
+            if           */
 
+            // If the mapRow from getGridIndex doesnt exist in the data grid, it is undefined so set stepAQI as 1 for now. 
+            let stepAQI = 0;
+            if (!rowMap || !dataGrid[mapRow][mapCol]) {
+                console.log("either row map doesnt exist and is undefined or the step aqi dosnt exist because you cant fine mapCol in mapRow. cant find and set stepAQI");
+                // if it doesnt have a AQI value cose it doesnt exist in the grid, make the value = 0 
+            } else if () {
+                console.log();
             } else {
                 stepAQI = dataGrid[mapRow][mapCol];
             }
 
-            console.log(stepAQI);
+            console.log(stepAQI);/*
+            // If step AQI doesnt exist in the data grid becuase mapCol doesnt exist. 
             if (!stepAQI || !rowMap) {
                 console.log("PRINT !STEPAQI WORKS! IT IS UNDEFINED");
                 // if it doesnt have a AQI value cose it doesnt exist in the grid, make the value = 0 
                 stepAQI = 0; 
-            }
+            }*/
             console.log(stepAQI);
             totalValue += stepWeight * stepAQI;
             totalWeight += stepWeight;
