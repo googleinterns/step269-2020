@@ -199,8 +199,20 @@ class AutocompleteDirectionsHandler {
         for (const route of routes) {
             console.log("In route " + (routes.indexOf(route) + 1) + " of " + routes.length + "  of the route array of the response.");
             //console.log(route);
-            let score = this.scoreIndvRoute(route, griddedData);
-            console.log("The score of route " + (routes.indexOf(route) + 1)  + " of " + routes.length + "in the route array is: " + score);
+            let routeAQIScore = this.scoreIndvRoute(route, griddedData);
+            console.log("The score of route " + (routes.indexOf(route) + 1)  + " of " + routes.length + "in the route array is: " + routeAQIScore);
+
+            // If there are waypoints, there there is only one route. 
+            // If not waypoints, then there are alternate route suggestions. 
+            var center_point = routes[routes.indexOf(route)].overview_path.length/2;
+            var infowindow = new google.maps.InfoWindow();
+            infowindow.setContent(routes[routes.indexOf(route)].legs[0].distance.text + "<br>" 
+                + routes[routes.indexOf(route)].legs[0].duration.text + "<br>" 
+                + "RouteAQI Score: " + routeAQIScore + " ");
+            
+            // Set the infowindow position in the midpoint of the route. 
+            infowindow.setPosition(routes[routes.indexOf(route)].overview_path[center_point|0]);
+            infowindow.open(map);
         }
     }
 
@@ -341,6 +353,14 @@ class AutocompleteDirectionsHandler {
                 if (status === "OK") {
                     // "Me." is used as it is saved as the old "this." 
                     me.directionsResponse = response;
+
+                    
+                    /*
+                    var center_point = response.routes[0].overview_path.length/2;
+                    var infowindow = new google.maps.InfoWindow();
+                    infowindow.setContent(response.routes[0].legs[0].distance.text + "<br>" + response.routes[0].legs[0].duration.text + " ");
+                    infowindow.setPosition(response.routes[0].overview_path[center_point|0]);
+                    infowindow.open(map); */
                     //when we trigger the render, it will cause the map will redraw. when it redarws, we score the route. 
                     // when we score the route, we want it somewhere to use it
                     // in the this . directions sreposne. 
