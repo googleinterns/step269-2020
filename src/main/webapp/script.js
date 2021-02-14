@@ -2,6 +2,21 @@ let map;
 let aqLayer;
 let refreshAQLayerTimeout;
 let searchMarker;
+let printDebugData = false;
+
+// key = zoom level, value = point radius in pixels
+let heatmapPointRadius = new Map([
+    [7, 1],
+    [8, 2],
+    [9, 6],
+    [10, 12],
+    [11, 24],
+    [12, 46],
+    [13, 105],
+    [14, 195],
+    [15, 390],
+    [16, 800]
+]);
 
 function aqLayerControl(controlDiv) {
     const controlUI = document.createElement("div");
@@ -23,6 +38,8 @@ function initMap() {
     map = new google.maps.Map(document.getElementById("map"), {
         center: new google.maps.LatLng(-34.397, 150.644),
         zoom: 8,
+        minZoom: 7,
+        maxZoom: 16,
         mapTypeControl: true,
         mapTypeControlOptions: {
             position: google.maps.ControlPosition.TOP_RIGHT,
@@ -176,6 +193,7 @@ function populateAQVisualisationData() {
     let fetchURL = `/visualisation?sw-lat=${swCorner.lat()}&sw-long=${swCorner.lng()}&ne-lat=${neCorner.lat()}&ne-long=${neCorner.lng()}`;
     fetch(fetchURL).then(response => response.json()).then((data) => {
         const aqData = convertGriddedDataToWeightedPoints(data);
+        if (printDebugData) {console.log(data);}
         loadHeatmap(aqData);
         scoreRoute(data);
     });
@@ -194,9 +212,10 @@ function loadHeatmap(data) {
             ],
             maxIntensity: 200,
             dissipating: true,
-            radius: 10, // Arbitrary value.
         });
     }
+    const pixelRadius = heatmapPointRadius.get(map.getZoom());
+    aqLayer.setOptions({radius: pixelRadius});
     aqLayer.setData(data);
     aqLayer.setMap(map);
 }

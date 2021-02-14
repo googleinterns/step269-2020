@@ -14,8 +14,9 @@ public class Cache {
 
   public GriddedData getGrid(Coordinates swCorner, Coordinates neCorner) {
     ArrayList<AQDataPoint> data = new ArrayList<>();
-    aqDataPointsPerDegree = 1000;
+    aqDataPointsPerDegree = 100;
 
+    // TODO (Rachel) implement a better failsafe for when both data fetches fail (i.e. a way of checking so the old grid can be returned)
     // Catch the error here because the servlet cannot throw the Exception type
     try {
       data.addAll(getNSWGovData());
@@ -33,21 +34,29 @@ public class Cache {
 
     for (AQDataPoint dataPoint : data) {
       GridIndex index = getGridIndex(new Coordinates(dataPoint.lng, dataPoint.lat));
-      addDataPointWithWeighting(dataPoint, 5, index);
+      addDataPointWithWeighting(dataPoint, 10, index);
     }
 
-    return convertToGriddedData(swCorner, neCorner);
+    return this.convertToGriddedData(swCorner, neCorner);
   }
 
   private void addDataPointWithWeighting(AQDataPoint dataPoint, int numRings, GridIndex centreCellIndex) {
     int centreRow = centreCellIndex.row;
     int centreCol = centreCellIndex.col;
-    for (int ring = numRings -1; ring >= 0; ring--) {
-      for (int rowNum = centreRow - ring; rowNum <= centreRow + ring; rowNum ++) {
+    for (int ring = numRings - 1; ring >= 0; ring--) {
+      int bottomRow = centreRow - ring;
+      int topRow = centreRow + ring;
+      int leftMostColumn = centreCol - ring;
+      int rightMostColumn = centreCol + ring;
+      for (int rowNum = centreRow - ring; rowNum <= centreRow + ring; rowNum++) {
         HashMap<Integer, GridCell> row = dataGrid.getOrDefault(rowNum, new HashMap<>());
-        for (int colNum = centreCol - ring; colNum <= centreCol + ring; colNum ++) {
+        for (int colNum = centreCol - ring; colNum <= centreCol + ring; colNum++) {
+          if (colNum != leftMostColumn && colNum != rightMostColumn && rowNum != topRow && rowNum != bottomRow) {
+            continue;
+          }
           GridCell cell = row.getOrDefault(colNum, new GridCell());
-          cell.addPoint(dataPoint);
+          double weight = 1 / (double) (ring + 1);
+          cell.addPointWithWeight(dataPoint, weight);
           row.put(colNum,cell);
         }
         dataGrid.put(rowNum,row);
@@ -77,18 +86,18 @@ public class Cache {
     GridIndex swIndex = getGridIndex(swCorner);
     GridIndex neIndex = getGridIndex(neCorner);
 
-    for (int rowNum = swIndex.row; rowNum <= neIndex.row; rowNum++) {
+    for (int rowNum = swIndex.row - 1; rowNum <= neIndex.row + 1; rowNum++) {
       HashMap<Integer, Double> convertedRow = new HashMap<>();
       HashMap<Integer, GridCell> row = this.dataGrid.get(rowNum);
       if (row == null) {
         continue;
       }
-      for (int colNum = swIndex.col; colNum <= neIndex.col; colNum++) {
+      for (int colNum = swIndex.col - 1; colNum <= neIndex.col + 1; colNum++) {
         GridCell cell = row.get(colNum);
         if (cell == null) {
           continue;
         }
-        convertedRow.put(colNum, cell.averageAQI);
+        convertedRow.put(colNum, cell.getAQI());
       }
       if (!convertedRow.isEmpty()) {
         grid.data.put(rowNum, convertedRow);
