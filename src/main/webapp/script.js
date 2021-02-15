@@ -245,6 +245,7 @@ class AutocompleteDirectionsHandler {
 
             // If there are waypoints, there is only one route. 
             // If there are no waypoints, there are alternate route suggestions. 
+            // TODO: rn info window only displays first leg duration and distance. Loop through to allow total route summary. 
             var center_point = route.overview_path.length / 2;
             var infowindow = new google.maps.InfoWindow();
             infowindow.setContent(
