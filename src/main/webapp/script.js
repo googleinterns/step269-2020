@@ -253,14 +253,7 @@ class AutocompleteDirectionsHandler {
         console.log("scoring route");
         //when i have calc and displate route. do if... if this.directionsresponse isnt set so dont do things with undefined data
         //the class has repsonse data, pass in gridded data. now have two things to process response with data 
-        //console.log("printing the response");
-        console.log(this.directionsResponse); // works and prints 
-
-        //console.log("printing routes array");
-        //console.log(this.directionsResponse["routes"]); // prints an array 
-        //console.log("printing the legs array in fist repsonse\n");
-        //console.log(this.directionsResponse["routes"][0]["legs"]);
-
+        
         let routes = this.directionsResponse["routes"];
         for (const route of routes) {
             console.log("In route " + (routes.indexOf(route) + 1) + " of " + routes.length + "  of the route array of the response.");
@@ -278,15 +271,7 @@ class AutocompleteDirectionsHandler {
                 + "RouteAQI Score: " + routeAQIScore + " "
             );
     
-            /*
-            marker.addListener("click", () => {
-                if (lastOpenedRouteInfoWindow) {
-                    lastOpenedRouteInfoWindow.close();
-                }
-                infoWindow.open(map, marker);
-                lastOpenedRouteInfoWindow = infoWindow;
-            })*/
-            // Set the infowindow position in the midpoint of the route. 
+            // Set the infowindow position to be in the midpoint of the route. 
             infowindow.setPosition(routes[routes.indexOf(route)].overview_path[center_point|0]);
             infowindow.open(map);
         }
