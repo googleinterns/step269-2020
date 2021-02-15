@@ -221,39 +221,36 @@ class AutocompleteDirectionsHandler {
             return;
         }
 
-        // Close all the current info windows, loop through array and close them, and then reset array 
         for (let routeInfoWindow of infoWindowArray) {
-            // close it!
             routeInfoWindow.close();
-            console.log("closing info window");
         } 
-        // Reset infoWindowArray by making it empty again.
         infoWindowArray = [];
 
         let routes = this.directionsResponse["routes"];
         for (const route of routes) {
+            const routeIndex = routes.indexOf(route);
             // Keep console comments to print in console and see if score is working. 
-            console.log("In route " + (routes.indexOf(route) + 1) + " of " + routes.length + "  of the route array of the response.");
+            console.log("In route " + (routeIndex + 1) + " of " + routes.length + "  of the route array of the response.");
             let routeAQIScore = this.scoreIndvRoute(route, griddedData);
-            console.log("The score of route " + (routes.indexOf(route) + 1)  + " of " + routes.length + "in the route array is: " + routeAQIScore);
+            console.log("The score of route " + (routeIndex + 1)  + " of " + routes.length + "in the route array is: " + routeAQIScore);
 
-            // Round score to 2dp. 
             routeAQIScore = Math.round((routeAQIScore +  Number.EPSILON) * 100) / 100;
 
-            // If there are waypoints, there there is only one route. 
-            // If not waypoints, then there are alternate route suggestions. 
-            var center_point = routes[routes.indexOf(route)].overview_path.length/2;
+            // If there are waypoints, there is only one route. 
+            // If there are no waypoints, there are alternate route suggestions. 
+            var center_point = route.overview_path.length / 2;
             var infowindow = new google.maps.InfoWindow();
             infowindow.setContent(
-                routes[routes.indexOf(route)].legs[0].distance.text + "<br>" 
-                + routes[routes.indexOf(route)].legs[0].duration.text + "<br>" 
+                route.legs[0].distance.text + "<br>" 
+                + route.legs[0].duration.text + "<br>" 
                 + "RouteAQI Score: " + routeAQIScore + " "
             );
 
-            infoWindowArray.push(infowindow); // add it to the global array 
+            infoWindowArray.push(infowindow);
             console.log("adding new info window onto infoarray");
+            
             // Set the infowindow position to be in the midpoint of the route. 
-            infowindow.setPosition(routes[routes.indexOf(route)].overview_path[center_point|0]);
+            infowindow.setPosition(route.overview_path[center_point|0]);
             infowindow.open(map);
         }
     }
@@ -267,9 +264,12 @@ class AutocompleteDirectionsHandler {
         let totalValue = 0;
         let totalWeight = 0; 
         for (const leg of legs) {
-            console.log("In leg " + (legs.indexOf(leg) + 1) + "  of "+ legs.length +" the legs array in the 1st route of the response.");
+            const legIndex = legs.indexOf(leg);
+            console.log("In leg " + (legIndex + 1) + "  of "+ legs.length +" the legs array in the 1st route of the response.");
+
             for (const step of leg["steps"]) {
-                console.log("printing out start point of a step in a leg. In step " + (leg["steps"].indexOf(step) + 1) + " of " + leg["steps"].length + step["start_location"]);
+                const stepIndex = leg["steps"].indexOf(step);
+                console.log("printing out start point of a step in a leg. In step " + (stepIndex + 1) + " of " + leg["steps"].length + step["start_location"]);
 
                 // The duration value indicates duration in seconds. Using that (time) as stepWeight. 
                 let stepWeight = step["duration"]["value"];
@@ -297,8 +297,10 @@ class AutocompleteDirectionsHandler {
                 totalWeight += stepWeight;
                 console.log("so far total value is: " + totalValue + " total weight is: "+ totalWeight);
             }
-            // Counting the AQI at the arrival point as part of the score. 
+
+            // Counting the AQI at the end point of the leg as part of the score. 
             // Set duration stepWeight as 60 seconds to account of parking upon arrival at end point. 
+            // TODO: Rosanna to rethink on this logic, would it stll apply with waypoints where there are a lot of legs? It can count for stopover time. 
             let legWeight = 60;
             let legEndlat = leg["end_location"].lat();
             let legEndLng = leg["end_location"].lng();
@@ -306,11 +308,10 @@ class AutocompleteDirectionsHandler {
             let endPtRowCol = getGridIndex(legEndlat, legEndLng, aqDataPointsPerDegree);
             let mapRow = endPtRowCol.row;
             let mapCol = endPtRowCol.col;
-            let rowMap = dataGrid[mapRow];
             let endptAQI = 0;
 
             // Print to see in console whether mapRow or mapCol is undefined. 
-            if (!rowMap) {
+            if (!dataGrid[mapRow]) {
                 console.log("Row map doesnt exist and is undefined.");
             } else if (!dataGrid[mapRow][mapCol]) {
                 console.log("Step aqi dosnt exist because mapCol doesn't exist in mapRow. So cant find and set stepAQI");
@@ -319,12 +320,11 @@ class AutocompleteDirectionsHandler {
             }
 
             console.log(endptAQI);
-
             totalValue += legWeight * endptAQI;
             totalWeight += legWeight;
             console.log("so far total value is: " + totalValue + " total weight is: "+ totalWeight);
-
         }
+
         // Calculate total route Score 
         let routeScore = totalValue / totalWeight; 
         console.log("total value is: " + totalValue + " totalweight is: " + totalWeight);
@@ -340,8 +340,7 @@ class AutocompleteDirectionsHandler {
         const waypts = [];
         const wayptAutocompleteArray = this.waypointAutocompleteArray;
 
-        for (let autocompleteObject of wayptAutocompleteArray) {
-            const place = autocompleteObject.getPlace();
+        for (const autocompleteObject of wayptAutocompleteArray) {
             waypts.push ({
                 location: autocompleteObject.getPlace().name,
                 stopover: true,
@@ -365,7 +364,7 @@ class AutocompleteDirectionsHandler {
                   // Add renders into a global array, and everytime. i calcalculate score route, i refrehs that array. 
                   // e.g. used to have 3 paths, now the new on has 1 path. 
                   // consle prinst "setting render to map to null" 3 times, and "push render to map" once
-                    for (let render of directionsRendererArray) {
+                    for (const render of directionsRendererArray) {
                       console.log("setting renders map to null");
                       render.setMap(null); // here i set each render and clear the routes display from the map
                     }
