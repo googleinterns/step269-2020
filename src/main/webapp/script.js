@@ -4,6 +4,7 @@ let aqLayer;
 let refreshAQLayerTimeout;
 let searchMarker;
 let printDebugData = false;
+let lastOpenedRouteInfoWindow;
 
 // key = zoom level, value = point radius in pixels
 let heatmapPointRadius = new Map([
@@ -48,7 +49,9 @@ function initMap() {
         streetViewControl: false,
         fullscreenControl: false,
     });
-    routeHandler = new AutocompleteDirectionsHandler(map); //now have a global scope reference to the route handelr to be access in diff places
+
+    // Have a global scope reference to the route handler to be accessed in various places.
+    routeHandler = new AutocompleteDirectionsHandler(map); 
 }
 
 class AutocompleteDirectionsHandler {
@@ -57,9 +60,7 @@ class AutocompleteDirectionsHandler {
         this.originPlaceId = "";
         this.destinationPlaceId = "";
 
-        // NEED AN ARRAY OF THIS.WAYPOINT PLACE ID 
-        //this.waypointPlaceID = "";
-        //this.waypointPlaceIDArray = [];
+        // 
         this.waypointAutocompleteArray = []; //array of autcomplete object of each waypoint 
 
 
@@ -271,17 +272,19 @@ class AutocompleteDirectionsHandler {
             // If not waypoints, then there are alternate route suggestions. 
             var center_point = routes[routes.indexOf(route)].overview_path.length/2;
             var infowindow = new google.maps.InfoWindow();
-            infowindow.setContent(routes[routes.indexOf(route)].legs[0].distance.text + "<br>" 
+            infowindow.setContent(
+                routes[routes.indexOf(route)].legs[0].distance.text + "<br>" 
                 + routes[routes.indexOf(route)].legs[0].duration.text + "<br>" 
-                + "RouteAQI Score: " + routeAQIScore + " ");
-            
+                + "RouteAQI Score: " + routeAQIScore + " "
+            );
+    
             /*
             marker.addListener("click", () => {
-                if (lastOpenedInfoWindow) {
-                    lastOpenedInfoWindow.close();
+                if (lastOpenedRouteInfoWindow) {
+                    lastOpenedRouteInfoWindow.close();
                 }
                 infoWindow.open(map, marker);
-                lastOpenedInfoWindow = infoWindow;
+                lastOpenedRouteInfoWindow = infoWindow;
             })*/
             // Set the infowindow position in the midpoint of the route. 
             infowindow.setPosition(routes[routes.indexOf(route)].overview_path[center_point|0]);
@@ -417,17 +420,7 @@ class AutocompleteDirectionsHandler {
             console.log(place);
         }
 
-        /*
-        const checkedWayptsArray = document.getElementById("waypoints");
-        for (let i = 0; i < checkedWayptsArray.length; i++) {
-            if (checkedWayptsArray.options[i].selected) {
-                // If the option is selcted, add it to the array. 
-                waypts.push({
-                    location: checkedWayptsArray[i].value,
-                    stopover: true,
-                });
-            }
-        } */
+        
         // Saving the class "this" as "me", as the definition of "this." 
         // changed in the reponse section and does not refer to the AutocompleteDirectionsHandler Class.
         const me = this;
