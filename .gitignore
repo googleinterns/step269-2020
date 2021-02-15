@@ -4,5 +4,7 @@ target/**
 .project
 .idea
 .settings
+src/main/webapp/workspace.code-workspace
+.DS_Store
 *.class
 bin
