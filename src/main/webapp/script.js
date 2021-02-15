@@ -373,7 +373,7 @@ class AutocompleteDirectionsHandler {
                       render.setMap(null); 
                     }
                     directionsRendererArray = []; 
-                    for (const i = 0; i < response.routes.length; i++) {
+                    for (var i = 0; i < response.routes.length; i++) {
                         const renderer = new google.maps.DirectionsRenderer({
                             map: me.map,
                             directions: response,
