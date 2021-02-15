@@ -97,6 +97,9 @@ public class Cache {
         if (cell == null) {
           continue;
         }
+        if (cell.getAQI() == -1) {
+          continue;
+        }
         convertedRow.put(colNum, cell.getAQI());
       }
       if (!convertedRow.isEmpty()) {

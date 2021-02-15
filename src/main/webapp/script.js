@@ -2,9 +2,15 @@ let map;
 let aqLayer;
 let refreshAQLayerTimeout;
 let searchMarker;
+let placesService;
+let cleanAirPlaces = [];
+let cleanAirMarkers = [];
+let lastOpenedInfoWindow;
+let selectedLocation;
+
 let printDebugData = false;
 
-// key = zoom level, value = point radius in pixels
+// Key = zoom level, Value = point radius in pixels
 let heatmapPointRadius = new Map([
     [7, 1],
     [8, 2],
@@ -12,7 +18,7 @@ let heatmapPointRadius = new Map([
     [10, 12],
     [11, 24],
     [12, 46],
-    [13, 105],
+    [13, 95],
     [14, 195],
     [15, 390],
     [16, 800]
@@ -48,7 +54,8 @@ function initMap() {
         fullscreenControl: false,
     });
     new AutocompleteDirectionsHandler(map);
-}
+    placesService = new google.maps.places.PlacesService(map);
+} 
 
 class AutocompleteDirectionsHandler {
     constructor(map) {
@@ -67,7 +74,7 @@ class AutocompleteDirectionsHandler {
         const searchbar = document.getElementById("location-search-bar");
         searchMarker = new google.maps.Marker({
             map,
-            anchorPoint: new google.maps.Point(0,-29), // position the marker icon relative to the origin
+            anchorPoint: new google.maps.Point(0,-29), // Position the marker icon relative to the origin
         });
         searchMarker.setVisible(false);
 
@@ -84,7 +91,7 @@ class AutocompleteDirectionsHandler {
         destinationAutocomplete.setFields(["place_id"]);
 
 
-        //for individual search and marker function, temporarily contained here for test runs
+        // For individual search and marker function, temporarily contained here for test runs
         autocomplete.addListener("place_changed", () => {
             searchMarker.setVisible(false);
             const place = autocomplete.getPlace(); 
@@ -115,12 +122,14 @@ class AutocompleteDirectionsHandler {
 
         // Initialise visualisation when the bounds of the map changed.
         // map.getBounds() is undefined until the map tiles have finished loading,
-        // at which point the bounds change
+        // at which point the bounds change.
         google.maps.event.addListener(map, 'bounds_changed', function() {
             if (refreshAQLayerTimeout) {
                 clearTimeout(refreshAQLayerTimeout);
             }
             refreshAQLayerTimeout = setTimeout(function() {
+                hideCleanAirMarkers();
+                cleanAirMarkers = [];
                 populateAQVisualisationData();
             }, 500);
         });
@@ -196,6 +205,8 @@ function populateAQVisualisationData() {
         if (printDebugData) {console.log(data);}
         loadHeatmap(aqData);
         scoreRoute(data);
+        updateCleanAirPlaces(data, mapBounds); // TODO (Rachel): disable clean air button until data is ready
+        if (selectedLocation) {updateSelectedLocationInfo(data);}
     });
 }
 
@@ -229,7 +240,7 @@ function convertGriddedDataToWeightedPoints(griddedData) {
 	    for (let [colNum, aqi] of Object.entries(row)) {
             const cellCoords = calcCellCoords(rowNum, colNum, aqDataPointsPerDegree);
 
-            // create the weightedLocation for the heatmap
+            // Create the weightedLocation for the heatmap
             let weightedPoint = {}
             weightedPoint.location = new google.maps.LatLng(cellCoords.lat, cellCoords.lng);
             weightedPoint.weight = aqi;
@@ -265,6 +276,8 @@ function setEndPoint(place) {
     searchMarker.setVisible(true);
 
     locationInfo.innerHTML = `<h3>${place.name}</h3>`;
+
+    selectedLocation = place;
 }
 
 function showRoutes() {
@@ -289,4 +302,104 @@ function toggleSidebar() {
         toggleButton.innerHTML = "<i class=material-icons>navigate_before</i>";
         toggleButton.style.left = "300px";
     }
+}
+
+// This function returns the aqi from the data at the specified index.
+// If the aqi is unknown at that index, it will return -1.
+function getAQI(data, index) {
+    let aqi = -1;
+    const row = data.data[index.row];
+    if (row) {
+        if (row[index.col]) {
+            aqi = row[index.col];
+        }
+    }
+    return aqi;
+}
+
+// Functionality for Clean Air Near Me feature
+
+function updateCleanAirPlaces(data, bounds) {
+    // Perform a nearby search bounded by the current viewport.
+    // Any locations outside the viewport would not have an AQI.
+    placesService.nearbySearch(
+        {bounds: bounds, type: "park"},
+        (places, status) => {
+            if (status !== "OK" || !places) return;
+            
+            // Update list of clean air places
+            cleanAirPlaces = [];
+            for (const place of places) {
+                if (place.geometry && place.geometry.location) {
+                    const index = getGridIndex(place.geometry.location.lat(), place.geometry.location.lng(), data.aqDataPointsPerDegree);
+                    let aqi = getAQI(data, index);
+                    aqi = aqi === -1 ? "?" : Math.round(aqi).toString();
+                    cleanAirPlaces.push({place: place, aqi: aqi});
+                }
+            }
+        }
+    )
+}
+
+function createCleanAirMarkers() {
+    for (const element of cleanAirPlaces) {
+        const place = element.place;
+        const labelText = element.aqi === "?" ? "?" : Math.round(element.aqi).toString();
+        const marker = new google.maps.Marker({
+            map,
+            icon: {
+                url: "http://maps.google.com/mapfiles/kml/paddle/grn-blank.png",
+                labelOrigin: new google.maps.Point(32, 20),
+            },
+            label: labelText,
+            position: place.geometry.location,
+            title: place.name,
+        })
+        
+        let infoWindowHTML = `<h3>${place.name}</h3>
+            <p>This place is close to: ${place.vicinity}</p>`
+        const infoWindow = new google.maps.InfoWindow({
+            content: infoWindowHTML,
+        })
+        marker.addListener("click", () => {
+            if (lastOpenedInfoWindow) {
+                lastOpenedInfoWindow.close();
+            }
+            infoWindow.open(map, marker);
+            lastOpenedInfoWindow = infoWindow;
+        })
+
+        cleanAirMarkers.push(marker);
+    }
+}
+
+function showCleanAirMarkers() {
+    if (cleanAirMarkers.length == 0) {
+        createCleanAirMarkers();
+        return;
+    }
+    for (const marker of cleanAirMarkers) {
+        marker.setMap(map);
+    }
+}
+
+function hideCleanAirMarkers() {
+    for (const marker of cleanAirMarkers) {
+        marker.setMap(null);
+    }
+}
+
+function updateSelectedLocationInfo(data) {
+    const index = getGridIndex(selectedLocation.geometry.location.lat(), selectedLocation.geometry.location.lng(), data.aqDataPointsPerDegree);
+    const aqi = getAQI(data, index);
+    let aqiString;
+    if (aqi === -1) {
+        aqiString = "AQI is unknown at this location.";
+    } else {
+        aqiString = `AQI: ${Math.round(aqi)}`;
+    }
+
+    const locationInfo = document.getElementById("location-info");
+    locationInfo.innerHTML = `<h3>${selectedLocation.name}</h3>`
+    locationInfo.innerHTML += `<p>${aqiString}</p>`;
 }
