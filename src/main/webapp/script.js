@@ -1,12 +1,12 @@
 let map; // Defining a global script variable
-let routeHandler; // in the globar scope, there is a thing call route handlers 
+let routeHandler;
 let aqLayer;
 let refreshAQLayerTimeout;
 let searchMarker;
 let printDebugData = false;
 let lastOpenedRouteInfoWindow;
 let infoWindowArray = [];
-let renderArray = [];
+let directionsRendererArray = [];
 
 // key = zoom level, value = point radius in pixels
 let heatmapPointRadius = new Map([
@@ -61,15 +61,15 @@ class AutocompleteDirectionsHandler {
         this.map = map;
         this.originPlaceId = "";
         this.destinationPlaceId = "";
-
-        // Array of Autocomplete object for each waypoint
-        this.waypointAutocompleteArray = [];
         this.travelMode = google.maps.TravelMode.DRIVING; // Set default mode as Driving.
         this.directionsService = new google.maps.DirectionsService();
         this.directionsRenderer = new google.maps.DirectionsRenderer();
         this.directionsRenderer.setMap(map);
         this.directionsResponse = null;
-        this.wayptCounter = 0;
+
+        // Array of Autocomplete object for each waypoint
+        this.waypointAutocompleteArray = [];
+        this.waypointCounter = 0;
         
         // Put directions in the directions panel
         this.directionsRenderer.setPanel(document.getElementById("direction-panel"));
@@ -178,8 +178,8 @@ class AutocompleteDirectionsHandler {
             waypointInput.className = "waypointInput";
             waypointInput.placeholder="Enter a Waypoint location";
             wayptContainer.appendChild(waypointInput); //Put it into the HTML Container 
-            waypointInput.id = "waypoint-input" + this.wayptCounter; //start at waypoint-input0
-            this.wayptCounter++;
+            waypointInput.id = "waypoint-input" + this.waypointCounter; //start at waypoint-input0
+            this.waypointCounter++;
 
             // Make it autocomplete by default on creation
             const waypointAutocomplete = new google.maps.places.Autocomplete(waypointInput);
@@ -213,7 +213,6 @@ class AutocompleteDirectionsHandler {
     }
 
     scoreRoutes(griddedData) {
-        // Note for Rosanna: griddedData is not exactly a grid, but a grid-like nested map
         const dataGrid =  griddedData.data;
         const aqDataPointsPerDegree = griddedData.aqDataPointsPerDegree;
 
@@ -222,13 +221,13 @@ class AutocompleteDirectionsHandler {
             return;
         }
 
-        //close all the current info windows, loop through array and clsoe them, and then reset array 
+        // Close all the current info windows, loop through array and close them, and then reset array 
         for (let routeInfoWindow of infoWindowArray) {
             // close it!
             routeInfoWindow.close();
             console.log("closing info window");
         } 
-        //reset infowindwo array by making it empty again.
+        // Reset infoWindowArray by making it empty again.
         infoWindowArray = [];
 
         let routes = this.directionsResponse["routes"];
@@ -366,18 +365,18 @@ class AutocompleteDirectionsHandler {
                   // Add renders into a global array, and everytime. i calcalculate score route, i refrehs that array. 
                   // e.g. used to have 3 paths, now the new on has 1 path. 
                   // consle prinst "setting render to map to null" 3 times, and "push render to map" once
-                    for (let render of renderArray) {
+                    for (let render of directionsRendererArray) {
                       console.log("setting renders map to null");
                       render.setMap(null); // here i set each render and clear the routes display from the map
                     }
-                    renderArray = []; // if it is just this, it doesnt delete the route and array. and the routes will still stay on the map. 
+                    directionsRendererArray = []; // if it is just this, it doesnt delete the route and array. and the routes will still stay on the map. 
                     for (var i = 0; i < response.routes.length; i++) {
                         const r = new google.maps.DirectionsRenderer({
                             map: me.map,
                             directions: response,
                             routeIndex: i
                         })
-                        renderArray.push(r);
+                        directionsRendererArray.push(r);
                         console.log("pushing a render to the map");
                     }
                     me.directionsResponse = response;
