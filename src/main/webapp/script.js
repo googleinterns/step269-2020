@@ -56,11 +56,19 @@ class AutocompleteDirectionsHandler {
         this.map = map;
         this.originPlaceId = "";
         this.destinationPlaceId = "";
+
+        // NEED AN ARRAY OF THIS.WAYPOINT PLACE ID 
+        //this.waypointPlaceID = "";
+        //this.waypointPlaceIDArray = [];
+        this.waypointAutocompleteArray = []; //array of autcomplete object of each waypoint 
+
+
         this.travelMode = google.maps.TravelMode.DRIVING; // Set default mode as Driving.
         this.directionsService = new google.maps.DirectionsService();
         this.directionsRenderer = new google.maps.DirectionsRenderer();
         this.directionsRenderer.setMap(map);
         this.directionsResponse = null;
+        this.wayptCounter = 0;
         
         // Put directions in the directions panel
         this.directionsRenderer.setPanel(document.getElementById("direction-panel"));
@@ -75,6 +83,7 @@ class AutocompleteDirectionsHandler {
 
         const originInput = document.getElementById("origin-input");
         const destinationInput = document.getElementById("destination-input");
+        //const waypointInput = document.getElementById("waypoint-input");
 
         // Initialise places autocomplete in search bar
         const autocomplete = new google.maps.places.Autocomplete(searchbar);
@@ -83,6 +92,8 @@ class AutocompleteDirectionsHandler {
         originAutocomplete.setFields(["place_id"]);
         const destinationAutocomplete = new google.maps.places.Autocomplete(destinationInput);
         destinationAutocomplete.setFields(["place_id"]);
+        //const waypointAutocomplete = new google.maps.places.Autocomplete(waypointInput);
+        //waypointAutocomplete.setFields(["place_id"]);
 
         //for individual search and marker function, temporarily contained here for test runs
         autocomplete.addListener("place_changed", () => {
@@ -109,7 +120,11 @@ class AutocompleteDirectionsHandler {
         this.detectClickListener("changemode-transit", google.maps.TravelMode.TRANSIT);
         this.detectClickListener("changemode-driving", google.maps.TravelMode.DRIVING); 
 
-        this.detectWaypointClickListener("waypoints");
+        //this.detectWaypointClickListener("waypoint-button");
+
+        //add waypoint containers on click of button 
+        this.detectAddWaypointButtonListener("waypoint-button");
+
         
         // Detect if user has input origin/destination and calculate direction
         this.detectPlaceChangedListener(originAutocomplete, "ORIG");
@@ -144,6 +159,7 @@ class AutocompleteDirectionsHandler {
         });
     }
 
+    //dont need this function anymore. 
     detectWaypointClickListener(id) {
         const waypt = document.getElementById(id);
         waypt.addEventListener("click", () => {
@@ -151,10 +167,59 @@ class AutocompleteDirectionsHandler {
         });
     }
 
+    detectWaypointChangedListener(autocompletedInput) {
+        autocompletedInput.bindTo("bounds", this.map);
+        autocompletedInput.addListener("place_changed", () => {
+            const place = autocompletedInput.getPlace();
+      
+            if (!place.place_id) {
+              window.alert("Please select an option from the dropdown list.");
+              return;
+            }
+      
+            this.calculateAndDisplayRoute();
+          });
+    }
+
+    detectAddWaypointButtonListener(buttonId) {
+        const button = document.getElementById(buttonId);
+        // Add listener to append a container onto HTML
+        button.addEventListener("click", () => {
+            var wayptContainer = document.getElementById("waypoint-container");
+            var waypointInput = document.createElement("input");
+            waypointInput.type = "text";
+            waypointInput.className = "userInput"; // Set CSS Class userInput
+            waypointInput.placeholder="Enter a Waypoint location";
+            wayptContainer.appendChild(waypointInput); //Put it into the HTML Container 
+            waypointInput.id = "waypoint-input" + this.wayptCounter; //start at waypoint-input0
+            this.wayptCounter++;
+
+            // Make it autocomplete by default on creation
+            const waypointAutocomplete = new google.maps.places.Autocomplete(waypointInput);
+            waypointAutocomplete.setFields(["place_id", "name"]);
+
+            this.detectWaypointChangedListener(waypointAutocomplete);
+
+            //have an array and add it into it everytime i make a new waypoint 
+            this.waypointAutocompleteArray.push(
+                waypointAutocomplete
+            );
+            
+            //autocompelte object and element are differne thtings. 
+            // go through waypoint caontiainer, only get the elements. 
+            //but i need to get the autocomplete elements. 
+        });
+
+        // now i have a empty waypoint array decaled in class. 
+        // loop through the container of waypoits when i need it. 
+    }
+
     detectPlaceChangedListener(autocompletedInput, journeyPoint) {
         autocompletedInput.bindTo("bounds", this.map);
         autocompletedInput.addListener("place_changed", () => {
             const place = autocompletedInput.getPlace();
+            console.log(autocompletedInput.getPlace().place_id);
+            console.log(place);
       
             if (!place.place_id) {
               window.alert("Please select an option from the dropdown list.");
@@ -188,7 +253,7 @@ class AutocompleteDirectionsHandler {
         //when i have calc and displate route. do if... if this.directionsresponse isnt set so dont do things with undefined data
         //the class has repsonse data, pass in gridded data. now have two things to process response with data 
         //console.log("printing the response");
-        //console.log(this.directionsResponse); // works and prints 
+        console.log(this.directionsResponse); // works and prints 
 
         //console.log("printing routes array");
         //console.log(this.directionsResponse["routes"]); // prints an array 
@@ -210,6 +275,14 @@ class AutocompleteDirectionsHandler {
                 + routes[routes.indexOf(route)].legs[0].duration.text + "<br>" 
                 + "RouteAQI Score: " + routeAQIScore + " ");
             
+            /*
+            marker.addListener("click", () => {
+                if (lastOpenedInfoWindow) {
+                    lastOpenedInfoWindow.close();
+                }
+                infoWindow.open(map, marker);
+                lastOpenedInfoWindow = infoWindow;
+            })*/
             // Set the infowindow position in the midpoint of the route. 
             infowindow.setPosition(routes[routes.indexOf(route)].overview_path[center_point|0]);
             infowindow.open(map);
@@ -250,20 +323,20 @@ class AutocompleteDirectionsHandler {
                 let mapCol = mapRowCol.col;
 
                 //get the aqi in that map. 
-                console.log(typeof dataGrid); // Object 
-                console.log(mapRow);
-                console.log(mapCol);
-                console.log(aqDataPointsPerDegree); //1000
-                console.log(dataGrid);
+                //console.log(typeof dataGrid); // Object 
+                //console.log(mapRow);
+                //console.log(mapCol);
+                //console.log(aqDataPointsPerDegree); //1000
+                //console.log(dataGrid);
                 
-                let rowMap = dataGrid[mapRow];
-                console.log(rowMap);
+                //let rowMap = dataGrid[mapRow];
+                //console.log(dataGrid[mapRow]);
 
                 // AQI is only available for routes passing through the grid exactly. 
                 // Or else no data available and will have error saying it is undefined (because it doesnt exist). 
                 // If the mapRow from getGridIndex of stepAQIdoesnt exist in the data grid, set stepAQI as 0 for now. 
                 let stepAQI = 0;
-                if (!rowMap) {
+                if (!dataGrid[mapRow]) {
                     console.log("Row map doesnt exist and is undefined.");
                     // if it doesnt have a AQI value cose it doesnt exist in the grid, make the value = 0 
                 } else if (!dataGrid[mapRow][mapCol]) {
@@ -309,6 +382,7 @@ class AutocompleteDirectionsHandler {
             console.log("so far total value is: " + totalValue + " total weight is: "+ totalWeight);
 
         }
+        // Calculate total route Score 
         let routeScore = totalValue / totalWeight; 
         console.log("total value is: " + totalValue + " totalweight is: " + totalWeight);
         console.log("The Route Score is: " + routeScore);
@@ -326,8 +400,25 @@ class AutocompleteDirectionsHandler {
             return;
         }
         const waypts = [];
-        const checkedWayptsArray = document.getElementById("waypoints");
+        //const waypointContainer = document.get("waypoint-container");
+        const wayptAutocompleteArray = this.waypointAutocompleteArray;
+        
+        //loop through auto array, and add the autocompelte's palace id into waypt. 
+        //rewrting it every single time 
 
+        for (let autocompleteObject of wayptAutocompleteArray) {
+            const place = autocompleteObject.getPlace();
+            waypts.push ({
+                location: autocompleteObject.getPlace().name,
+                stopover: true,
+            })
+            console.log(autocompleteObject.getPlace().place_id);
+            console.log(autocompleteObject.getPlace().name);
+            console.log(place);
+        }
+
+        /*
+        const checkedWayptsArray = document.getElementById("waypoints");
         for (let i = 0; i < checkedWayptsArray.length; i++) {
             if (checkedWayptsArray.options[i].selected) {
                 // If the option is selcted, add it to the array. 
@@ -336,7 +427,7 @@ class AutocompleteDirectionsHandler {
                     stopover: true,
                 });
             }
-        }
+        } */
         // Saving the class "this" as "me", as the definition of "this." 
         // changed in the reponse section and does not refer to the AutocompleteDirectionsHandler Class.
         const me = this;
