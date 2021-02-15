@@ -327,7 +327,7 @@ function updateCleanAirPlaces(data, bounds) {
         (places, status) => {
             if (status !== "OK" || !places) return;
             
-            // update list of clean air places
+            // Update list of clean air places
             cleanAirPlaces = [];
             for (const place of places) {
                 if (place.geometry && place.geometry.location) {
