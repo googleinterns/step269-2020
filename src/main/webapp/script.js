@@ -1,10 +1,12 @@
 let map; // Defining a global script variable
-let routeHandler; //in the globar scope, there is a thing call route handlers 
+let routeHandler; // in the globar scope, there is a thing call route handlers 
 let aqLayer;
 let refreshAQLayerTimeout;
 let searchMarker;
 let printDebugData = false;
 let lastOpenedRouteInfoWindow;
+let infoWindowArray = [];
+let renderArray = [];
 
 // key = zoom level, value = point radius in pixels
 let heatmapPointRadius = new Map([
@@ -220,6 +222,15 @@ class AutocompleteDirectionsHandler {
             return;
         }
 
+        //close all the current info windows, loop through array and clsoe them, and then reset array 
+        for (let routeInfoWindow of infoWindowArray) {
+            // close it!
+            routeInfoWindow.close();
+            console.log("closing info window");
+        } 
+        //reset infowindwo array by making it empty again.
+        infoWindowArray = [];
+
         let routes = this.directionsResponse["routes"];
         for (const route of routes) {
             // Keep console comments to print in console and see if score is working. 
@@ -239,7 +250,9 @@ class AutocompleteDirectionsHandler {
                 + routes[routes.indexOf(route)].legs[0].duration.text + "<br>" 
                 + "RouteAQI Score: " + routeAQIScore + " "
             );
-    
+
+            infoWindowArray.push(infowindow); // add it to the global array 
+            console.log("adding new info window onto infoarray");
             // Set the infowindow position to be in the midpoint of the route. 
             infowindow.setPosition(routes[routes.indexOf(route)].overview_path[center_point|0]);
             infowindow.open(map);
@@ -350,6 +363,23 @@ class AutocompleteDirectionsHandler {
             },
             (response, status) => {
                 if (status === "OK") {
+                  // Add renders into a global array, and everytime. i calcalculate score route, i refrehs that array. 
+                  // e.g. used to have 3 paths, now the new on has 1 path. 
+                  // consle prinst "setting render to map to null" 3 times, and "push render to map" once
+                    for (let render of renderArray) {
+                      console.log("setting renders map to null");
+                      render.setMap(null); // here i set each render and clear the routes display from the map
+                    }
+                    renderArray = []; // if it is just this, it doesnt delete the route and array. and the routes will still stay on the map. 
+                    for (var i = 0; i < response.routes.length; i++) {
+                        const r = new google.maps.DirectionsRenderer({
+                            map: me.map,
+                            directions: response,
+                            routeIndex: i
+                        })
+                        renderArray.push(r);
+                        console.log("pushing a render to the map");
+                    }
                     me.directionsResponse = response;
                     me.directionsRenderer.setDirections(response);
                 } else {
