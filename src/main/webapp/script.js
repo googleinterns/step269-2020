@@ -60,6 +60,7 @@ function initMap() {
     // Have a global scope reference to the route handler to be accessed in various places.
     routeHandler = new AutocompleteDirectionsHandler(map); 
     placesService = new google.maps.places.PlacesService(map);
+}
 
 class AutocompleteDirectionsHandler {
     constructor(map) {
@@ -72,11 +73,11 @@ class AutocompleteDirectionsHandler {
         this.directionsRenderer.setMap(map);
         this.directionsResponse = null;
 
-        // Array of Autocomplete object for each waypoint
+        // Array of Autocomplete object for each waypoint.
         this.waypointAutocompleteArray = [];
         this.waypointCounter = 0;
         
-        // Put directions in the directions panel
+        // Put directions in the directions panel.
         this.directionsRenderer.setPanel(document.getElementById("direction-panel"));
 
         // Retrieve what was input by user for the location search bar.  
@@ -173,22 +174,21 @@ class AutocompleteDirectionsHandler {
           });
     }
 
-    // TODO (Rosanna): account to delete a waypoint container too. 
+    // TODO (Rosanna): to account to delete a waypoint container too. 
     detectAddWaypointButtonListener(buttonId) {
         const button = document.getElementById(buttonId);
 
-        // Add listener to append a container onto HTML
+        // Add listener to append a container onto HTML.
         button.addEventListener("click", () => {
             var wayptContainer = document.getElementById("waypoint-container");
             var waypointInput = document.createElement("input");
             waypointInput.type = "text";
             waypointInput.className = "waypointInput";
             waypointInput.placeholder="Enter a Waypoint location";
-            wayptContainer.appendChild(waypointInput); //Put it into the HTML Container 
-            waypointInput.id = "waypoint-input" + this.waypointCounter; //start at waypoint-input0
+            wayptContainer.appendChild(waypointInput); // Put it into the HTML Container.
+            waypointInput.id = "waypoint-input" + this.waypointCounter; // Starting at waypoint-input0.
             this.waypointCounter++;
 
-            // Make it autocomplete by default on creation
             const waypointAutocomplete = new google.maps.places.Autocomplete(waypointInput);
             waypointAutocomplete.setFields(["place_id", "name"]);
             this.detectWaypointChangedListener(waypointAutocomplete);
@@ -254,7 +254,6 @@ class AutocompleteDirectionsHandler {
             );
 
             infoWindowArray.push(infowindow);
-            console.log("adding new info window onto infoarray");
             
             // Set the infowindow position to be in the midpoint of the route. 
             infowindow.setPosition(route.overview_path[center_point|0]);
@@ -276,7 +275,7 @@ class AutocompleteDirectionsHandler {
 
             for (const step of leg["steps"]) {
                 const stepIndex = leg["steps"].indexOf(step);
-                console.log("printing out start point of a step in a leg. In step " + (stepIndex + 1) + " of " + leg["steps"].length + step["start_location"]);
+                console.log("Printing out start point of a step in a leg. In step " + (stepIndex + 1) + " of " + leg["steps"].length + step["start_location"]);
 
                 // The duration value indicates duration in seconds. Using that (time) as stepWeight. 
                 let stepWeight = step["duration"]["value"];
@@ -302,7 +301,7 @@ class AutocompleteDirectionsHandler {
                 console.log(stepAQI);
                 totalValue += stepWeight * stepAQI;
                 totalWeight += stepWeight;
-                console.log("so far total value is: " + totalValue + " total weight is: "+ totalWeight);
+                console.log("So far total value is: " + totalValue + " total weight is: "+ totalWeight);
             }
 
             // Counting the AQI at the end point of the leg as part of the score. 
@@ -329,12 +328,12 @@ class AutocompleteDirectionsHandler {
             console.log(endptAQI);
             totalValue += legWeight * endptAQI;
             totalWeight += legWeight;
-            console.log("so far total value is: " + totalValue + " total weight is: "+ totalWeight);
+            console.log("So far total value is: " + totalValue + " total weight is: "+ totalWeight);
         }
 
         // Calculate total route Score 
         let routeScore = totalValue / totalWeight; 
-        console.log("total value is: " + totalValue + " totalweight is: " + totalWeight);
+        console.log("Total value is: " + totalValue + " totalweight is: " + totalWeight);
         console.log("The Route Score is: " + routeScore);
         return routeScore;
     }
@@ -354,8 +353,8 @@ class AutocompleteDirectionsHandler {
             })
         }
    
-        // Saving the class "this" as "me", as the definition of "this." is 
-        // changed in the reponse section and does not refer to the AutocompleteDirectionsHandler Class.
+        // Saving the class "this" as "me", as the definition of "this."  
+        // is changed in the reponse section and does not refer to the AutocompleteDirectionsHandler Class.
         const me = this;
         this.directionsService.route(
             {
@@ -368,22 +367,18 @@ class AutocompleteDirectionsHandler {
             },
             (response, status) => {
                 if (status === "OK") {
-                  // Add renders into a global array, and everytime. i calcalculate score route, i refrehs that array. 
-                  // e.g. used to have 3 paths, now the new on has 1 path. 
-                  // consle prinst "setting render to map to null" 3 times, and "push render to map" once
+                    // Everytime a route is calculated, refresh renderer Array with the latest routes. 
                     for (const render of directionsRendererArray) {
-                      console.log("setting renders map to null");
-                      render.setMap(null); // here i set each render and clear the routes display from the map
+                      render.setMap(null); 
                     }
-                    directionsRendererArray = []; // if it is just this, it doesnt delete the route and array. and the routes will still stay on the map. 
-                    for (var i = 0; i < response.routes.length; i++) {
-                        const r = new google.maps.DirectionsRenderer({
+                    directionsRendererArray = []; 
+                    for (const i = 0; i < response.routes.length; i++) {
+                        const renderer = new google.maps.DirectionsRenderer({
                             map: me.map,
                             directions: response,
                             routeIndex: i
                         })
-                        directionsRendererArray.push(r);
-                        console.log("pushing a render to the map");
+                        directionsRendererArray.push(renderer);
                     }
                     me.directionsResponse = response;
                     me.directionsRenderer.setDirections(response);
