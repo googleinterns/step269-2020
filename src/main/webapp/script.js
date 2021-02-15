@@ -226,7 +226,10 @@ class AutocompleteDirectionsHandler {
             console.log("In route " + (routes.indexOf(route) + 1) + " of " + routes.length + "  of the route array of the response.");
             let routeAQIScore = this.scoreIndvRoute(route, griddedData);
             console.log("The score of route " + (routes.indexOf(route) + 1)  + " of " + routes.length + "in the route array is: " + routeAQIScore);
-            
+
+            // Round score to 2dp. 
+            routeAQIScore = Math.round((routeAQIScore +  Number.EPSILON) * 100) / 100;
+
             // If there are waypoints, there there is only one route. 
             // If not waypoints, then there are alternate route suggestions. 
             var center_point = routes[routes.indexOf(route)].overview_path.length/2;
