@@ -10,7 +10,7 @@ let selectedLocation;
 
 let printDebugData = false;
 
-// key = zoom level, value = point radius in pixels
+// Key = zoom level, Value = point radius in pixels
 let heatmapPointRadius = new Map([
     [7, 1],
     [8, 2],
@@ -74,7 +74,7 @@ class AutocompleteDirectionsHandler {
         const searchbar = document.getElementById("location-search-bar");
         searchMarker = new google.maps.Marker({
             map,
-            anchorPoint: new google.maps.Point(0,-29), // position the marker icon relative to the origin
+            anchorPoint: new google.maps.Point(0,-29), // Position the marker icon relative to the origin
         });
         searchMarker.setVisible(false);
 
@@ -91,7 +91,7 @@ class AutocompleteDirectionsHandler {
         destinationAutocomplete.setFields(["place_id"]);
 
 
-        //for individual search and marker function, temporarily contained here for test runs
+        // For individual search and marker function, temporarily contained here for test runs
         autocomplete.addListener("place_changed", () => {
             searchMarker.setVisible(false);
             const place = autocomplete.getPlace(); 
@@ -122,7 +122,7 @@ class AutocompleteDirectionsHandler {
 
         // Initialise visualisation when the bounds of the map changed.
         // map.getBounds() is undefined until the map tiles have finished loading,
-        // at which point the bounds change
+        // at which point the bounds change.
         google.maps.event.addListener(map, 'bounds_changed', function() {
             if (refreshAQLayerTimeout) {
                 clearTimeout(refreshAQLayerTimeout);
@@ -240,7 +240,7 @@ function convertGriddedDataToWeightedPoints(griddedData) {
 	    for (let [colNum, aqi] of Object.entries(row)) {
             const cellCoords = calcCellCoords(rowNum, colNum, aqDataPointsPerDegree);
 
-            // create the weightedLocation for the heatmap
+            // Create the weightedLocation for the heatmap
             let weightedPoint = {}
             weightedPoint.location = new google.maps.LatLng(cellCoords.lat, cellCoords.lng);
             weightedPoint.weight = aqi;
@@ -320,8 +320,8 @@ function getAQI(data, index) {
 // Functionality for Clean Air Near Me feature
 
 function updateCleanAirPlaces(data, bounds) {
-    // Perform a nearby search bounded by the current viewport
-    // Any locations outside the viewport would not have an AQI
+    // Perform a nearby search bounded by the current viewport.
+    // Any locations outside the viewport would not have an AQI.
     placesService.nearbySearch(
         {bounds: bounds, type: "park"},
         (places, status) => {
