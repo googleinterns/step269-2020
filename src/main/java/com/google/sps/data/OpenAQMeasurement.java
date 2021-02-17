@@ -1,7 +1,6 @@
 package com.google.sps.data;
 
 import java.util.HashMap;
-import java.util.Map;
 
 import com.google.gson.annotations.SerializedName;
 
