@@ -23,14 +23,14 @@ public class Cache {
       data.addAll(getNSWGovData());
     } catch (Exception e) {
       System.out.println(e.getMessage());
-      numDataFetchesFailed ++;
+      numDataFetchesFailed++;
     }
 
     try {
       data.addAll(getOpenAQData());
     } catch (Exception e) {
       System.out.println(e.getMessage());
-      numDataFetchesFailed ++;
+      numDataFetchesFailed++;
     }
 
     if (numDataFetchesFailed == NUM_DATA_SOURCES) {
