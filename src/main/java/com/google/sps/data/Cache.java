@@ -11,23 +11,30 @@ import java.util.HashMap;
 public class Cache {
   private HashMap<Integer,HashMap<Integer,GridCell>> dataGrid = new HashMap<>();
   private int aqDataPointsPerDegree;
+  private static final int NUM_DATA_SOURCES = 2;
 
   public GriddedData getGrid(Coordinates swCorner, Coordinates neCorner) {
     ArrayList<AQDataPoint> data = new ArrayList<>();
     aqDataPointsPerDegree = 100;
-
-    // TODO (Rachel) implement a better failsafe for when both data fetches fail (i.e. a way of checking so the old grid can be returned)
+    int numDataFetchesFailed = 0;
+    
     // Catch the error here because the servlet cannot throw the Exception type
     try {
       data.addAll(getNSWGovData());
     } catch (Exception e) {
       System.out.println(e.getMessage());
+      numDataFetchesFailed ++;
     }
 
     try {
       data.addAll(getOpenAQData());
     } catch (Exception e) {
       System.out.println(e.getMessage());
+      numDataFetchesFailed ++;
+    }
+
+    if (numDataFetchesFailed == NUM_DATA_SOURCES) {
+      return this.convertToGriddedData(swCorner, neCorner);
     }
     
     dataGrid = new HashMap<>();
