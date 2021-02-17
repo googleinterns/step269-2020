@@ -39,7 +39,7 @@ public final class GridCellTest {
     cell.addPointWithWeight(ZERO_AQ_POINT, POSITIVE_WEIGHT);
     double expected = 18.0;
     double actual = cell.getAQI();
-    Assert.assertEquals(expected, actual,0);
+    Assert.assertEquals(expected, actual, 0);
   }
 
   @Test
