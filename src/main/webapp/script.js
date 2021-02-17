@@ -345,9 +345,7 @@ class AutocompleteDirectionsHandler {
             return;
         }
         const waypts = [];
-        const wayptAutocompleteArray = this.waypointAutocompleteArray;
-
-        for (const autocompleteObject of wayptAutocompleteArray) {
+        for (const autocompleteObject of this.waypointAutocompleteArray) {
             waypts.push ({
                 location: autocompleteObject.getPlace().name,
                 stopover: true,
