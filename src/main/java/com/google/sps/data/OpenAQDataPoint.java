@@ -14,18 +14,11 @@ public class OpenAQDataPoint {
   }
 
   private double calcAQI(ArrayList<OpenAQMeasurement> measurements) {
-    // The approx midpoints of the thresholds defined at the following site for the AQ categories
-    // https://soe.environment.gov.au/theme/ambient-air-quality/topic/2016/air-quality-index
-    // this is not a very accurate calculation, however there is no accurate way since Australia
-    // moved to reporting categories rather than AQI
-    final int[] categoryAQIs = {17, 50, 83, 125, 160};
-
-    int maxCategory = -1;
+    double maxAQI = -1;
     for (OpenAQMeasurement measurement : measurements) {
-      int category = measurement.calcAQCategory();
-      maxCategory = category > maxCategory ? category : maxCategory;
+      double aqi = measurement.calcMeasurementAQI();
+      maxAQI = aqi > maxAQI ? aqi : maxAQI;
     }
-
-    return categoryAQIs[maxCategory - 1];
+    return maxAQI;
   }
 }
