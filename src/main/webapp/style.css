@@ -46,7 +46,9 @@ body {
 .topnav input[type=text] {
   padding: 6px;
   margin-top: 8px;
-  font-size: 12px;
+  font-size: 14px;
+  text-overflow: ellipsis;
+  font-family: Roboto;
   border: none;
 }
 
@@ -72,7 +74,7 @@ button {
 }
 
 button:hover {
-  background-color: darkgrey;
+  background-color: #4285F4;
   color: white;
 }
 
@@ -89,9 +91,16 @@ button:hover {
   flex-grow: 1;
 }
 
+#waypoint-note {
+  margin-left: 10px;
+}
+
 .feature-button {
   flex: 1;
   margin: 10px 10px 5px 10px;
+  font-family: Roboto;
+  font-size: 12px;
+  font-weight: 300;
 }
 
 #toggle-sidebar {
@@ -116,6 +125,24 @@ button:hover {
   background-color: #fff;
   overflow-x: hidden;
   padding-top: 20px;
+}
+.waypointInput {
+  background-color: #fff;
+  font-family: Roboto;
+  font-size: 14px;
+  font-weight: 300;
+  margin-left: 10px;
+  padding: 0 11px 0 13px;
+  text-overflow: ellipsis;
+  width: 200px;
+  margin: 5px 10px 5px 10px;
+  border: 1px solid transparent;
+  border-radius: 2px 0 0 2px;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  height: 32px;
+  outline: none;
+  box-shadow: 0 2px 4px rgb(0 0 0 / 20%), 0 -1px 0px rgb(0 0 0 / 2%);
 }
 
 .userInput {

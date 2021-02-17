@@ -29,7 +29,10 @@
           <input id="origin-input" class="userInput" type="text" placeholder="Enter an origin location"/>
           <input id="destination-input" class="userInput" type="text" placeholder="Enter a destination location"/>
         </div>
+        <div id="waypoint-container">
+        </div>
         <div id="feature-buttons-container" class="flex-container">
+          <button class="feature-button" id="waypoint-button" alt="Add Waypoints to route">Add Waypoints</button>
           <button class="feature-button" id="clean-air-button" alt="Find rest stops with clean air near this location" onClick="showCleanAirMarkers()">Clean air near here</button>
         </div>
         <div id="mode-selector" class="userInput">
@@ -41,6 +44,9 @@
   
           <input type="radio" name="type" id="changemode-driving" checked="checked"/>
           <label for="changemode-driving">Driving</label>
+        </div>
+        <div id="waypoint-note">
+          <i> Please note Google Maps API does not support Waypoints on transit mode. </i>
         </div>
       </div>
       <div id="location-info"></div>

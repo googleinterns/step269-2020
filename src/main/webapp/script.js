@@ -1,4 +1,5 @@
-let map;
+let map; // Defining a global script variable
+let routeHandler;
 let aqLayer;
 let refreshAQLayerTimeout;
 let searchMarker;
@@ -9,6 +10,9 @@ let lastOpenedInfoWindow;
 let selectedLocation;
 
 let printDebugData = false;
+let lastOpenedRouteInfoWindow;
+let infoWindowArray = [];
+let directionsRendererArray = [];
 
 // Key = zoom level, Value = point radius in pixels
 let heatmapPointRadius = new Map([
@@ -53,9 +57,10 @@ function initMap() {
         streetViewControl: false,
         fullscreenControl: false,
     });
-    new AutocompleteDirectionsHandler(map);
+    // Have a global scope reference to the route handler to be accessed in various places.
+    routeHandler = new AutocompleteDirectionsHandler(map); 
     placesService = new google.maps.places.PlacesService(map);
-} 
+}
 
 class AutocompleteDirectionsHandler {
     constructor(map) {
@@ -66,8 +71,13 @@ class AutocompleteDirectionsHandler {
         this.directionsService = new google.maps.DirectionsService();
         this.directionsRenderer = new google.maps.DirectionsRenderer();
         this.directionsRenderer.setMap(map);
+        this.directionsResponse = null;
+
+        // Array of Autocomplete object for each waypoint.
+        this.waypointAutocompleteArray = [];
+        this.waypointCounter = 0;
         
-        // Put directions in the directions panel
+        // Put directions in the directions panel.
         this.directionsRenderer.setPanel(document.getElementById("direction-panel"));
 
         // Retrieve what was input by user for the location search bar.  
@@ -80,9 +90,8 @@ class AutocompleteDirectionsHandler {
 
         const originInput = document.getElementById("origin-input");
         const destinationInput = document.getElementById("destination-input");
-        const modeSelector = document.getElementById("mode-selector"); 
 
-        // Initialise places autocomplete in search bar
+        // Initialise places autocomplete in search bar.
         const autocomplete = new google.maps.places.Autocomplete(searchbar);
         autocomplete.setFields(["geometry","name", "place_id"]);
         const originAutocomplete = new google.maps.places.Autocomplete(originInput);
@@ -90,8 +99,7 @@ class AutocompleteDirectionsHandler {
         const destinationAutocomplete = new google.maps.places.Autocomplete(destinationInput);
         destinationAutocomplete.setFields(["place_id"]);
 
-
-        // For individual search and marker function, temporarily contained here for test runs
+        // For individual search and marker function.
         autocomplete.addListener("place_changed", () => {
             searchMarker.setVisible(false);
             const place = autocomplete.getPlace(); 
@@ -115,7 +123,10 @@ class AutocompleteDirectionsHandler {
         this.detectClickListener("changemode-walking", google.maps.TravelMode.WALKING);
         this.detectClickListener("changemode-transit", google.maps.TravelMode.TRANSIT);
         this.detectClickListener("changemode-driving", google.maps.TravelMode.DRIVING); 
-        
+
+        // Detect if user clicked on the "add waypoints" button. 
+        this.detectAddWaypointButtonListener("waypoint-button");
+   
         // Detect if user has input origin/destination and calculate direction
         this.detectPlaceChangedListener(originAutocomplete, "ORIG");
         this.detectPlaceChangedListener(destinationAutocomplete, "DEST");
@@ -137,10 +148,9 @@ class AutocompleteDirectionsHandler {
         const aqLayerControlDiv = document.createElement("div");
         aqLayerControl(aqLayerControlDiv, map);
         this.map.controls[google.maps.ControlPosition.RIGHT_TOP].push(aqLayerControlDiv);
-
     }
 
-    // Sets a listener on a radio button to change the travel mode on Places Autocomplete.
+    // Set a listener on a radio button to change the travel mode on Places Autocomplete.
     detectClickListener(id, mode) {
         const radioButton = document.getElementById(id);
         radioButton.addEventListener("click", () => {
@@ -149,39 +159,227 @@ class AutocompleteDirectionsHandler {
         });
     }
 
-    detectPlaceChangedListener(autocompletedInput, journeyPoint) {
+    // A listener to see if the user changed the input of a waypoint, and update the route. 
+    detectWaypointChangedListener(autocompletedInput) {
         autocompletedInput.bindTo("bounds", this.map);
         autocompletedInput.addListener("place_changed", () => {
             const place = autocompletedInput.getPlace();
-      
+
             if (!place.place_id) {
               window.alert("Please select an option from the dropdown list.");
               return;
             }
-      
+
+            this.calculateAndDisplayRoute();
+          });
+    }
+
+    // TODO (Rosanna): to account to delete a waypoint container too. 
+    detectAddWaypointButtonListener(buttonId) {
+        const button = document.getElementById(buttonId);
+
+        // Add listener to append a container onto HTML.
+        button.addEventListener("click", () => {
+            var wayptContainer = document.getElementById("waypoint-container");
+            var waypointInput = document.createElement("input");
+            waypointInput.type = "text";
+            waypointInput.className = "waypointInput";
+            waypointInput.placeholder="Enter a Waypoint location";
+            wayptContainer.appendChild(waypointInput); // Put it into the HTML Container.
+            waypointInput.id = "waypoint-input" + this.waypointCounter; // Starting at waypoint-input0.
+            this.waypointCounter++;
+
+            const waypointAutocomplete = new google.maps.places.Autocomplete(waypointInput);
+            waypointAutocomplete.setFields(["place_id", "name"]);
+            this.detectWaypointChangedListener(waypointAutocomplete);
+
+            this.waypointAutocompleteArray.push(
+                waypointAutocomplete
+            );
+        });
+    }
+
+    detectPlaceChangedListener(autocompletedInput, journeyPoint) {
+        autocompletedInput.bindTo("bounds", this.map);
+        autocompletedInput.addListener("place_changed", () => {
+            const place = autocompletedInput.getPlace();
+
+            if (!place.place_id) {
+              window.alert("Please select an option from the dropdown list.");
+              return;
+            }
+
             if (journeyPoint === "ORIG") {
               this.originPlaceId = place.place_id;
             } else {
               this.destinationPlaceId = place.place_id;
             }
+
             this.calculateAndDisplayRoute();
           });
     }
 
+    scoreRoutes(griddedData) {
+        const dataGrid =  griddedData.data;
+        const aqDataPointsPerDegree = griddedData.aqDataPointsPerDegree;
+
+        // If directions repsonse is null (which means a route isnt calcualted yet), dont score. 
+        if (!this.directionsResponse) {
+            return;
+        }
+
+        for (let routeInfoWindow of infoWindowArray) {
+            routeInfoWindow.close();
+        } 
+        infoWindowArray = [];
+
+        let routes = this.directionsResponse["routes"];
+        for (const route of routes) {
+            const routeIndex = routes.indexOf(route);
+            // Keep console comments to print in console and see if score is working. 
+            console.log("In route " + (routeIndex + 1) + " of " + routes.length + "  of the route array of the response.");
+            let routeAQIScore = this.scoreIndvRoute(route, griddedData);
+            console.log("The score of route " + (routeIndex + 1)  + " of " + routes.length + "in the route array is: " + routeAQIScore);
+
+            routeAQIScore = Math.round((routeAQIScore +  Number.EPSILON) * 100) / 100;
+
+            // If there are waypoints, there is only one route. 
+            // If there are no waypoints, there are alternate route suggestions. 
+            // TODO: rn info window only displays first leg duration and distance. Loop through to allow total route summary. 
+            var center_point = route.overview_path.length / 2;
+            var infowindow = new google.maps.InfoWindow();
+            infowindow.setContent(
+                route.legs[0].distance.text + "<br>" 
+                + route.legs[0].duration.text + "<br>" 
+                + "RouteAQI Score: " + routeAQIScore + " "
+            );
+
+            infoWindowArray.push(infowindow);
+            
+            // Set the infowindow position to be in the midpoint of the route. 
+            infowindow.setPosition(route.overview_path[center_point|0]);
+            infowindow.open(map);
+        }
+    }
+
+    // Given A Route, by going through all of the legs, and each step inside each leg. 
+    scoreIndvRoute(Route, griddedData ) {
+        const dataGrid =  griddedData.data;
+        const aqDataPointsPerDegree = griddedData.aqDataPointsPerDegree;
+        let legs = Route["legs"];
+
+        let totalValue = 0;
+        let totalWeight = 0; 
+        for (const leg of legs) {
+            const legIndex = legs.indexOf(leg);
+            console.log("In leg " + (legIndex + 1) + "  of "+ legs.length +" the legs array in the 1st route of the response.");
+
+            for (const step of leg["steps"]) {
+                const stepIndex = leg["steps"].indexOf(step);
+                console.log("Printing out start point of a step in a leg. In step " + (stepIndex + 1) + " of " + leg["steps"].length + step["start_location"]);
+
+                // The duration value indicates duration in seconds. Using that (time) as stepWeight. 
+                let stepWeight = step["duration"]["value"];
+                let stepStartLat = step["start_location"].lat();
+                let stepStartLng = step["start_location"].lng();
+
+                let mapRowCol = getGridIndex(stepStartLat, stepStartLng, aqDataPointsPerDegree);
+                let mapRow = mapRowCol.row;
+                let mapCol = mapRowCol.col;
+
+                // AQI is only available for routes passing through the grid exactly. 
+                // Or else no data available and will have error saying it is undefined (because it doesnt exist). 
+                // If the mapRow from getGridIndex of stepAQIdoesnt doesn't exist in the data grid, stepAQI is 0 for now. 
+                let stepAQI = 0;
+                if (!dataGrid[mapRow]) {
+                    console.log("Row map doesnt exist and is undefined.");
+                } else if (!dataGrid[mapRow][mapCol]) {
+                    console.log("Step aqi dosnt exist because mapCol doesn't exist in mapRow. So cant find and set stepAQI");
+                } else {
+                    stepAQI = dataGrid[mapRow][mapCol];
+                }
+
+                console.log(stepAQI);
+                totalValue += stepWeight * stepAQI;
+                totalWeight += stepWeight;
+                console.log("So far total value is: " + totalValue + " total weight is: "+ totalWeight);
+            }
+
+            // Counting the AQI at the end point of the leg as part of the score. 
+            // Set duration stepWeight as 60 seconds to account of parking upon arrival at end point. 
+            // TODO: Rosanna to rethink on this logic, would it stll apply with waypoints where there are a lot of legs? It can count for stopover time. 
+            let legWeight = 60;
+            let legEndlat = leg["end_location"].lat();
+            let legEndLng = leg["end_location"].lng();
+
+            let endPtRowCol = getGridIndex(legEndlat, legEndLng, aqDataPointsPerDegree);
+            let mapRow = endPtRowCol.row;
+            let mapCol = endPtRowCol.col;
+            let endptAQI = 0;
+
+            // Print to see in console whether mapRow or mapCol is undefined. 
+            if (!dataGrid[mapRow]) {
+                console.log("Row map doesnt exist and is undefined.");
+            } else if (!dataGrid[mapRow][mapCol]) {
+                console.log("Step aqi dosnt exist because mapCol doesn't exist in mapRow. So cant find and set stepAQI");
+            } else {
+                endptAQI = dataGrid[mapRow][mapCol];
+            }
+
+            console.log(endptAQI);
+            totalValue += legWeight * endptAQI;
+            totalWeight += legWeight;
+            console.log("So far total value is: " + totalValue + " total weight is: "+ totalWeight);
+        }
+
+        // Calculate total route Score 
+        let routeScore = totalValue / totalWeight; 
+        console.log("Total value is: " + totalValue + " totalweight is: " + totalWeight);
+        console.log("The Route Score is: " + routeScore);
+        return routeScore;
+    }
+
     calculateAndDisplayRoute() {
+        // If PlaceIDs are not placed in yet, dont calculate a route yet. 
         if (!this.originPlaceId || !this.destinationPlaceId) {
             return;
         }
+        const waypts = [];
+        for (const autocompleteObject of this.waypointAutocompleteArray) {
+            waypts.push ({
+                location: autocompleteObject.getPlace().name,
+                stopover: true,
+            })
+        }
+   
+        // Saving the class "this" as "me", as the definition of "this."  
+        // is changed in the reponse section and does not refer to the AutocompleteDirectionsHandler Class.
         const me = this;
         this.directionsService.route(
             {
                 origin: { placeId: this.originPlaceId },
                 destination: { placeId: this.destinationPlaceId },
                 travelMode: this.travelMode,
-                provideRouteAlternatives: true
+                provideRouteAlternatives: true,
+                waypoints: waypts,
+                optimizeWaypoints: true,
             },
             (response, status) => {
                 if (status === "OK") {
+                    // Everytime a route is calculated, refresh renderer Array with the latest routes. 
+                    for (const render of directionsRendererArray) {
+                      render.setMap(null); 
+                    }
+                    directionsRendererArray = []; 
+                    for (var i = 0; i < response.routes.length; i++) {
+                        const renderer = new google.maps.DirectionsRenderer({
+                            map: me.map,
+                            directions: response,
+                            routeIndex: i
+                        })
+                        directionsRendererArray.push(renderer);
+                    }
+                    me.directionsResponse = response;
                     me.directionsRenderer.setDirections(response);
                 } else {
                     window.alert("Directions request failed due to " + status);
@@ -204,7 +402,7 @@ function populateAQVisualisationData() {
         const aqData = convertGriddedDataToWeightedPoints(data);
         if (printDebugData) {console.log(data);}
         loadHeatmap(aqData);
-        scoreRoute(data);
+        routeHandler.scoreRoutes(data);
         updateCleanAirPlaces(data, mapBounds); // TODO (Rachel): disable clean air button until data is ready
         if (selectedLocation) {updateSelectedLocationInfo(data);}
     });
@@ -248,12 +446,6 @@ function convertGriddedDataToWeightedPoints(griddedData) {
         }
     }
     return weightedPoints;
-}
-
-// TODO (Rosanna): implement scoring here
-function scoreRoute(griddedData) {
-    // Note for Rosanna: griddedData is not exactly a grid, but a grid-like nested map
-    console.log("scoring route");
 }
 
 function calcCellCoords(rowNum, colNum, aqDataPointsPerDegree) {
