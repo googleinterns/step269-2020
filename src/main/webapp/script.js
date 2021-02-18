@@ -276,12 +276,13 @@ class AutocompleteDirectionsHandler {
 
             for (const step of leg["steps"]) {
                 const stepIndex = leg["steps"].indexOf(step);
-                console.log("Printing out start point of a step in a leg. In step " + (stepIndex + 1) + " of " + leg["steps"].length + step["start_location"]);
+                console.log("Printing out start point of a step in a leg. In step " + (stepIndex + 1) + " of " + leg["steps"].length);
 
                 // The duration value indicates duration in seconds. Using that (time) as stepWeight. 
                 let stepWeight = step["duration"]["value"];
                 let stepStartLat = step["start_location"].lat();
                 let stepStartLng = step["start_location"].lng();
+                console.log("step coord" + step["start_location"] + " time weight: " + stepWeight);
 
                 let mapRowCol = getGridIndex(stepStartLat, stepStartLng, aqDataPointsPerDegree);
                 let mapRow = mapRowCol.row;
@@ -289,50 +290,58 @@ class AutocompleteDirectionsHandler {
 
                 // AQI is only available for routes passing through the grid exactly. 
                 // Or else no data available and will have error saying it is undefined (because it doesnt exist). 
-                // If the mapRow from getGridIndex of stepAQIdoesnt doesn't exist in the data grid, stepAQI is 0 for now. 
-                let stepAQI = 0;
+                // Ignore step if the mapRow from getGridIndex of stepAQIdoesnt doesn't exist in the data grid, 
+                // as setting it to 0 will skew data to 0 if passing through an area with very little data. 
+                // So the route score will only be scored based on available data. 
+                var stepAQI;
                 if (!dataGrid[mapRow]) {
-                    console.log("Row map doesnt exist and is undefined.");
+                    console.log("Row map doesnt exist and is undefined. Ignore this step, skip over iteration.");
+                    continue;
                 } else if (!dataGrid[mapRow][mapCol]) {
-                    console.log("Step aqi dosnt exist because mapCol doesn't exist in mapRow. So cant find and set stepAQI");
+                    console.log("Step aqi dosnt exist because mapCol doesn't exist in mapRow. So cant find and set stepAQI. Skip over iteration.");
+                    continue;
                 } else {
+                    console.log("AQI exists");
                     stepAQI = dataGrid[mapRow][mapCol];
                 }
 
-                console.log(stepAQI);
+                console.log("The Step's AQI is:  " + stepAQI);
                 totalValue += stepWeight * stepAQI;
                 totalWeight += stepWeight;
+                console.log("So far total value is: " + totalValue + " total weight is: " + totalWeight);
+            }
+
+            if ((legIndex + 1) == legs.length) {
+                // If it is the last leg of the route, count the AQI at the end point of the leg as part of the score. 
+                // Set duration stepWeight as 180 seconds (3 min) to account for parking upon arrival at end point. 
+                let legWeight = 180;
+                let legEndlat = leg["end_location"].lat();
+                let legEndLng = leg["end_location"].lng();
+                console.log("the leg's endpoint coord is: " + leg["end_location"] + " time weight: " + legWeight); 
+
+                let endPtRowCol = getGridIndex(legEndlat, legEndLng, aqDataPointsPerDegree);
+                let mapRow = endPtRowCol.row;
+                let mapCol = endPtRowCol.col;
+                var endptAQI;
+
+                // Print to see in console whether mapRow or mapCol is undefined. 
+                if (!dataGrid[mapRow]) {
+                    console.log("Row map doesnt exist and is undefined. Ignore this step, skip over iteration.");
+                    continue;
+                } else if (!dataGrid[mapRow][mapCol]) {
+                    console.log("Step aqi dosnt exist because mapCol doesn't exist in mapRow. So cant find and set stepAQI. Skip over iteration.");
+                    continue;
+                } else {
+                    endptAQI = dataGrid[mapRow][mapCol];
+                }
+
+                console.log("The end of leg's AQI is:  " + endptAQI);
+                totalValue += legWeight * endptAQI;
+                totalWeight += legWeight;
                 console.log("So far total value is: " + totalValue + " total weight is: "+ totalWeight);
             }
-
-            // Counting the AQI at the end point of the leg as part of the score. 
-            // Set duration stepWeight as 60 seconds to account of parking upon arrival at end point. 
-            // TODO: Rosanna to rethink on this logic, would it stll apply with waypoints where there are a lot of legs? It can count for stopover time. 
-            let legWeight = 60;
-            let legEndlat = leg["end_location"].lat();
-            let legEndLng = leg["end_location"].lng();
-
-            let endPtRowCol = getGridIndex(legEndlat, legEndLng, aqDataPointsPerDegree);
-            let mapRow = endPtRowCol.row;
-            let mapCol = endPtRowCol.col;
-            let endptAQI = 0;
-
-            // Print to see in console whether mapRow or mapCol is undefined. 
-            if (!dataGrid[mapRow]) {
-                console.log("Row map doesnt exist and is undefined.");
-            } else if (!dataGrid[mapRow][mapCol]) {
-                console.log("Step aqi dosnt exist because mapCol doesn't exist in mapRow. So cant find and set stepAQI");
-            } else {
-                endptAQI = dataGrid[mapRow][mapCol];
-            }
-
-            console.log(endptAQI);
-            totalValue += legWeight * endptAQI;
-            totalWeight += legWeight;
-            console.log("So far total value is: " + totalValue + " total weight is: "+ totalWeight);
         }
-
-        // Calculate total route Score 
+        // Calculate total route Score, after looping through all the legs.
         let routeScore = totalValue / totalWeight; 
         console.log("Total value is: " + totalValue + " totalweight is: " + totalWeight);
         console.log("The Route Score is: " + routeScore);
