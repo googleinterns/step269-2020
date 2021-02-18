@@ -239,7 +239,7 @@ class AutocompleteDirectionsHandler {
             // Keep console comments to print in console and see if score is working. 
             console.log("In route " + (routeIndex + 1) + " of " + routes.length + "  of the route array of the response.");
             let routeAQIScore = this.scoreIndvRoute(route, griddedData);
-            console.log("The score of route " + (routeIndex + 1)  + " of " + routes.length + "in the route array is: " + routeAQIScore);
+            console.log("The score of route " + (routeIndex + 1)  + " of " + routes.length + " in the route array is: " + routeAQIScore);
 
             routeAQIScore = Math.round((routeAQIScore +  Number.EPSILON) * 100) / 100;
 
@@ -255,7 +255,7 @@ class AutocompleteDirectionsHandler {
             );
 
             infoWindowArray.push(infowindow);
-            
+
             // Set the infowindow position to be in the midpoint of the route. 
             infowindow.setPosition(route.overview_path[center_point|0]);
             infowindow.open(map);
@@ -272,17 +272,16 @@ class AutocompleteDirectionsHandler {
         let totalWeight = 0; 
         for (const leg of legs) {
             const legIndex = legs.indexOf(leg);
-            console.log("In leg " + (legIndex + 1) + "  of "+ legs.length +" the legs array in the 1st route of the response.");
+            console.log("In leg " + (legIndex + 1) + "  of "+ legs.length + " the legs array in the 1st route of the response.");
 
             for (const step of leg["steps"]) {
                 const stepIndex = leg["steps"].indexOf(step);
-                console.log("Printing out start point of a step in a leg. In step " + (stepIndex + 1) + " of " + leg["steps"].length);
+                console.log("In step " + (stepIndex + 1) + " of " + leg["steps"].length);
 
                 // The duration value indicates duration in seconds. Using that (time) as stepWeight. 
                 let stepWeight = step["duration"]["value"];
                 let stepStartLat = step["start_location"].lat();
                 let stepStartLng = step["start_location"].lng();
-                console.log("step coord" + step["start_location"] + " time weight: " + stepWeight);
 
                 let mapRowCol = getGridIndex(stepStartLat, stepStartLng, aqDataPointsPerDegree);
                 let mapRow = mapRowCol.row;
@@ -293,15 +292,14 @@ class AutocompleteDirectionsHandler {
                 // Ignore step if the mapRow from getGridIndex of stepAQIdoesnt doesn't exist in the data grid, 
                 // as setting it to 0 will skew data to 0 if passing through an area with very little data. 
                 // So the route score will only be scored based on available data. 
-                var stepAQI;
+                let stepAQI;
                 if (!dataGrid[mapRow]) {
                     console.log("Row map doesnt exist and is undefined. Ignore this step, skip over iteration.");
                     continue;
                 } else if (!dataGrid[mapRow][mapCol]) {
-                    console.log("Step aqi dosnt exist because mapCol doesn't exist in mapRow. So cant find and set stepAQI. Skip over iteration.");
+                    console.log("Step aqi dosnt exist because mapCol doesn't exist in mapRow. Skip over iteration.");
                     continue;
                 } else {
-                    console.log("AQI exists");
                     stepAQI = dataGrid[mapRow][mapCol];
                 }
 
@@ -317,12 +315,11 @@ class AutocompleteDirectionsHandler {
                 let legWeight = 180;
                 let legEndlat = leg["end_location"].lat();
                 let legEndLng = leg["end_location"].lng();
-                console.log("the leg's endpoint coord is: " + leg["end_location"] + " time weight: " + legWeight); 
 
                 let endPtRowCol = getGridIndex(legEndlat, legEndLng, aqDataPointsPerDegree);
                 let mapRow = endPtRowCol.row;
                 let mapCol = endPtRowCol.col;
-                var endptAQI;
+                let endptAQI;
 
                 // Print to see in console whether mapRow or mapCol is undefined. 
                 if (!dataGrid[mapRow]) {
@@ -338,12 +335,11 @@ class AutocompleteDirectionsHandler {
                 console.log("The end of leg's AQI is:  " + endptAQI);
                 totalValue += legWeight * endptAQI;
                 totalWeight += legWeight;
-                console.log("So far total value is: " + totalValue + " total weight is: "+ totalWeight);
+                console.log("So far total value is: " + totalValue + " total weight is: " + totalWeight);
             }
         }
         // Calculate total route Score, after looping through all the legs.
         let routeScore = totalValue / totalWeight; 
-        console.log("Total value is: " + totalValue + " totalweight is: " + totalWeight);
         console.log("The Route Score is: " + routeScore);
         return routeScore;
     }
