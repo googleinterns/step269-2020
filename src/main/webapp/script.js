@@ -291,10 +291,7 @@ class AutocompleteDirectionsHandler {
 
     // Given A Route, by going through all of the legs, and each step inside each leg. 
     scoreIndvRoute(route, griddedData ) {
-        //const dataGrid =  griddedData.data;
-        //const aqDataPointsPerDegree = griddedData.aqDataPointsPerDegree;
         let legs = route["legs"];
-
         let totalValue = 0;
         let totalWeight = 0; 
         for (const leg of legs) {
