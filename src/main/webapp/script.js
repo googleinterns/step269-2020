@@ -262,7 +262,7 @@ class AutocompleteDirectionsHandler {
         }
     }
 
-    calculateAQI(lat, lng, griddedData) {
+    getAQI(lat, lng, griddedData) {
         const dataGrid =  griddedData.data;
         const aqDataPointsPerDegree = griddedData.aqDataPointsPerDegree;
 
@@ -275,16 +275,14 @@ class AutocompleteDirectionsHandler {
         // Ignore step if the mapRow from getGridIndex of stepAQIdoesnt doesn't exist in the data grid, 
         // as setting it to 0 will skew data to 0 if passing through an area with very little data. 
         // So the route score will only be scored based on available data. 
-        let AQI;
         if (!dataGrid[mapRow]) {
             console.log("Row map doesnt exist and is undefined. Skip over iteration.");
             return;
         } else if (!dataGrid[mapRow][mapCol]) {
             console.log("AQI dosnt exist because mapCol doesn't exist in mapRow. Skip over iteration.");
             return;
-        } else {
-            AQI = dataGrid[mapRow][mapCol];
         }
+        let AQI = dataGrid[mapRow][mapCol];
         console.log("The AQI is:  " + AQI);
         return AQI;
     }
@@ -307,7 +305,7 @@ class AutocompleteDirectionsHandler {
                 let stepStartLat = step["start_location"].lat();
                 let stepStartLng = step["start_location"].lng();
 
-                let stepAQI = this.calculateAQI(stepStartLat, stepStartLng, griddedData);
+                let stepAQI = this.getAQI(stepStartLat, stepStartLng, griddedData);
                 if (!stepAQI) {
                     continue;
                 }
@@ -316,24 +314,19 @@ class AutocompleteDirectionsHandler {
                 totalWeight += stepWeight;
                 console.log("So far total value is: " + totalValue + " total weight is: " + totalWeight);
             }
-
-            if ((legIndex + 1) == legs.length) {
-                // If it is the last leg of the route, count the AQI at the end point of the leg as part of the score. 
-                // Set duration stepWeight as 180 seconds (3 min) to account for parking upon arrival at end point. 
-                let legWeight = 180;
-                let legEndlat = leg["end_location"].lat();
-                let legEndLng = leg["end_location"].lng();
-
-                let endAQI = this.calculateAQI(legEndlat, legEndLng, griddedData);
-                if (!endAQI) {
-                    continue;
-                }
-
-                totalValue += legWeight * endAQI;
-                totalWeight += legWeight;
-                console.log("So far total value is: " + totalValue + " total weight is: " + totalWeight);
-            }
         }
+        let legWeight = 180;
+        let endLeg = legs[legs.length - 1];
+        let routeEndLat = endLeg["end_location"].lat();
+        let routeEndLng = endLeg["end_location"].lng();
+
+        let endAQI = this.getAQI(routeEndLat, routeEndLng, griddedData);
+        if (endAQI) {
+            totalValue += legWeight * endAQI;
+            totalWeight += legWeight;
+            console.log("So far total value is: " + totalValue + " total weight is: " + totalWeight);
+        }
+
         // Calculate total route Score, after looping through all the legs.
         let routeScore = totalValue / totalWeight; 
         console.log("The Route Score is: " + routeScore);
