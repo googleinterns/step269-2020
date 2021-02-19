@@ -220,9 +220,6 @@ class AutocompleteDirectionsHandler {
     }
 
     scoreRoutes(griddedData) {
-        const dataGrid =  griddedData.data;
-        const aqDataPointsPerDegree = griddedData.aqDataPointsPerDegree;
-
         // If directions repsonse is null (which means a route isnt calcualted yet), dont score. 
         if (!this.directionsResponse) {
             return;
@@ -262,31 +259,6 @@ class AutocompleteDirectionsHandler {
         }
     }
 
-    getAQI(lat, lng, griddedData) {
-        const dataGrid =  griddedData.data;
-        const aqDataPointsPerDegree = griddedData.aqDataPointsPerDegree;
-
-        let mapRowCol = getGridIndex(lat, lng, aqDataPointsPerDegree);
-        let mapRow = mapRowCol.row;
-        let mapCol = mapRowCol.col;
-
-        // AQI is only available for routes passing through the grid exactly. 
-        // Or else no data available and will have error saying it is undefined (because it doesnt exist). 
-        // Ignore step if the mapRow from getGridIndex of stepAQIdoesnt doesn't exist in the data grid, 
-        // as setting it to 0 will skew data to 0 if passing through an area with very little data. 
-        // So the route score will only be scored based on available data. 
-        if (!dataGrid[mapRow]) {
-            console.log("Row map doesnt exist and is undefined. Skip over iteration.");
-            return;
-        } else if (!dataGrid[mapRow][mapCol]) {
-            console.log("AQI dosnt exist because mapCol doesn't exist in mapRow. Skip over iteration.");
-            return;
-        }
-        let AQI = dataGrid[mapRow][mapCol];
-        console.log("The AQI is:  " + AQI);
-        return AQI;
-    }
-
     // Given A Route, by going through all of the legs, and each step inside each leg. 
     scoreIndvRoute(route, griddedData ) {
         let legs = route["legs"];
@@ -302,11 +274,9 @@ class AutocompleteDirectionsHandler {
 
                 // The duration value indicates duration in seconds. Using that (time) as stepWeight. 
                 let stepWeight = step["duration"]["value"];
-                let stepStartLat = step["start_location"].lat();
-                let stepStartLng = step["start_location"].lng();
-
-                let stepAQI = this.getAQI(stepStartLat, stepStartLng, griddedData);
-                if (!stepAQI) {
+                let index = getGridIndex(step["start_location"].lat(), step["start_location"].lng(), griddedData.aqDataPointsPerDegree);
+                let stepAQI = getAQI(griddedData, index);
+                if (stepAQI == -1) {
                     continue;
                 }
 
@@ -317,11 +287,10 @@ class AutocompleteDirectionsHandler {
         }
         let legWeight = 180;
         let endLeg = legs[legs.length - 1];
-        let routeEndLat = endLeg["end_location"].lat();
-        let routeEndLng = endLeg["end_location"].lng();
+        let index = getGridIndex(endLeg["end_location"].lat(), endLeg["end_location"].lng(), griddedData.aqDataPointsPerDegree);
 
-        let endAQI = this.getAQI(routeEndLat, routeEndLng, griddedData);
-        if (endAQI) {
+        let endAQI = getAQI(griddedData, index);
+        if (endAQI !== -1) {
             totalValue += legWeight * endAQI;
             totalWeight += legWeight;
             console.log("So far total value is: " + totalValue + " total weight is: " + totalWeight);
@@ -492,9 +461,9 @@ function toggleSidebar() {
 
 // This function returns the aqi from the data at the specified index.
 // If the aqi is unknown at that index, it will return -1.
-function getAQI(data, index) {
+function getAQI(griddedData, index) {
     let aqi = -1;
-    const row = data.data[index.row];
+    const row = griddedData.data[index.row];
     if (row) {
         if (row[index.col]) {
             aqi = row[index.col];
