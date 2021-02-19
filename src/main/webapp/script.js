@@ -290,7 +290,7 @@ class AutocompleteDirectionsHandler {
         let index = getGridIndex(endLeg["end_location"].lat(), endLeg["end_location"].lng(), griddedData.aqDataPointsPerDegree);
 
         let endAQI = getAQI(griddedData, index);
-        if (endAQI != -1) {
+        if (endAQI !== -1) {
             totalValue += legWeight * endAQI;
             totalWeight += legWeight;
             console.log("So far total value is: " + totalValue + " total weight is: " + totalWeight);
